@@ -1,0 +1,45 @@
+= Arquillian Native Platforms support
+
+Support for running native code by Arquillian
+
+== Making it part of your extension
+
+In your project, import following artifact:
+
+[source,xml]
+----
+<dependency>
+    <groupId>org.arquillian.native</artifactId>
+    <artifactId>arquillian-native-platform</artifactId>
+    <version>${version.arquillian.native.platform}</version>
+</dependency>
+----
+
+In your extension, based on your scope needs (_SuiteScope is recommended_), create an instance of +ProcessExecutor+ and put it into scope.
+
+[source,java]
+----
+@Instance<ServiceLoader> serviceLoader;
+
+@InstanceProducer<ProcessExecutor> processExecutor;
+
+public void createProcessExecutorInstance(@Observes AnyEventOfYourChoice) {
+
+    ProcessExecutor executor = serviceLoader.get(ProcessExecutorFactory.class).getProcessExecutorInstance();
+
+    // or, if you need to alter environment for process created by ProcessExecutor
+    Map<String,String> env = createEnv();
+    ProcessExecutor executor = serviceLoader.get(ProcessExecutorFactory.class).getProcessExecutorInstance(env);
+    
+    processExecutor.set(executor)
+}
+
+----
+
+
+== TODO
+
+Currently missing features:
+* support to get platform dependent bits automatically
+* make process executor singleton once created, unless env is different
+
