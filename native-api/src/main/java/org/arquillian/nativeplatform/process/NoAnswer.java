@@ -23,9 +23,9 @@ import org.arquillian.nativeplatform.process.ProcessExecution;
 
 /**
  * Represents an empty or no answer. It simply does nothing at all.
- * 
+ *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
- * 
+ *
  */
 public enum NoAnswer implements Answer {
 
