@@ -38,12 +38,23 @@ One time action::
 Periodical action::
     Use +scheduleUntilTrue(...)+ method if you want to re-execute code block until condition is fulfilled
 
+=== ProcessExecutor in your test
+
+You can inject +ProcessExecutor+ into test as an +ArquillianResource+ like this:
+
+[source, java]
+----
+@ArquillianResource ProcessExecutor executor;
+----
+
+After this, you can use process executor in your test methods in order to perform platform specific operations. You are free to inject 
+this resource into test method itself as well.
+
 == TODO
 
 Currently missing features:
 
 * support to get platform dependent bits automatically
 * provide metadata format to simplify platform dependent execution
-* expose executor for others - make it injectable in tests
 * create Command abstraction
 
