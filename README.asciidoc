@@ -44,6 +44,5 @@ Currently missing features:
 
 * support to get platform dependent bits automatically
 * provide metadata format to simplify platform dependent execution
-* expose executor for others - make it injectable in tests
 * create Command abstraction
 
