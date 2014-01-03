@@ -21,15 +21,16 @@
  */
 package org.arquillian.nativeplatform.process;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
 
 /**
- * Test class which tests if tokens added to {@link Command} are valid.
  *
  * @author <a href="@mailto:smikloso@redhat.com">Stefan Miklosovic</a>
  *
@@ -37,17 +38,59 @@ import org.junit.Test;
 public class CommandTestCase {
 
     @Test
+    public void constructEmptyCommandTest() {
+
+        CommandBuilder cb = new CommandBuilder();
+        Command command = cb.build();
+        Command command2 = cb.build();
+
+        assertThat(command, not(sameInstance(command2)));
+
+        assertThat(command, notNullValue());
+        assertEquals(0, command.size());
+        assertThat(command.get(0), nullValue());
+    }
+
+    @Test
+    public void commandListSeparationTest() {
+
+        CommandBuilder cb = new CommandBuilder();
+        Command command = cb.build();
+        Command command2 = cb.add("some").add("command").build();
+
+        assertThat(command, not(sameInstance(command2)));
+        assertEquals(0, command.size());
+        assertEquals(2, command2.size());
+    }
+
+    @Test
+    public void complexCommandTest() {
+        Command command = new CommandBuilder()
+            .add(Collections.<String> emptyList())
+            .add("some")
+            .add("command")
+            .clear()
+            .add(new String[] { "some", "other", "complex", "command" })
+            .remove("complex")
+            .build();
+
+        assertEquals(3, command.size());
+        assertEquals("some", command.getFirst());
+        assertEquals("command", command.getLast());
+        assertThat(command.get(command.size() + 5), nullValue());
+    }
+
+    @Test
     public void testDeleteTrailingSpaces() {
-
-        Command command = new Command();
-
         String testString = " abcd   \"  a   \"  \"    c    d\" \"${HOME}\"";
+
         List<String> list = new ArrayList<String>();
         list.add("abcd");
-        list.add("a");
-        list.add("c    d");
+        list.add("  a   ");
+        list.add("    c    d");
         list.add("${HOME}");
-        assertTrue(listsAreSame(list, command.addTokenized(testString).getAsList()));
+
+        assertTrue(listsAreSame(list, new CommandBuilder().addTokenized(testString).build().getAsList()));
     }
 
     private boolean listsAreSame(List<String> list1, List<String> list2) {
