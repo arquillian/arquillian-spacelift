@@ -56,5 +56,4 @@ Currently missing features:
 
 * support to get platform dependent bits automatically
 * provide metadata format to simplify platform dependent execution
-* create Command abstraction
 

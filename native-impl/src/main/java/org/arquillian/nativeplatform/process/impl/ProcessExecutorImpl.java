@@ -37,6 +37,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.arquillian.nativeplatform.process.Answer;
+import org.arquillian.nativeplatform.process.Command;
 import org.arquillian.nativeplatform.process.ProcessExecution;
 import org.arquillian.nativeplatform.process.ProcessExecutionException;
 import org.arquillian.nativeplatform.process.ProcessExecutor;
@@ -195,18 +196,32 @@ public class ProcessExecutorImpl implements ProcessExecutor {
         }
     }
 
-    /**
-     * Executes a process defined by command. Process output is discarded. Waits for process to finish and checks if process
-     * finished with status code 0
-     *
-     * @param command command to be execution
-     * @return spawned process execution
-     * @throws ProcessExecutionException if anything goes wrong
-     */
+    @Override
     public ProcessExecution execute(String... command) throws ProcessExecutionException {
         return execute(ProcessInteractionBuilder.NO_INTERACTION, command);
     }
 
+    @Override
+    public ProcessExecution spawn(ProcessInteraction interaction, Command command) throws ProcessExecutionException {
+        return spawn(interaction, command.getAsArray());
+    }
+
+    @Override
+    public ProcessExecution spawn(Command command) throws ProcessExecutionException {
+        return spawn(command.getAsArray());
+    }
+
+    @Override
+    public ProcessExecution execute(ProcessInteraction interaction, Command command) throws ProcessExecutionException {
+        return execute(interaction, command.getAsArray());
+    }
+
+    @Override
+    public ProcessExecution execute(Command command) throws ProcessExecutionException {
+        return execute(command.getAsArray());
+    }
+
+    @Override
     public ProcessExecutor removeShutdownHook(ProcessExecution p) {
         shutdownThreads.removeHookFor(p);
         return this;
@@ -353,4 +368,5 @@ public class ProcessExecutorImpl implements ProcessExecutor {
             return execution;
         }
     }
+
 }

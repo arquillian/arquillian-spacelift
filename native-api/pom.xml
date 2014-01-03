@@ -18,6 +18,13 @@
     <name>Arquillian Native Platform Support API</name>
     <description>Extension for to make running of native code easier from Arquillian Extensions</description>
 
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
     <build>
     </build>

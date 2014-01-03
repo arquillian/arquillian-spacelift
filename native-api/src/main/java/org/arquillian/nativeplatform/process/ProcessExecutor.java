@@ -50,7 +50,7 @@ public interface ProcessExecutor {
     /**
      * Schedules a callable to be executed in regular intervals
      *
-     * @param callable Callable
+     * @param callable {@link Callable}
      * @param timeout Total timeout
      * @param step delay before next execution
      * @param unit time unit
@@ -64,20 +64,39 @@ public interface ProcessExecutor {
      * Spawns a process defined by command. Process output is consumed by {@link ProcessInteraction}.
      *
      * @param interaction command interaction
-     * @param command command to be execution
+     * @param command command to be executed
      * @return spawned process execution
      * @throws ProcessExecutionException if anything goes wrong
      */
     ProcessExecution spawn(ProcessInteraction interaction, String[] command) throws ProcessExecutionException;
 
     /**
+     * Spawns a process defined by command. Process output is consumed by {@link ProcessInteraction}.
+     *
+     * @param interaction command interaction
+     * @param command command to be executed
+     * @return spawned process execution
+     * @throws ProcessExecutionException if anything goes wrong
+     */
+    ProcessExecution spawn(ProcessInteraction interaction, Command command) throws ProcessExecutionException;
+
+    /**
      * Spawns a process defined by command. Process output is discarded.
      *
-     * @param command command to be execution
+     * @param command command to be executed
      * @return spawned process execution
      * @throws ProcessExecutionException if anything goes wrong
      */
     ProcessExecution spawn(String... command) throws ProcessExecutionException;
+
+    /**
+     * Spawns a process defined by command. Process output is discarded.
+     *
+     * @param command command to be executed
+     * @return spawned process execution
+     * @throws ProcessExecutionException if anything goes wrong
+     */
+    ProcessExecution spawn(Command command) throws ProcessExecutionException;
 
     /**
      * Executes a process defined by command. Process output is consumed by {@link ProcessInteraction}. Waits for process to
@@ -91,14 +110,35 @@ public interface ProcessExecutor {
     ProcessExecution execute(ProcessInteraction interaction, String[] command) throws ProcessExecutionException;
 
     /**
+     * Executes a process defined by command. Process output is consumed by {@link ProcessInteraction}. Waits for process to
+     * finish and checks if process finished with status code 0
+     *
+     * @param interaction command interaction
+     * @param command command to be executed
+     * @return spawned process execution
+     * @throws ProcessExecutionException if anything goes wrong
+     */
+    ProcessExecution execute(ProcessInteraction interaction, Command command) throws ProcessExecutionException;
+
+    /**
      * Executes a process defined by command. Process output is discarded. Waits for process to finish and checks if process
      * finished with status code 0
      *
-     * @param command command to be execution
+     * @param command command to be executed
      * @return spawned process execution
      * @throws ProcessExecutionException if anything goes wrong
      */
     ProcessExecution execute(String... command) throws ProcessExecutionException;
+
+    /**
+     * Executes a process defined by command. Process output is discarded. Waits for process to finish and checks if process
+     * finished with status code 0
+     *
+     * @param command command to be executed
+     * @return spawned process execution
+     * @throws ProcessExecutionException if anything goes wrong
+     */
+    ProcessExecution execute(Command command) throws ProcessExecutionException;
 
     // FIXME
     // This method should not be public nor available
