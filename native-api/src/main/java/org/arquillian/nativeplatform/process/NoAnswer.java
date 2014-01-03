@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.arquillian.nativeplatform.process.impl;
+package org.arquillian.nativeplatform.process;
 
 import java.io.IOException;
 

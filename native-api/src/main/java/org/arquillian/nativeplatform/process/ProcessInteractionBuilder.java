@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.arquillian.nativeplatform.process.impl;
+package org.arquillian.nativeplatform.process;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -23,8 +23,10 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.arquillian.nativeplatform.process.Answer;
+import org.arquillian.nativeplatform.process.NoAnswer;
 import org.arquillian.nativeplatform.process.ProcessInteraction;
 import org.arquillian.nativeplatform.process.Sentence;
+import org.arquillian.nativeplatform.process.TextAnswer;
 
 /**
  * Builder API for process interaction. It uses regular expression to match allowed and error output.
@@ -164,7 +166,7 @@ public class ProcessInteractionBuilder {
 
         private final List<Pattern> errorOutput;
 
-        public ProcessInteractionImpl(Map<Pattern, Answer> replyMap, List<Pattern> allowedOutput, List<Pattern> errorOutput) {
+        ProcessInteractionImpl(Map<Pattern, Answer> replyMap, List<Pattern> allowedOutput, List<Pattern> errorOutput) {
             this.replyMap = replyMap;
             this.allowedOutput = allowedOutput;
             this.errorOutput = errorOutput;

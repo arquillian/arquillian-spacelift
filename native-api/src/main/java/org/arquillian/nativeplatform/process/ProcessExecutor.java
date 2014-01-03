@@ -16,8 +16,8 @@
  */
 package org.arquillian.nativeplatform.process;
 
+import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -28,6 +28,16 @@ import java.util.concurrent.TimeUnit;
  *
  */
 public interface ProcessExecutor {
+
+    /**
+     * Adds given environment map to the default inherited environment be used for next process execution.
+     * Previous environments settings are discarded.
+     *
+     * @param environment The new environment settings addon
+     * @return Modified instance
+     * @throws IllegalStateException In case that environment is {@code null} or contains empty values
+     */
+    ProcessExecutor setEnvironment(Map<String, String> environment) throws IllegalStateException;
 
     /**
      * Submit callable to be executed
@@ -45,11 +55,10 @@ public interface ProcessExecutor {
      * @param step delay before next execution
      * @param unit time unit
      * @return {@code true} if executed successfully, false otherwise
-     * @throws InterruptedException
-     * @throws ExecutionException
+     * @throws ProcessExecutionException if anything goes wrong
      */
     Boolean scheduleUntilTrue(Callable<Boolean> callable, long timeout, long step, TimeUnit unit)
-        throws InterruptedException, ExecutionException;
+        throws ProcessExecutionException;
 
     /**
      * Spawns a process defined by command. Process output is consumed by {@link ProcessInteraction}.
@@ -57,6 +66,7 @@ public interface ProcessExecutor {
      * @param interaction command interaction
      * @param command command to be execution
      * @return spawned process execution
+     * @throws ProcessExecutionException if anything goes wrong
      */
     ProcessExecution spawn(ProcessInteraction interaction, String[] command) throws ProcessExecutionException;
 
@@ -91,6 +101,7 @@ public interface ProcessExecutor {
     ProcessExecution execute(String... command) throws ProcessExecutionException;
 
     // FIXME
+    // This method should not be public nor available
     ProcessExecutor removeShutdownHook(ProcessExecution p);
 
 }

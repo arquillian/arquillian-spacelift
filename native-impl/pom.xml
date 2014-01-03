@@ -23,6 +23,10 @@
             <groupId>org.jboss.arquillian.core</groupId>
             <artifactId>arquillian-core-spi</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.jboss.arquillian.config</groupId>
+            <artifactId>arquillian-config-api</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.arquillian.native</groupId>
@@ -35,7 +39,9 @@
             <version>${project.version}</version>
         </dependency>
 
+
         <!-- Test dependencies -->
+
         <dependency>
             <groupId>org.jboss.arquillian.core</groupId>
             <artifactId>arquillian-core-impl-base</artifactId>
@@ -44,6 +50,11 @@
         <dependency>
             <groupId>org.jboss.arquillian.test</groupId>
             <artifactId>arquillian-test-impl-base</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.arquillian.junit</groupId>
+            <artifactId>arquillian-junit-standalone</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

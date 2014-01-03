@@ -1,8 +1,8 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2014, Red Hat Middleware LLC, and individual contributors
- * by the @authors tag. See the copyright.txt in the distribution for a
- * full listing of individual contributors.
+ * Copyright 2014, Red Hat, Inc. and/or its affiliates, and individual
+ * contributors by the @authors tag. See the copyright.txt in the
+ * distribution for a full listing of individual contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,20 @@
 package org.arquillian.nativeplatform.process;
 
 /**
- * Factory that creates process executors.
+ * Event that is fire right after ProcessExecutor is available. Can be used to modify executor object.
  *
- * @see ProcessExecutor
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
  *
  */
-public interface ProcessExecutorFactory {
+public class ProcessExecutorCreated {
 
-    /**
-     * Creates a process executor. It might create a new instance or return already created one, based on factory implementation
-     *
-     * @return New process executor instance
-     */
-    ProcessExecutor getProcessExecutorInstance();
+    private final ProcessExecutor executor;
 
+    public ProcessExecutorCreated(ProcessExecutor executor) {
+        this.executor = executor;
+    }
+
+    public ProcessExecutor getExecutor() {
+        return executor;
+    }
 }

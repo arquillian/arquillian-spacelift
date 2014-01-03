@@ -16,8 +16,6 @@
  */
 package org.arquillian.nativeplatform.process.impl;
 
-import java.util.Map;
-
 import org.arquillian.nativeplatform.process.ProcessExecutor;
 import org.arquillian.nativeplatform.process.ProcessExecutorFactory;
 
@@ -29,14 +27,17 @@ import org.arquillian.nativeplatform.process.ProcessExecutorFactory;
  */
 public class DefaultProcessExecutionFactory implements ProcessExecutorFactory {
 
-    @Override
-    public ProcessExecutor getProcessExecutorInstance() {
-        return new ProcessExecutorImpl();
+    private static class ProcessExecutorHolder {
+        public static ProcessExecutor lastExecutor = new ProcessExecutorImpl();
+    }
+
+    private static ProcessExecutor getAsSingleton() {
+        return ProcessExecutorHolder.lastExecutor;
     }
 
     @Override
-    public ProcessExecutor getProcessExecutorInstance(Map<String, String> environment) {
-        return new ProcessExecutorImpl(environment);
+    public ProcessExecutor getProcessExecutorInstance() {
+        return getAsSingleton();
     }
 
 }

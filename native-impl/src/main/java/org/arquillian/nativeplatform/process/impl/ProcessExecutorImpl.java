@@ -41,6 +41,7 @@ import org.arquillian.nativeplatform.process.ProcessExecution;
 import org.arquillian.nativeplatform.process.ProcessExecutionException;
 import org.arquillian.nativeplatform.process.ProcessExecutor;
 import org.arquillian.nativeplatform.process.ProcessInteraction;
+import org.arquillian.nativeplatform.process.ProcessInteractionBuilder;
 import org.arquillian.nativeplatform.process.Sentence;
 
 /**
@@ -51,50 +52,36 @@ import org.arquillian.nativeplatform.process.Sentence;
  */
 public class ProcessExecutorImpl implements ProcessExecutor {
 
-    private final Map<String, String> environment;
+    private Map<String, String> environment;
     private final ShutDownThreadHolder shutdownThreads;
     private final ExecutorService service;
     private final ScheduledExecutorService scheduledService;
 
-    public ProcessExecutorImpl(Map<String, String> environmentProperies) {
-        if (environmentProperies == null || environmentProperies.containsValue("")) {
-            throw new IllegalStateException(
-                "All entries in environment properies map have to have values which are not null objects nor empty strings!");
-        }
-
+    public ProcessExecutorImpl() {
         this.shutdownThreads = new ShutDownThreadHolder();
         this.service = Executors.newCachedThreadPool();
         this.scheduledService = Executors.newScheduledThreadPool(1);
-        this.environment = environmentProperies;
+        this.environment = new HashMap<String, String>();
     }
 
-    public ProcessExecutorImpl() {
-        this(new HashMap<String, String>());
+    @Override
+    public ProcessExecutor setEnvironment(Map<String, String> environment) throws IllegalStateException {
+        if (environment == null || environment.containsValue("")) {
+            throw new IllegalStateException(
+                "All entries in environment properies map have to have values which are not null objects nor empty strings!");
+        }
+        this.environment = environment;
+        return this;
     }
 
-    /**
-     * Submit callable to be executed
-     *
-     * @param callable to be executed
-     * @return future
-     */
+    @Override
     public <T> Future<T> submit(Callable<T> callable) {
         return service.submit(callable);
     }
 
-    /**
-     * Schedules a callable to be executed in regular intervals
-     *
-     * @param callable Callable
-     * @param timeout Total timeout
-     * @param step delay before next execution
-     * @param unit time unit
-     * @return {@code true} if executed successfully, false otherwise
-     * @throws InterruptedException
-     * @throws ExecutionException
-     */
+    @Override
     public Boolean scheduleUntilTrue(Callable<Boolean> callable, long timeout, long step, TimeUnit unit)
-        throws InterruptedException, ExecutionException {
+        throws ProcessExecutionException {
 
         CountDownWatch countdown = new CountDownWatch(timeout, unit);
         while (countdown.timeLeft() > 0) {
@@ -111,18 +98,18 @@ public class ProcessExecutorImpl implements ProcessExecutor {
             } catch (TimeoutException e) {
                 continue;
             }
+            // rewrap exception
+            catch (ExecutionException e) {
+                throw new ProcessExecutionException(e.getMessage(), e.getCause() != null ? e.getCause() : e);
+            } catch (InterruptedException e) {
+                throw new ProcessExecutionException(e.getMessage(), e.getCause() != null ? e.getCause() : e);
+            }
         }
 
         return false;
     }
 
-    /**
-     * Spawns a process defined by command. Process output is consumed by {@link ProcessInteraction}.
-     *
-     * @param interaction command interaction
-     * @param command command to be execution
-     * @return spawned process execution
-     */
+    @Override
     public ProcessExecution spawn(ProcessInteraction interaction, String[] command) throws ProcessExecutionException {
         try {
             Future<Process> processFuture = service.submit(new SpawnedProcess(environment, true, command));
@@ -131,33 +118,25 @@ public class ProcessExecutorImpl implements ProcessExecutor {
             service.submit(new ProcessOutputConsumer(execution, interaction));
             shutdownThreads.addHookFor(execution);
             return execution;
-        } catch (InterruptedException e) {
-            throw new ProcessExecutionException(e, "Unable to spawn {0}, interrupted", new Object[] { command });
+        }
+        // rewrap exception
+        catch (InterruptedException e) {
+            throw new ProcessExecutionException(e.getCause() != null ? e.getCause() : e, "Spawning {0}: {1}", new Object[] {
+                e.getMessage(),
+                command });
         } catch (ExecutionException e) {
-            throw new ProcessExecutionException(e, "Unable to spawn {0}, failed", new Object[] { command });
+            throw new ProcessExecutionException(e.getCause() != null ? e.getCause() : e, "Spawning {0}: {1}", new Object[] {
+                e.getMessage(),
+                command });
         }
     }
 
-    /**
-     * Spawns a process defined by command. Process output is discarded.
-     *
-     * @param command command to be execution
-     * @return spawned process execution
-     * @throws ProcessExecutionException if anything goes wrong
-     */
+    @Override
     public ProcessExecution spawn(String... command) throws ProcessExecutionException {
         return spawn(ProcessInteractionBuilder.NO_INTERACTION, command);
     }
 
-    /**
-     * Executes a process defined by command. Process output is consumed by {@link ProcessInteraction}. Waits for process to
-     * finish and checks if process finished with status code 0
-     *
-     * @param interaction command interaction
-     * @param command command to be execution
-     * @return spawned process execution
-     * @throws ProcessExecutionException if anything goes wrong
-     */
+    @Override
     public ProcessExecution execute(ProcessInteraction interaction, String[] command) throws ProcessExecutionException {
         Process process = null;
         try {
@@ -175,10 +154,16 @@ public class ProcessExecutorImpl implements ProcessExecutor {
                     execution.getExitCode() });
             }
             return execution;
-        } catch (InterruptedException e) {
-            throw new ProcessExecutionException(e, "Unable to execute {0}, interrupted", new Object[] { command });
+        }
+        // rewrap exception
+        catch (InterruptedException e) {
+            throw new ProcessExecutionException(e.getCause() != null ? e.getCause() : e, "Executing {0}: {1}", new Object[] {
+                e.getMessage(),
+                command });
         } catch (ExecutionException e) {
-            throw new ProcessExecutionException(e, "Unable to execute {0}, failed", new Object[] { command });
+            throw new ProcessExecutionException(e.getCause() != null ? e.getCause() : e, "Executing {0}: {1}", new Object[] {
+                e.getMessage(),
+                command });
         } finally {
             // cleanup
             if (process != null) {
@@ -189,21 +174,18 @@ public class ProcessExecutorImpl implements ProcessExecutor {
                     try {
                         in.close();
                     } catch (IOException ignore) {
-
                     }
                 }
                 if (out != null) {
                     try {
                         out.close();
                     } catch (IOException ignore) {
-
                     }
                 }
                 if (err != null) {
                     try {
                         err.close();
                     } catch (IOException ignore) {
-
                     }
                 }
                 // just in case, something went wrong

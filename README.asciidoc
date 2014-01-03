@@ -15,31 +15,35 @@ In your project, import following artifact:
 </dependency>
 ----
 
-In your extension, based on your scope needs (_SuiteScope is recommended_), create an instance of +ProcessExecutor+ and put it into scope.
+In your extension, inject instance of +ProcessExecutor+. This instance is created in +ArquillianDescriptor+ event and you can observe
++ProcessExecutorCreated+ event if you will. The instance is singleton, so you will always retrieve the same instance.
 
 [source,java]
 ----
-@Instance<ServiceLoader> serviceLoader;
-
-@InstanceProducer<ProcessExecutor> processExecutor;
-
-public void createProcessExecutorInstance(@Observes AnyEventOfYourChoice) {
-
-    ProcessExecutor executor = serviceLoader.get(ProcessExecutorFactory.class).getProcessExecutorInstance();
-
-    // or, if you need to alter environment for process created by ProcessExecutor
-    Map<String,String> env = createEnv();
-    ProcessExecutor executor = serviceLoader.get(ProcessExecutorFactory.class).getProcessExecutorInstance(env);
-    
-    processExecutor.set(executor)
-}
-
+@Instance<ProcessExecutor> processExecutor;
 ----
 
+== How to use the extension
+
+=== ProcessExecutor
+
+ProcessExecutor allows your extension to execute any code, either external or internal. You have following possibilities:
+
+Execution::
+    Use +execute(...)+ method if you want to execute a command and wait for it to be finished
+Spawning::
+    Use +spawn(...)+ method if you want to execute a command as a daemon in different thread
+One time action::
+    Use +submit(...)+ method if you want to asynchronously execute a code block
+Periodical action::
+    Use +scheduleUntilTrue(...)+ method if you want to re-execute code block until condition is fulfilled
 
 == TODO
 
 Currently missing features:
+
 * support to get platform dependent bits automatically
-* make process executor singleton once created, unless env is different
+* provide metadata format to simplify platform dependent execution
+* expose executor for others - make it injectable in tests
+* create Command abstraction
 

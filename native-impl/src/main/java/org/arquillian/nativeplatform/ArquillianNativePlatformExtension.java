@@ -2,6 +2,7 @@ package org.arquillian.nativeplatform;
 
 import org.arquillian.nativeplatform.process.ProcessExecutorFactory;
 import org.arquillian.nativeplatform.process.impl.DefaultProcessExecutionFactory;
+import org.arquillian.nativeplatform.process.impl.ProcessExecutorCreator;
 import org.jboss.arquillian.core.spi.LoadableExtension;
 
 public class ArquillianNativePlatformExtension implements LoadableExtension {
@@ -10,8 +11,7 @@ public class ArquillianNativePlatformExtension implements LoadableExtension {
     public void register(ExtensionBuilder extension) {
 
         extension.service(ProcessExecutorFactory.class, DefaultProcessExecutionFactory.class);
-
-        extension.observer(null);
+        extension.observer(ProcessExecutorCreator.class);
     }
 
 }
