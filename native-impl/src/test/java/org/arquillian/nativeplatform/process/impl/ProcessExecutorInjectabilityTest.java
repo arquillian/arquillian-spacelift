@@ -118,4 +118,19 @@ public class ProcessExecutorInjectabilityTest extends AbstractTestTestBase {
         fire(new AfterClass(ProcessExecutorInjectTest.class));
         fire(new AfterSuite());
     }
+
+    private static class ProcessExecutorInjectTest {
+
+        @ArquillianResource
+        ProcessExecutor executor;
+
+        @Test
+        public void testMe() {
+
+        }
+
+        public ProcessExecutor getExecutor() {
+            return executor;
+        }
+    }
 }
