@@ -24,9 +24,7 @@ package org.arquillian.nativeplatform.process;
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -84,33 +82,7 @@ public class CommandTestCase {
     public void testDeleteTrailingSpaces() {
         String testString = " abcd   \"  a   \"  \"    c    d\" \"${HOME}\"";
 
-        List<String> list = new ArrayList<String>();
-        list.add("abcd");
-        list.add("  a   ");
-        list.add("    c    d");
-        list.add("${HOME}");
-
-        assertTrue(listsAreSame(list, new CommandBuilder().addTokenized(testString).build().getAsList()));
-    }
-
-    private boolean listsAreSame(List<String> list1, List<String> list2) {
-
-        if (list1 == null && list2 == null) {
-            return true;
-        }
-
-        if (list1 != null && list2 != null) {
-            if (list1.size() != list2.size()) {
-                return false;
-            }
-            for (int i = 0; i < list1.size(); i++) {
-                if (!list1.get(i).equals(list2.get(i))) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        return false;
+        Command c = new CommandBuilder().addTokenized(testString).build();
+        assertThat(c.getAsList(), hasItems("abcd", "  a   ", "    c    d", "${HOME}"));
     }
 }
