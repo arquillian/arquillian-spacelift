@@ -30,19 +30,19 @@ public interface Command {
      *
      * @return number of tokens stored in the command
      */
-    public int size();
+	int size();
 
     /**
      *
      * @return command as a list
      */
-    public List<String> getAsList();
+	List<String> getAsList();
 
     /**
      *
      * @return command as an array
      */
-    public String[] getAsArray();
+	String[] getAsArray();
 
     /**
      * Returns token on i-th position
@@ -50,18 +50,18 @@ public interface Command {
      * @param i position of token we want to get
      * @return token on i-th position or null if out of bounds
      */
-    public String get(int i);
+	String get(int i);
 
     /**
      *
      * @return last token from the command or null if command is empty
      */
-    public String getLast();
+	String getLast();
 
     /**
      *
      * @return first token from the command or null if command is empty
      */
-    public String getFirst();
+	String getFirst();
 
 }
