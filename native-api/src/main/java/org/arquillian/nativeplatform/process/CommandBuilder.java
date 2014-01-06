@@ -123,7 +123,7 @@ public class CommandBuilder {
 
     private static class CommandImpl implements Command {
 
-        private List<String> command;
+        private final List<String> command;
 
         public CommandImpl(List<String> command) {
             this.command = new ArrayList<String>(command);
