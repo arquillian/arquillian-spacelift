@@ -69,7 +69,7 @@ public class ProcessExecutorImpl implements ProcessExecutor {
     public ProcessExecutor setEnvironment(Map<String, String> environment) throws IllegalStateException {
         if (environment == null) {
             throw new IllegalStateException(
-                "All entries in environment properies map have to have values which are not null objects nor empty strings!");
+                "Environment properies map must not be null!");
         }
         this.environment = environment;
         return this;
