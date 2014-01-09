@@ -57,3 +57,18 @@ Currently missing features:
 * support to get platform dependent bits automatically
 * provide metadata format to simplify platform dependent execution
 
+== Releasing new version
+
+In order to release new version, execute following Maven command:
+
+[source,bash]
+----
+mvn clean release:prepare release:perform
+----
+
+Then:
+1. Verify the build from staging repository
+2. Make sure all JIRAs are closed
+3. Release version in JIRA and create next version if not available
+4. Promote the build to the stable Maven repository
+5. Push commits and tag created by +maven-release-plugin+ to the repository.
