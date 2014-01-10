@@ -22,8 +22,10 @@
 package org.arquillian.nativeplatform.process;
 
 import static org.junit.Assert.*;
+
 import static org.hamcrest.CoreMatchers.*;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import org.junit.Test;
@@ -45,7 +47,7 @@ public class CommandTestCase {
         assertThat(command, not(sameInstance(command2)));
 
         assertThat(command, notNullValue());
-        assertEquals(0, command.size());
+        assertThat(command.size(), equalTo(0));
         assertThat(command.get(0), nullValue());
     }
 
@@ -57,8 +59,8 @@ public class CommandTestCase {
         Command command2 = cb.add("some").add("command").build();
 
         assertThat(command, not(sameInstance(command2)));
-        assertEquals(0, command.size());
-        assertEquals(2, command2.size());
+        assertThat(command.size(), equalTo(0));
+        assertThat(command2.size(), equalTo(2));
     }
 
     @Test
@@ -72,9 +74,9 @@ public class CommandTestCase {
             .remove("complex")
             .build();
 
-        assertEquals(3, command.size());
-        assertEquals("some", command.getFirst());
-        assertEquals("command", command.getLast());
+        assertThat(command.size(), equalTo(3));
+        assertThat(command.getFirst(), equalTo("some"));
+        assertThat(command.getLast(), equalTo("command"));
         assertThat(command.get(command.size() + 5), nullValue());
     }
 
@@ -85,4 +87,35 @@ public class CommandTestCase {
         Command c = new CommandBuilder().addTokenized(testString).build();
         assertThat(c.getAsList(), hasItems("abcd", "  a   ", "    c    d", "${HOME}"));
     }
+
+    @Test
+    public void testAddingStringBuilder() {
+        StringBuilder sb = new StringBuilder("some");
+        Command command = new CommandBuilder().add(sb).build();
+
+        assertThat(command.size(), equalTo(1));
+        assertThat(command.getFirst(), equalTo("some"));
+    }
+
+    @Test
+    public void testAddingStringBuilders() {
+        StringBuilder sb = new StringBuilder("some");
+        StringBuilder sb2 = new StringBuilder("someother");
+        Command command = new CommandBuilder().add(Arrays.asList(sb, sb2)).build();
+
+        assertThat(command.size(), equalTo(2));
+        assertThat(command.getFirst(), equalTo("some"));
+        assertThat(command.getLast(), equalTo("someother"));
+    }
+
+    @Test
+    public void testAddingStringBuilderTokenized() {
+        StringBuilder sb = new StringBuilder("some").append(" ").append(" someother");
+        Command command = new CommandBuilder().addTokenized(sb).build();
+
+        assertThat(command.size(), equalTo(2));
+        assertThat(command.getFirst(), equalTo("some"));
+        assertThat(command.getLast(), equalTo("someother"));
+    }
+
 }

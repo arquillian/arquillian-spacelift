@@ -42,9 +42,9 @@ public class CommandBuilder {
      * @param tokens tokens we are adding to the already existing list
      * @return instance of this {@link CommandBuilder}
      */
-    public CommandBuilder add(List<String> tokens) {
-        for (String token : tokens) {
-            add(token);
+    public CommandBuilder add(List<? extends CharSequence> tokens) {
+        for (CharSequence token : tokens) {
+            add(token.toString());
         }
         return this;
     }
@@ -55,7 +55,7 @@ public class CommandBuilder {
      * @param tokens
      * @return instance of this {@link CommandBuilder}
      */
-    public CommandBuilder add(String... tokens) {
+    public CommandBuilder add(CharSequence... tokens) {
         return add(Arrays.asList(tokens));
     }
 
@@ -65,9 +65,9 @@ public class CommandBuilder {
      * @param token token to add to the command list
      * @return instance of this {@link CommandBuilder}
      */
-    public CommandBuilder add(String token) {
+    public CommandBuilder add(CharSequence token) {
         if (token != null && token.length() > 0) {
-            command.add(token);
+            command.add(token.toString());
         }
         return this;
     }
@@ -75,11 +75,13 @@ public class CommandBuilder {
     /**
      * @param stringToBeParsed
      * @return instance of this {@link CommandBuilder}
-     * @see StringUtils#tokenize(String)
      * @return instance of this {@link CommandBuilder}
      */
-    public CommandBuilder addTokenized(String stringToBeParsed) {
-        return add(StringUtils.tokenize(stringToBeParsed));
+    public CommandBuilder addTokenized(CharSequence sequenceToBeParsed) {
+        if (sequenceToBeParsed != null && sequenceToBeParsed.length() > 0) {
+            add(StringUtils.tokenize(sequenceToBeParsed.toString()));
+        }
+        return this;
     }
 
     /**
@@ -98,8 +100,8 @@ public class CommandBuilder {
      * @param token token to remove
      * @return instance of this {@link CommandBuilder}
      */
-    public CommandBuilder remove(String token) {
-        if (token == null || token.trim().equals("")) {
+    public CommandBuilder remove(CharSequence token) {
+        if (token == null || token.toString().trim().equals("")) {
             return this;
         }
 
