@@ -25,7 +25,7 @@ import org.arquillian.nativeplatform.process.ProcessExecutorFactory;
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
  *
  */
-public class DefaultProcessExecutionFactory implements ProcessExecutorFactory {
+public class DefaultProcessExecutorFactory implements ProcessExecutorFactory {
 
     private static class ProcessExecutorHolder {
         public static ProcessExecutor lastExecutor = new ProcessExecutorImpl();

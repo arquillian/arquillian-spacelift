@@ -92,9 +92,9 @@ public class ProcessExecutorInjectabilityTest extends AbstractTestTestBase {
         bind(ApplicationScoped.class, ServiceLoader.class, serviceLoader);
 
         Mockito.when(serviceLoader.onlyOne(ProcessExecutorFactory.class))
-            .thenReturn(new DefaultProcessExecutionFactory());
-        Mockito.when(serviceLoader.onlyOne(ProcessExecutorFactory.class, DefaultProcessExecutionFactory.class))
-            .thenReturn(new DefaultProcessExecutionFactory());
+            .thenReturn(new DefaultProcessExecutorFactory());
+        Mockito.when(serviceLoader.onlyOne(ProcessExecutorFactory.class, DefaultProcessExecutorFactory.class))
+            .thenReturn(new DefaultProcessExecutorFactory());
     }
 
     @Test

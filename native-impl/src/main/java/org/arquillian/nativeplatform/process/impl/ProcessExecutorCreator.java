@@ -32,7 +32,7 @@ public class ProcessExecutorCreator {
     public void createProcessExecutor(@Observes ArquillianDescriptor event) {
 
         ProcessExecutorFactory factory = serviceLoader.get().onlyOne(ProcessExecutorFactory.class,
-            DefaultProcessExecutionFactory.class);
+            DefaultProcessExecutorFactory.class);
 
         log.log(Level.FINE, "Retrieving ProcessExecutor instance from factory");
 

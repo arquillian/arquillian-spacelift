@@ -57,9 +57,9 @@ public class DefaultProcessExecutionFactoryTest extends AbstractTestTestBase {
         bind(ApplicationScoped.class, ServiceLoader.class, serviceLoader);
 
         Mockito.when(serviceLoader.onlyOne(ProcessExecutorFactory.class))
-            .thenReturn(new DefaultProcessExecutionFactory());
-        Mockito.when(serviceLoader.onlyOne(ProcessExecutorFactory.class, DefaultProcessExecutionFactory.class))
-            .thenReturn(new DefaultProcessExecutionFactory());
+            .thenReturn(new DefaultProcessExecutorFactory());
+        Mockito.when(serviceLoader.onlyOne(ProcessExecutorFactory.class, DefaultProcessExecutorFactory.class))
+            .thenReturn(new DefaultProcessExecutorFactory());
     }
 
     @Test
@@ -78,7 +78,7 @@ public class DefaultProcessExecutionFactoryTest extends AbstractTestTestBase {
         ProcessExecutor executor2 = factory.getProcessExecutorInstance();
         assertThat(executor2, sameInstance(executor1));
 
-        ProcessExecutor executor3 = new DefaultProcessExecutionFactory().getProcessExecutorInstance();
+        ProcessExecutor executor3 = new DefaultProcessExecutorFactory().getProcessExecutorInstance();
         assertThat(executor3, sameInstance(executor1));
 
         // if we change environment, it modifies all existing instances
