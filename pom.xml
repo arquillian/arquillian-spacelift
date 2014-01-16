@@ -13,12 +13,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <!-- Artifact Configuration -->
-    <groupId>org.arquillian.native</groupId>
-    <artifactId>arquillian-native-platform-aggregator</artifactId>
+    <groupId>org.arquillian.spacelift</groupId>
+    <artifactId>arquillian-spacelift-aggregator</artifactId>
     <version>1.0.0.Alpha1-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>Arquillian Native Platform Support Agreggator</name>
-    <description>Extension for to make running of native code easier from Arquillian Extensions</description>
+    <name>Arquillian Spacelift</name>
+    <description>Arquillian Process and Package Manager</description>
 
     <developers>
         <developer>
@@ -120,8 +120,8 @@
 
     <!-- Modules -->
     <modules>
-        <module>native-api</module>
-        <module>native-impl</module>
-        <module>native-spi</module>
+        <module>spacelift-api</module>
+        <module>spacelift-impl</module>
+        <module>spacelift-spi</module>
     </modules>
 </project>

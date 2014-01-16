@@ -1,6 +1,6 @@
-= Arquillian Native Platforms support
+= Arquillian Spacelift
 
-Support for running native code by Arquillian
+Arquillian process and package manager. Makes executing an external process or fetching platform depends dependencies an easier job.
 
 == Making it part of your extension
 
@@ -9,9 +9,9 @@ In your project, import following artifact:
 [source,xml]
 ----
 <dependency>
-    <groupId>org.arquillian.native</artifactId>
-    <artifactId>arquillian-native-platform</artifactId>
-    <version>${version.arquillian.native.platform}</version>
+    <groupId>org.arquillian.spacelift</artifactId>
+    <artifactId>arquillian-spacelift</artifactId>
+    <version>${version.arquillian.spacelift}</version>
 </dependency>
 ----
 
