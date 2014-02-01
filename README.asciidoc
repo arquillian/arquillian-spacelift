@@ -9,7 +9,7 @@ In your project, import following artifact:
 [source,xml]
 ----
 <dependency>
-    <groupId>org.arquillian.spacelift</artifactId>
+    <groupId>org.arquillian.spacelift</groupId>
     <artifactId>arquillian-spacelift</artifactId>
     <version>${version.arquillian.spacelift}</version>
 </dependency>
@@ -67,6 +67,7 @@ mvn clean release:prepare release:perform
 ----
 
 Then:
+
 1. Verify the build from staging repository
 2. Make sure all JIRAs are closed
 3. Release version in JIRA and create next version if not available
