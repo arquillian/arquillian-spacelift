@@ -89,6 +89,9 @@ public class DefaultProcessExecutionFactoryTest extends AbstractTestTestBase {
         executor3.setEnvironment(env);
 
         assertThat(executor3, sameInstance(executor1));
+
+        executor3.setWorkingDirectory(System.getProperty("user.dir"));
+        assertThat(executor3, sameInstance(executor1));
     }
 
     @Test

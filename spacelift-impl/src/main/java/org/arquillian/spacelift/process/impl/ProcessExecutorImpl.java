@@ -17,6 +17,7 @@
 package org.arquillian.spacelift.process.impl;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -54,6 +55,7 @@ import org.arquillian.spacelift.process.Sentence;
 public class ProcessExecutorImpl implements ProcessExecutor {
 
     private Map<String, String> environment;
+    private File workingDirectory;
     private final ShutDownThreadHolder shutdownThreads;
     private final ExecutorService service;
     private final ScheduledExecutorService scheduledService;
@@ -72,6 +74,32 @@ public class ProcessExecutorImpl implements ProcessExecutor {
                 "Environment properies map must not be null!");
         }
         this.environment = environment;
+        return this;
+    }
+
+    @Override
+    public ProcessExecutor setWorkingDirectory(String workingDirectory) throws IllegalArgumentException {
+        if(workingDirectory == null) {
+            this.workingDirectory = null;
+            return this;
+        }
+        return setWorkingDirectory(new File(workingDirectory));
+    }
+
+    @Override
+    public ProcessExecutor setWorkingDirectory(File workingDirectory) throws IllegalArgumentException {
+        if(workingDirectory == null) {
+            this.workingDirectory = null;
+            return this;
+        }
+        if(!workingDirectory.exists()) {
+            throw new IllegalArgumentException("Specified path " + workingDirectory.getAbsolutePath() + " does not exist!");
+        }
+        if (!workingDirectory.isDirectory()) {
+            throw new IllegalArgumentException("Specified path " + workingDirectory.getAbsolutePath() + " is not a directory!");
+        }
+
+        this.workingDirectory = workingDirectory;
         return this;
     }
 
@@ -113,7 +141,7 @@ public class ProcessExecutorImpl implements ProcessExecutor {
     @Override
     public ProcessExecution spawn(ProcessInteraction interaction, String[] command) throws ProcessExecutionException {
         try {
-            Future<Process> processFuture = service.submit(new SpawnedProcess(environment, true, command));
+            Future<Process> processFuture = service.submit(new SpawnedProcess(environment, workingDirectory, true, command));
             Process process = processFuture.get();
             ProcessExecution execution = new ProcessExecutionImpl(process, command[0]);
             service.submit(new ProcessOutputConsumer(execution, interaction));
@@ -141,7 +169,7 @@ public class ProcessExecutorImpl implements ProcessExecutor {
     public ProcessExecution execute(ProcessInteraction interaction, String[] command) throws ProcessExecutionException {
         Process process = null;
         try {
-            Future<Process> processFuture = service.submit(new SpawnedProcess(environment, true, command));
+            Future<Process> processFuture = service.submit(new SpawnedProcess(environment, workingDirectory, true, command));
             process = processFuture.get();
             Future<ProcessExecution> executionFuture = service.submit(new ProcessOutputConsumer(new ProcessExecutionImpl(process,
                 command[0]),
@@ -256,11 +284,13 @@ public class ProcessExecutorImpl implements ProcessExecutor {
     private static class SpawnedProcess implements Callable<Process> {
 
         private final String[] command;
+        private final File workingDirectory;
         private boolean redirectErrorStream;
         private Map<String, String> env;
 
-        public SpawnedProcess(Map<String, String> env, boolean redirectErrorStream, String[] command) {
+        public SpawnedProcess(Map<String, String> env, File workingDirectory, boolean redirectErrorStream, String[] command) {
             this.env = env;
+            this.workingDirectory = workingDirectory;
             this.redirectErrorStream = redirectErrorStream;
             this.command = command;
         }
@@ -268,6 +298,7 @@ public class ProcessExecutorImpl implements ProcessExecutor {
         @Override
         public Process call() throws Exception {
             ProcessBuilder builder = new ProcessBuilder(command);
+            builder.directory(workingDirectory);
             builder.environment().putAll(env);
             builder.redirectErrorStream(redirectErrorStream);
             return builder.start();

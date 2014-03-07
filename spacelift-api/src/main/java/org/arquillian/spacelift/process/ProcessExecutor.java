@@ -16,6 +16,8 @@
  */
 package org.arquillian.spacelift.process;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
@@ -38,6 +40,30 @@ public interface ProcessExecutor {
      * @throws IllegalStateException In case that environment is {@code null} or contains empty values
      */
     ProcessExecutor setEnvironment(Map<String, String> environment) throws IllegalStateException;
+
+    /**
+     * Sets path to be used as a working directory for next process execution. The argument may be {@code null} which
+     * means to use the working directory of the current Java process.
+     *
+     * @see java.lang.ProcessBuilder#directory(java.io.File)
+     *
+     * @param workingDirectory The working directory
+     * @return Modified instance
+     * @throws IllegalArgumentException In case that specified path does not exist or is not a directory.
+     */
+    ProcessExecutor setWorkingDirectory(String workingDirectory) throws IllegalArgumentException;
+
+    /**
+     * Sets path to be used as a working directory for next process execution. The argument may be {@code null} which
+     * means to use the working directory of the current Java process.
+     *
+     * @see java.lang.ProcessBuilder#directory(java.io.File)
+     *
+     * @param workingDirectory The working directory
+     * @return Modified instance
+     * @throws IllegalArgumentException In case that specified path does not exist or is not a directory.
+     */
+    ProcessExecutor setWorkingDirectory(File workingDirectory) throws IllegalArgumentException;
 
     /**
      * Submit callable to be executed
