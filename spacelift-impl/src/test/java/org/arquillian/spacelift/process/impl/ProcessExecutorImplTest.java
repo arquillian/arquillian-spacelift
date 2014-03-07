@@ -33,7 +33,7 @@ import java.util.UUID;
 public class ProcessExecutorImplTest {
 
     private ProcessExecutor executor;
-    private List<String> tempFiles;
+    private List<File> tempFiles;
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -41,7 +41,7 @@ public class ProcessExecutorImplTest {
     @Before
     public void setup() {
         executor = new ProcessExecutorImpl();
-        tempFiles = new ArrayList<String>();
+        tempFiles = new ArrayList<File>();
     }
 
     @After
@@ -79,8 +79,8 @@ public class ProcessExecutorImplTest {
         executor.setWorkingDirectory((String) null);
     }
 
-    private String createTempFile() throws IOException, IllegalStateException {
-        String tempFile = System.getProperty("java.io.tmpdir") + "/test_file.txt";
+    private File createTempFile() throws IOException, IllegalStateException {
+        File tempFile = File.createTempFile("test", null);
         FileWriter writer = new FileWriter(tempFile);
         writer.write("Lorem ipsum dolor sit amet ...");
         writer.flush();
@@ -90,9 +90,12 @@ public class ProcessExecutorImplTest {
     }
 
     private void deleteTempFiles() {
-        for (String tempFile : tempFiles) {
-            new File(tempFile).delete();
+        for (File tempFile : tempFiles) {
+            if (tempFile != null) {
+                tempFile.delete();
+            }
         }
+        tempFiles.clear();
     }
 
 }
