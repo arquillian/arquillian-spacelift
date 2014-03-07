@@ -22,12 +22,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.Matchers;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -73,6 +71,12 @@ public class ProcessExecutorImplTest {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("is not a directory");
         executor.setWorkingDirectory(createTempFile());
+    }
+
+    @Test
+    public void testNullAsWorkingDirectory() throws Exception {
+        executor.setWorkingDirectory((File) null);
+        executor.setWorkingDirectory((String) null);
     }
 
     private String createTempFile() throws IOException, IllegalStateException {

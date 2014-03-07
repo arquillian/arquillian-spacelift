@@ -65,8 +65,6 @@ public class ProcessExecutorImpl implements ProcessExecutor {
         this.service = Executors.newCachedThreadPool();
         this.scheduledService = Executors.newScheduledThreadPool(1);
         this.environment = new HashMap<String, String>();
-
-        setWorkingDirectory(System.getProperty("user.dir"));
     }
 
     @Override
@@ -81,11 +79,19 @@ public class ProcessExecutorImpl implements ProcessExecutor {
 
     @Override
     public ProcessExecutor setWorkingDirectory(String workingDirectory) throws IllegalArgumentException {
+        if(workingDirectory == null) {
+            this.workingDirectory = null;
+            return this;
+        }
         return setWorkingDirectory(new File(workingDirectory));
     }
 
     @Override
     public ProcessExecutor setWorkingDirectory(File workingDirectory) throws IllegalArgumentException {
+        if(workingDirectory == null) {
+            this.workingDirectory = null;
+            return this;
+        }
         if(!workingDirectory.exists()) {
             throw new IllegalArgumentException("Specified path " + workingDirectory.getAbsolutePath() + " does not exist!");
         }

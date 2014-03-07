@@ -42,7 +42,10 @@ public interface ProcessExecutor {
     ProcessExecutor setEnvironment(Map<String, String> environment) throws IllegalStateException;
 
     /**
-     * Sets path to be used as a working directory for next process execution.
+     * Sets path to be used as a working directory for next process execution. The argument may be {@code null} which
+     * means to use the working directory of the current Java process.
+     *
+     * @see java.lang.ProcessBuilder#directory(java.io.File)
      *
      * @param workingDirectory The working directory
      * @return Modified instance
@@ -51,7 +54,10 @@ public interface ProcessExecutor {
     ProcessExecutor setWorkingDirectory(String workingDirectory) throws IllegalArgumentException;
 
     /**
-     * Sets path to be used as a working directory for next process execution.
+     * Sets path to be used as a working directory for next process execution. The argument may be {@code null} which
+     * means to use the working directory of the current Java process.
+     *
+     * @see java.lang.ProcessBuilder#directory(java.io.File)
      *
      * @param workingDirectory The working directory
      * @return Modified instance
