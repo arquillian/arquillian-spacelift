@@ -39,6 +39,7 @@ import java.util.logging.Logger;
 
 import org.arquillian.spacelift.process.Answer;
 import org.arquillian.spacelift.process.Command;
+import org.arquillian.spacelift.process.CommandBuilder;
 import org.arquillian.spacelift.process.ProcessExecution;
 import org.arquillian.spacelift.process.ProcessExecutionException;
 import org.arquillian.spacelift.process.ProcessExecutor;
@@ -139,58 +140,53 @@ public class ProcessExecutorImpl implements ProcessExecutor {
     }
 
     @Override
-    public ProcessExecution spawn(ProcessInteraction interaction, String[] command) throws ProcessExecutionException {
+    public ProcessExecution spawn(ProcessInteraction interaction, Command command) throws ProcessExecutionException {
         try {
-            Future<Process> processFuture = service.submit(new SpawnedProcess(environment, workingDirectory, true, command));
+            Future<Process> processFuture = service.submit(new SpawnedProcess(environment, workingDirectory, true, command.getAsArray()));
             Process process = processFuture.get();
-            ProcessExecution execution = new ProcessExecutionImpl(process, command[0]);
+            ProcessExecution execution = new ProcessExecutionImpl(process, command.getFirst());
             service.submit(new ProcessOutputConsumer(execution, interaction));
             shutdownThreads.addHookFor(execution);
             return execution;
         }
         // rewrap exception
         catch (InterruptedException e) {
-            throw new ProcessExecutionException(e.getCause() != null ? e.getCause() : e, "Spawning {0}: {1}", new Object[] {
+            throw new ProcessExecutionException(e.getCause() != null ? e.getCause() : e, "Spawning \"{0}\": {1}", new Object[] {
                 e.getMessage(),
                 command });
         } catch (ExecutionException e) {
-            throw new ProcessExecutionException(e.getCause() != null ? e.getCause() : e, "Spawning {0}: {1}", new Object[] {
+            throw new ProcessExecutionException(e.getCause() != null ? e.getCause() : e, "Spawning \"{0}\": {1}", new Object[] {
                 e.getMessage(),
                 command });
         }
     }
 
     @Override
-    public ProcessExecution spawn(String... command) throws ProcessExecutionException {
-        return spawn(ProcessInteractionBuilder.NO_INTERACTION, command);
-    }
-
-    @Override
-    public ProcessExecution execute(ProcessInteraction interaction, String[] command) throws ProcessExecutionException {
+    public ProcessExecution execute(ProcessInteraction interaction, Command command) throws ProcessExecutionException {
         Process process = null;
         try {
-            Future<Process> processFuture = service.submit(new SpawnedProcess(environment, workingDirectory, true, command));
+            Future<Process> processFuture = service.submit(new SpawnedProcess(environment, workingDirectory, true, command.getAsArray()));
             process = processFuture.get();
             Future<ProcessExecution> executionFuture = service.submit(new ProcessOutputConsumer(new ProcessExecutionImpl(process,
-                command[0]),
+                command.getFirst()),
                 interaction));
             // wait for process to finish
             process.waitFor();
             // wait for process to finish IO
             ProcessExecution execution = executionFuture.get();
             if (execution.executionFailed()) {
-                throw new ProcessExecutionException("Invocation of {0} failed with {1}", new Object[] { command,
+                throw new ProcessExecutionException("Invocation of \"{0}\" failed with {1}", new Object[] { command,
                     execution.getExitCode() });
             }
             return execution;
         }
         // rewrap exception
         catch (InterruptedException e) {
-            throw new ProcessExecutionException(e.getCause() != null ? e.getCause() : e, "Executing {0}: {1}", new Object[] {
+            throw new ProcessExecutionException(e.getCause() != null ? e.getCause() : e, "Executing \"{0}\": {1}", new Object[] {
                 e.getMessage(),
                 command });
         } catch (ExecutionException e) {
-            throw new ProcessExecutionException(e.getCause() != null ? e.getCause() : e, "Executing {0}: {1}", new Object[] {
+            throw new ProcessExecutionException(e.getCause() != null ? e.getCause() : e, "Executing \"{0}\": {1}", new Object[] {
                 e.getMessage(),
                 command });
         } finally {
@@ -225,28 +221,33 @@ public class ProcessExecutorImpl implements ProcessExecutor {
     }
 
     @Override
-    public ProcessExecution execute(String... command) throws ProcessExecutionException {
-        return execute(ProcessInteractionBuilder.NO_INTERACTION, command);
-    }
-
-    @Override
-    public ProcessExecution spawn(ProcessInteraction interaction, Command command) throws ProcessExecutionException {
-        return spawn(interaction, command.getAsArray());
-    }
-
-    @Override
-    public ProcessExecution spawn(Command command) throws ProcessExecutionException {
-        return spawn(command.getAsArray());
-    }
-
-    @Override
-    public ProcessExecution execute(ProcessInteraction interaction, Command command) throws ProcessExecutionException {
-        return execute(interaction, command.getAsArray());
+    public ProcessExecution execute(ProcessInteraction interaction, String[] command) throws ProcessExecutionException {
+        return execute(interaction, new CommandBuilder().add(command).build());
     }
 
     @Override
     public ProcessExecution execute(Command command) throws ProcessExecutionException {
-        return execute(command.getAsArray());
+        return execute(ProcessInteractionBuilder.NO_INTERACTION, command);
+    }
+
+    @Override
+    public ProcessExecution execute(String... command) throws ProcessExecutionException {
+        return execute(new CommandBuilder().add(command).build());
+    }
+
+    @Override
+    public ProcessExecution spawn(ProcessInteraction interaction, String[] command) throws ProcessExecutionException {
+        return spawn(interaction, new CommandBuilder().add(command).build());
+    }
+
+    @Override
+    public ProcessExecution spawn(Command command) throws ProcessExecutionException {
+        return spawn(ProcessInteractionBuilder.NO_INTERACTION, command);
+    }
+
+    @Override
+    public ProcessExecution spawn(String... command) throws ProcessExecutionException {
+        return spawn(new CommandBuilder().add(command).build());
     }
 
     @Override
