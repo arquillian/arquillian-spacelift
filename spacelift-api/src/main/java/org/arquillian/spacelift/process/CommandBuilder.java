@@ -174,11 +174,19 @@ public class CommandBuilder {
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
+            String delimiter = "";
             for (String s : command) {
-                sb.append(s);
-                sb.append(" ");
+                sb.append(delimiter);
+                // check wheter we should print command in escaped form.
+                if (StringUtils.tokenize(s).size() > 1) {
+                    sb.append('"').append(s).append('"');
+                }
+                else {
+                    sb.append(s);
+                }
+                delimiter = " ";
             }
-            return sb.toString().trim();
+            return sb.toString();
         }
 
     }

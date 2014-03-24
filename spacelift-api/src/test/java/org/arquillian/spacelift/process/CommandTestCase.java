@@ -21,15 +21,17 @@
  */
 package org.arquillian.spacelift.process;
 
-import static org.junit.Assert.*;
-
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.junit.Assert.assertThat;
 
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.arquillian.spacelift.process.Command;
-import org.arquillian.spacelift.process.CommandBuilder;
 import org.junit.Test;
 
 /**
@@ -118,6 +120,28 @@ public class CommandTestCase {
         assertThat(command.size(), equalTo(2));
         assertThat(command.getFirst(), equalTo("some"));
         assertThat(command.getLast(), equalTo("someother"));
+    }
+
+    @Test
+    public void testOutputTokenized() {
+        Command command = new CommandBuilder().addTokenized("foo bar").build();
+        assertThat(command.toString(), equalTo("foo bar"));
+    }
+
+    @Test
+    public void testOutputEscaped() {
+        Command command = new CommandBuilder().add("foo bar").build();
+        assertThat(command.toString(), equalTo("\"foo bar\""));
+    }
+
+    @Test
+    public void testOutputCombined() {
+        Command command = new CommandBuilder().add("java")
+            .add("/path/to/my dir with spaces")
+            .add("foo bar")
+            .addTokenized("-Dbar=foo -Dfoo=bar")
+            .build();
+        assertThat(command.toString(), equalTo("java \"/path/to/my dir with spaces\" \"foo bar\" -Dbar=foo -Dfoo=bar"));
     }
 
 }
