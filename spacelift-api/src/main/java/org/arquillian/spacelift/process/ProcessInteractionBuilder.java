@@ -48,6 +48,8 @@ public class ProcessInteractionBuilder {
 
     private List<Pattern> errorOutput;
 
+    private OutputTransformer transformer;
+
     private Tuple tuple;
 
     /**
@@ -58,6 +60,7 @@ public class ProcessInteractionBuilder {
         this.allowedOutput = new ArrayList<Pattern>();
         this.errorOutput = new ArrayList<Pattern>();
         this.tuple = new Tuple();
+        this.transformer = new ProcessNamePrefixOutputTransformer();
     }
 
     /**
@@ -141,6 +144,33 @@ public class ProcessInteractionBuilder {
     }
 
     /**
+     * Defines a prefix for standard output and standard error output. Might be {@code null}
+     * or empty string, in such case no prefix is added and process outputs cannot be distinguished
+     * @param prefix the prefix
+     * @return current instance to allow chaining
+     */
+    public ProcessInteractionBuilder prefix(final String prefix) {
+        if (prefix == null || "".equals(prefix)) {
+            this.transformer = new OutputTransformer() {
+                @Override
+                public Sentence transform(Sentence output) {
+                    return output;
+                }
+            };
+        }
+        else {
+            // sets prefix output transformer
+            this.transformer = new OutputTransformer() {
+                @Override
+                public Sentence transform(Sentence output) {
+                    return output.prepend(prefix);
+                }
+            };
+        }
+        return this;
+    }
+
+    /**
      * Builds {@link ProcessInteraction} object from defined data
      *
      * @return {@link ProcessInteraction}
@@ -150,7 +180,7 @@ public class ProcessInteractionBuilder {
             throw new IllegalStateException("Unfinished replyTo().with() sequence, please append with(String) call");
         }
 
-        return new ProcessInteractionImpl(replyMap, allowedOutput, errorOutput);
+        return new ProcessInteractionImpl(replyMap, transformer, allowedOutput, errorOutput);
     }
 
     private static class Tuple {
@@ -166,8 +196,11 @@ public class ProcessInteractionBuilder {
 
         private final List<Pattern> errorOutput;
 
-        ProcessInteractionImpl(Map<Pattern, Answer> replyMap, List<Pattern> allowedOutput, List<Pattern> errorOutput) {
+        private final OutputTransformer transformer;
+
+        ProcessInteractionImpl(Map<Pattern, Answer> replyMap, OutputTransformer outputTransformer, List<Pattern> allowedOutput, List<Pattern> errorOutput) {
             this.replyMap = replyMap;
+            this.transformer = outputTransformer;
             this.allowedOutput = allowedOutput;
             this.errorOutput = errorOutput;
         }
@@ -206,6 +239,11 @@ public class ProcessInteractionBuilder {
         @Override
         public boolean requiresInputInteraction() {
             return !replyMap.isEmpty();
+        }
+
+        @Override
+        public OutputTransformer outputTransformer() {
+            return transformer;
         }
 
     }

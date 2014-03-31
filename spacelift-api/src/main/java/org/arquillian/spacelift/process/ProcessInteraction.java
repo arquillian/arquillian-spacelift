@@ -55,4 +55,11 @@ public interface ProcessInteraction {
      */
     boolean shouldOutputToErr(Sentence sentence);
 
+    /**
+     * Returns output transformer that is applied to sentences that should
+     * be propagated to either standard output or standard error output
+     * @return output transformer
+     */
+    OutputTransformer outputTransformer();
+
 }

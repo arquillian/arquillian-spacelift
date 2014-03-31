@@ -38,6 +38,23 @@ One time action::
 Periodical action::
     Use +scheduleUntilTrue(...)+ method if you want to re-execute code block until condition is fulfilled
 
+=== ProcessInteraction
+
+ProcessInteraction defines how a command scheduled for execution input and output is handled. You have +ProcessInteractionBuilder+ convenience builder
+available:
+
+Input handling::
+	Use +replyTo(String)+ and +with(String)+ or +with(Answer)+ to define non-interactive handling of process input.
+	Process output, split into separate lines is matched against pattern provided by +replyTo(String)+. Answer can either
+	be a string to be typed or you can force process termination by using +TerminateAnswer+.
+Output/error printing::
+	Use +output(String)+ or +errors(String)+ to define pattern that if matched against output line, are printed either to 
+	standard output or standard error output.
+Process name::
+	By default, a process output is prefixed by process name, defined by first parameter of +Command+. Use +prefix(String) 
+	call to override this prefix. You can also set it to +null+ or empty string if you want process output to be indistinguishable
+	from other output
+
 === ProcessExecutor in your test
 
 You can inject +ProcessExecutor+ into test as an +ArquillianResource+ like this:

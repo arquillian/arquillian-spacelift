@@ -36,7 +36,7 @@ public class ProcessExecutionImpl implements ProcessExecution {
 
     private boolean shouldBeFinished;
 
-    private final String processId;
+    private final String processName;
 
     private final Process process;
 
@@ -45,14 +45,14 @@ public class ProcessExecutionImpl implements ProcessExecution {
     private final OutputStream ostream;
 
     /**
-     * Creates a process execution, add an id to the process
+     * Creates a process execution, add a name to the process
      *
      * @param process
-     * @param processId
+     * @param processName
      */
-    public ProcessExecutionImpl(Process process, String processId) {
+    public ProcessExecutionImpl(Process process, String processName) {
         this.process = process;
-        this.processId = processId;
+        this.processName = processName;
         this.output = new ArrayList<String>();
         this.ostream = new BufferedOutputStream(process.getOutputStream());
         this.shouldBeFinished = false;
@@ -67,8 +67,8 @@ public class ProcessExecutionImpl implements ProcessExecution {
     }
 
     @Override
-    public String getProcessId() {
-        return processId;
+    public String getProcessName() {
+        return processName;
     }
 
     @Override
@@ -99,7 +99,7 @@ public class ProcessExecutionImpl implements ProcessExecution {
     public int getExitCode() throws IllegalStateException {
 
         if (!isFinished()) {
-            throw new IllegalStateException("Process " + processId + " is not yet finished");
+            throw new IllegalStateException("Process " + processName + " is not yet finished");
         }
 
         return process.exitValue();
@@ -136,7 +136,7 @@ public class ProcessExecutionImpl implements ProcessExecution {
         try {
             process.waitFor();
         } catch (InterruptedException e) {
-            throw new ProcessExecutionException(e, "Interrupted while waiting for {} to be terminated", processId);
+            throw new ProcessExecutionException(e, "Interrupted while waiting for {0} to be terminated", processName);
         }
     }
 

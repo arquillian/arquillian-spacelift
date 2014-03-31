@@ -16,18 +16,27 @@
  */
 package org.arquillian.spacelift.process.impl;
 
-import static org.hamcrest.CoreMatchers.*;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
-import java.io.IOException;
-
+import org.apache.commons.lang3.SystemUtils;
 import org.arquillian.spacelift.process.CommandBuilder;
 import org.arquillian.spacelift.process.ProcessExecutionException;
 import org.arquillian.spacelift.process.ProcessExecutor;
+import org.arquillian.spacelift.process.ProcessInteractionBuilder;
 import org.junit.After;
+import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.startsWith;
 
 public class ProcessNameTest {
 
@@ -55,10 +64,55 @@ public class ProcessNameTest {
 
     @Test
     public void invalidResult() {
+
+        // run only on linux
+        Assume.assumeThat(SystemUtils.IS_OS_LINUX, is(true));
+
         exception.expect(ProcessExecutionException.class);
         exception.expectMessage(containsString("java -bar -baz"));
         executor.execute(new CommandBuilder().add("java", "-bar", "-baz").build());
     }
 
+    @Test
+    public void outputNoPrefix() throws UnsupportedEncodingException {
+
+        // run only on linux
+        Assume.assumeThat(SystemUtils.IS_OS_LINUX, is(true));
+
+        final ByteArrayOutputStream errorOutput = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(errorOutput));
+        exception = ExpectedException.none();
+
+        try {
+            exception.expectMessage(containsString("java -bar -baz"));
+            executor.execute(new ProcessInteractionBuilder().prefix("").outputs(".*").build(),
+                new CommandBuilder().add("java", "-bar", "-baz").build());
+        } catch (ProcessExecutionException e) {
+            // ignore
+        }
+        String output = errorOutput.toString(Charset.defaultCharset().name());
+        Assert.assertThat(output, startsWith("Unrecognized option: -bar"));
+    }
+
+    @Test
+    public void outputDefaultPrefix() throws UnsupportedEncodingException {
+
+        // run only on linux
+        Assume.assumeThat(SystemUtils.IS_OS_LINUX, is(true));
+
+        final ByteArrayOutputStream errorOutput = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(errorOutput));
+        exception = ExpectedException.none();
+
+        try {
+            exception.expectMessage(containsString("java -bar -baz"));
+            executor.execute(new ProcessInteractionBuilder().outputs(".*").build(),
+                new CommandBuilder().add("java", "-bar", "-baz").build());
+        } catch (ProcessExecutionException e) {
+            // ignore
+        }
+        String output = errorOutput.toString(Charset.defaultCharset().name());
+        Assert.assertThat(output, startsWith("(java):Unrecognized option: -bar"));
+    }
 
 }

@@ -40,11 +40,13 @@ import java.util.logging.Logger;
 import org.arquillian.spacelift.process.Answer;
 import org.arquillian.spacelift.process.Command;
 import org.arquillian.spacelift.process.CommandBuilder;
+import org.arquillian.spacelift.process.OutputTransformer;
 import org.arquillian.spacelift.process.ProcessExecution;
 import org.arquillian.spacelift.process.ProcessExecutionException;
 import org.arquillian.spacelift.process.ProcessExecutor;
 import org.arquillian.spacelift.process.ProcessInteraction;
 import org.arquillian.spacelift.process.ProcessInteractionBuilder;
+import org.arquillian.spacelift.process.ProcessNamePrefixOutputTransformer;
 import org.arquillian.spacelift.process.Sentence;
 
 /**
@@ -323,6 +325,13 @@ public class ProcessExecutorImpl implements ProcessExecutor {
         public ProcessOutputConsumer(ProcessExecution execution, ProcessInteraction interaction) {
             this.execution = execution;
             this.interaction = interaction;
+
+            // FIXME there should be a better way how to propagate process name
+            OutputTransformer transformer = interaction.outputTransformer();
+            if(transformer instanceof ProcessNamePrefixOutputTransformer) {
+                ((ProcessNamePrefixOutputTransformer) transformer).setProcessName(execution.getProcessName());
+            }
+
         }
 
         @Override
@@ -357,34 +366,33 @@ public class ProcessExecutorImpl implements ProcessExecutor {
                     // save and print output
                     if (sentence.isFinished()) {
                         sentence.trim();
-                        log.log(Level.FINEST, "({0}): {1}", new Object[] { execution.getProcessId(), sentence });
-
-                        // propagate output/error to user
-                        if (interaction.shouldOutput(sentence)) {
-                            System.out.println("(" + execution.getProcessId() + "):" + sentence);
-                        }
-                        if (interaction.shouldOutputToErr(sentence)) {
-                            System.err.println("ERROR (" + execution.getProcessId() + "):" + sentence);
-                        }
+                        log.log(Level.FINEST, "({0}): {1}", new Object[] { execution.getProcessName(), sentence });
 
                         execution.appendOutput(sentence);
+                        // propagate output/error to user
+                        if (interaction.shouldOutput(sentence)) {
+                            System.out.println(interaction.outputTransformer().transform(sentence));
+                        }
+                        if (interaction.shouldOutputToErr(sentence)) {
+                            System.err.println(interaction.outputTransformer().transform(sentence));
+                        }
                         sentence.reset();
                     }
                 }
 
                 // handle last line
                 if (!sentence.isEmpty()) {
-                    log.log(Level.FINEST, "{0} outputs: {1}", new Object[] { execution.getProcessId(), sentence });
-
-                    // propagate output/error to user
-                    if (interaction.shouldOutput(sentence)) {
-                        System.out.println("(" + execution.getProcessId() + "):" + sentence);
-                    }
-                    if (interaction.shouldOutputToErr(sentence)) {
-                        System.err.println("ERROR (" + execution.getProcessId() + "):" + sentence);
-                    }
+                    log.log(Level.FINEST, "{0} outputs: {1}", new Object[] { execution.getProcessName(), sentence });
 
                     execution.appendOutput(sentence);
+                    // propagate output/error to user
+                    if (interaction.shouldOutput(sentence)) {
+                        System.out.println(interaction.outputTransformer().transform(sentence));
+                    }
+                    if (interaction.shouldOutputToErr(sentence)) {
+                        System.err.println(interaction.outputTransformer().transform(sentence));
+                    }
+
                 }
             } catch (IOException ignore) {
             }

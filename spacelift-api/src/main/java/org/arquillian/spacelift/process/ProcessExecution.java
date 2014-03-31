@@ -30,11 +30,11 @@ import java.util.List;
 public interface ProcessExecution {
 
     /**
-     * Returns identification of the process
+     * Returns name of the process
      *
-     * @return process id
+     * @return process name
      */
-    String getProcessId();
+    String getProcessName();
 
     /**
      * Adds a line to output of this process

@@ -25,12 +25,27 @@ package org.arquillian.spacelift.process;
 public interface Sentence extends CharSequence {
 
     /**
+     * Prepends a character sequence to sentence
+     *
+     * @param s sequence
+     * @return updated sentence
+     */
+    Sentence prepend(CharSequence s);
+
+    /**
+     * Prepends a character to sentence
+     * @param c character
+     * @return updated sentence
+     */
+    Sentence prepend(char c);
+
+    /**
      * Appends a character sequence to sentence
      *
      * @param s sequence
      * @return updated sentence
      */
-    public Sentence append(CharSequence s);
+    Sentence append(CharSequence s);
 
     /**
      * Appends a character to sentence
@@ -38,33 +53,33 @@ public interface Sentence extends CharSequence {
      * @param c character
      * @return updated sequence
      */
-    public Sentence append(char c);
+    Sentence append(char c);
 
     /**
      * Checks whether sentence is finished by newline character(s)
      *
      * @return
      */
-    public boolean isFinished();
+    boolean isFinished();
 
     /**
      * Checks whether sentence is empty, that is does not contain any characters
      *
      * @return
      */
-    public boolean isEmpty();
+    boolean isEmpty();
 
     /**
      * Removes a newline character(s) from the end of sentence, if any
      *
      * @return updated sentence
      */
-    public Sentence trim();
+    Sentence trim();
 
     /**
      * Clears the sentence
      *
      * @return
      */
-    public Sentence reset();
+    Sentence reset();
 }

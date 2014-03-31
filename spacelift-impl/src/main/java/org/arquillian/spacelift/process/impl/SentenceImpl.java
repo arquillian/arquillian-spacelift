@@ -56,6 +56,18 @@ public class SentenceImpl implements Sentence {
         return this;
     }
 
+    @Override
+    public Sentence prepend(char c) {
+        sb.insert(0, c);
+        return this;
+    }
+
+    @Override
+    public Sentence prepend(CharSequence s) {
+        sb.insert(0, s);
+        return this;
+    }
+
     /**
      * Checks whether sentence is finished by newline character(s)
      *
