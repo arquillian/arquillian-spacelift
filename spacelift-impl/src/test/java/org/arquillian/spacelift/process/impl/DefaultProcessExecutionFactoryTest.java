@@ -20,13 +20,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.arquillian.spacelift.ArquillianNativePlatformExtension;
+import org.arquillian.spacelift.SpaceliftBootstrap;
 import org.arquillian.spacelift.process.ProcessExecutor;
 import org.arquillian.spacelift.process.ProcessExecutorFactory;
 import org.arquillian.spacelift.process.event.ProcessExecutorCreated;
-import org.arquillian.spacelift.process.impl.DefaultProcessExecutorFactory;
-import org.arquillian.spacelift.process.impl.ProcessExecutorCreator;
-import org.jboss.arquillian.config.descriptor.impl.ArquillianDescriptorImpl;
 import org.jboss.arquillian.core.api.annotation.ApplicationScoped;
 import org.jboss.arquillian.core.spi.ServiceLoader;
 import org.jboss.arquillian.core.spi.context.ApplicationContext;
@@ -50,7 +47,6 @@ public class DefaultProcessExecutionFactoryTest extends AbstractTestTestBase {
 
     @Override
     protected void addExtensions(List<Class<?>> extensions) {
-        extensions.add(ArquillianNativePlatformExtension.class);
         extensions.add(ProcessExecutorCreator.class);
     }
 
@@ -97,7 +93,7 @@ public class DefaultProcessExecutionFactoryTest extends AbstractTestTestBase {
     @Test
     public void fireBeforeSuite() {
         //getManager().getContext(SuiteContext.class).activate();
-        fire(new ArquillianDescriptorImpl("arquillian.xml"));
+        fire(new SpaceliftBootstrap());
 
         ProcessExecutor executor = getManager().getContext(ApplicationContext.class)
             .getObjectStore()

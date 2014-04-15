@@ -16,21 +16,14 @@
  */
 package org.arquillian.spacelift.process.impl;
 
-import static org.hamcrest.CoreMatchers.notNullValue;
-
-import static org.junit.Assert.assertThat;
-
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
-import org.arquillian.spacelift.ArquillianNativePlatformExtension;
+import org.arquillian.spacelift.SpaceliftBootstrap;
 import org.arquillian.spacelift.process.ProcessExecutor;
 import org.arquillian.spacelift.process.ProcessExecutorFactory;
 import org.arquillian.spacelift.process.enricher.ProcessExecutorResourceProvider;
-import org.arquillian.spacelift.process.impl.DefaultProcessExecutorFactory;
-import org.arquillian.spacelift.process.impl.ProcessExecutorCreator;
-import org.jboss.arquillian.config.descriptor.impl.ArquillianDescriptorImpl;
 import org.jboss.arquillian.core.api.Injector;
 import org.jboss.arquillian.core.api.Instance;
 import org.jboss.arquillian.core.api.annotation.ApplicationScoped;
@@ -56,6 +49,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static org.hamcrest.CoreMatchers.notNullValue;
+
+import static org.junit.Assert.assertThat;
+
 /**
  * Tests that {@link ProcessExecutor} in injectable into test class as {@link ArquillianResource}.
  *
@@ -73,7 +70,6 @@ public class ProcessExecutorInjectabilityTest extends AbstractTestTestBase {
 
     @Override
     protected void addExtensions(List<Class<?>> extensions) {
-        extensions.add(ArquillianNativePlatformExtension.class);
         extensions.add(TestInstanceEnricher.class);
         extensions.add(ArquillianResourceTestEnricher.class);
         extensions.add(ProcessExecutorResourceProvider.class);
@@ -103,7 +99,7 @@ public class ProcessExecutorInjectabilityTest extends AbstractTestTestBase {
     @Test
     public void testProcessExecutorIsInjectable() throws Exception {
 
-        fire(new ArquillianDescriptorImpl("arquillian.xml"));
+        fire(new SpaceliftBootstrap());
 
         ProcessExecutorInjectTest instance = new ProcessExecutorInjectTest();
 

@@ -24,6 +24,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -82,7 +83,7 @@ public class ProcessExecutorImpl implements ProcessExecutor {
 
     @Override
     public ProcessExecutor setWorkingDirectory(String workingDirectory) throws IllegalArgumentException {
-        if(workingDirectory == null) {
+        if (workingDirectory == null) {
             this.workingDirectory = null;
             return this;
         }
@@ -91,11 +92,11 @@ public class ProcessExecutorImpl implements ProcessExecutor {
 
     @Override
     public ProcessExecutor setWorkingDirectory(File workingDirectory) throws IllegalArgumentException {
-        if(workingDirectory == null) {
+        if (workingDirectory == null) {
             this.workingDirectory = null;
             return this;
         }
-        if(!workingDirectory.exists()) {
+        if (!workingDirectory.exists()) {
             throw new IllegalArgumentException("Specified path " + workingDirectory.getAbsolutePath() + " does not exist!");
         }
         if (!workingDirectory.isDirectory()) {
@@ -144,9 +145,12 @@ public class ProcessExecutorImpl implements ProcessExecutor {
     @Override
     public ProcessExecution spawn(ProcessInteraction interaction, Command command) throws ProcessExecutionException {
         try {
-            Future<Process> processFuture = service.submit(new SpawnedProcess(environment, workingDirectory, true, command.getAsArray()));
+            Future<Process> processFuture = service.submit(new SpawnedProcess(environment,
+                workingDirectory,
+                true,
+                command.getFullCommand()));
             Process process = processFuture.get();
-            ProcessExecution execution = new ProcessExecutionImpl(process, command.getFirst());
+            ProcessExecution execution = new ProcessExecutionImpl(process, command.getProgramName());
             service.submit(new ProcessOutputConsumer(execution, interaction));
             shutdownThreads.addHookFor(execution);
             return execution;
@@ -167,10 +171,13 @@ public class ProcessExecutorImpl implements ProcessExecutor {
     public ProcessExecution execute(ProcessInteraction interaction, Command command) throws ProcessExecutionException {
         Process process = null;
         try {
-            Future<Process> processFuture = service.submit(new SpawnedProcess(environment, workingDirectory, true, command.getAsArray()));
+            Future<Process> processFuture = service.submit(new SpawnedProcess(environment,
+                workingDirectory,
+                true,
+                command.getFullCommand()));
             process = processFuture.get();
             Future<ProcessExecution> executionFuture = service.submit(new ProcessOutputConsumer(new ProcessExecutionImpl(process,
-                command.getFirst()),
+                command.getProgramName()),
                 interaction));
             // wait for process to finish
             process.waitFor();
@@ -184,13 +191,17 @@ public class ProcessExecutorImpl implements ProcessExecutor {
         }
         // rewrap exception
         catch (InterruptedException e) {
-            throw new ProcessExecutionException(e.getCause() != null ? e.getCause() : e, "Executing \"{0}\": {1}", new Object[] {
-                e.getMessage(),
-                command });
+            throw new ProcessExecutionException(e.getCause() != null ? e.getCause() : e,
+                "Executing \"{0}\": {1}",
+                new Object[] {
+                    e.getMessage(),
+                    command });
         } catch (ExecutionException e) {
-            throw new ProcessExecutionException(e.getCause() != null ? e.getCause() : e, "Executing \"{0}\": {1}", new Object[] {
-                e.getMessage(),
-                command });
+            throw new ProcessExecutionException(e.getCause() != null ? e.getCause() : e,
+                "Executing \"{0}\": {1}",
+                new Object[] {
+                    e.getMessage(),
+                    command });
         } finally {
             // cleanup
             if (process != null) {
@@ -224,7 +235,7 @@ public class ProcessExecutorImpl implements ProcessExecutor {
 
     @Override
     public ProcessExecution execute(ProcessInteraction interaction, String[] command) throws ProcessExecutionException {
-        return execute(interaction, new CommandBuilder().add(command).build());
+        return execute(interaction, new CommandBuilder(command).build());
     }
 
     @Override
@@ -234,12 +245,12 @@ public class ProcessExecutorImpl implements ProcessExecutor {
 
     @Override
     public ProcessExecution execute(String... command) throws ProcessExecutionException {
-        return execute(new CommandBuilder().add(command).build());
+        return execute(new CommandBuilder(command).build());
     }
 
     @Override
     public ProcessExecution spawn(ProcessInteraction interaction, String[] command) throws ProcessExecutionException {
-        return spawn(interaction, new CommandBuilder().add(command).build());
+        return spawn(interaction, new CommandBuilder(command).build());
     }
 
     @Override
@@ -249,7 +260,7 @@ public class ProcessExecutorImpl implements ProcessExecutor {
 
     @Override
     public ProcessExecution spawn(String... command) throws ProcessExecutionException {
-        return spawn(new CommandBuilder().add(command).build());
+        return spawn(new CommandBuilder(command).build());
     }
 
     @Override
@@ -286,12 +297,12 @@ public class ProcessExecutorImpl implements ProcessExecutor {
 
     private static class SpawnedProcess implements Callable<Process> {
 
-        private final String[] command;
+        private final List<String> command;
         private final File workingDirectory;
         private boolean redirectErrorStream;
         private Map<String, String> env;
 
-        public SpawnedProcess(Map<String, String> env, File workingDirectory, boolean redirectErrorStream, String[] command) {
+        public SpawnedProcess(Map<String, String> env, File workingDirectory, boolean redirectErrorStream, List<String> command) {
             this.env = env;
             this.workingDirectory = workingDirectory;
             this.redirectErrorStream = redirectErrorStream;
@@ -328,7 +339,7 @@ public class ProcessExecutorImpl implements ProcessExecutor {
 
             // FIXME there should be a better way how to propagate process name
             OutputTransformer transformer = interaction.outputTransformer();
-            if(transformer instanceof ProcessNamePrefixOutputTransformer) {
+            if (transformer instanceof ProcessNamePrefixOutputTransformer) {
                 ((ProcessNamePrefixOutputTransformer) transformer).setProcessName(execution.getProcessName());
             }
 

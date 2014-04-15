@@ -14,14 +14,19 @@
 
     <!-- Artifact Configuration -->
     <artifactId>arquillian-spacelift-api</artifactId>
-    
+
     <name>Arquillian Spacelift API</name>
-    <description>Arquillian Process and Package Manager</description>    
+    <description>Arquillian Process and Package Manager</description>
 
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

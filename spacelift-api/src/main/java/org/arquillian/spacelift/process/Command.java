@@ -27,41 +27,42 @@ import java.util.List;
 public interface Command {
 
     /**
+     * Returns a name of the program to be executed
      *
-     * @return number of tokens stored in the command
+     * @return program name
      */
-	int size();
+    String getProgramName();
 
     /**
+     * Returns a list of parameters. Program name is not included in this list.
      *
-     * @return command as a list
+     * @see Command#getFullCommand()
+     * @return
      */
-	List<String> getAsList();
+    List<String> getParameters();
 
     /**
+     * Returns a parameter by index. If {@code index} is {@code 0}, program name is returned
      *
-     * @return command as an array
+     * If index is out of range, {@code null} is returned
+     *
+     * @param i
+     * @return
      */
-	String[] getAsArray();
+    String getParameter(int i);
 
     /**
-     * Returns token on i-th position
+     * Returns number of parameters
      *
-     * @param i position of token we want to get
-     * @return token on i-th position or null if out of bounds
+     * @return
      */
-	String get(int i);
+    int getNumberOfParameters();
 
     /**
+     * Returns program name and parameters concatenated into a single list
      *
-     * @return last token from the command or null if command is empty
+     * @return
      */
-	String getLast();
-
-    /**
-     *
-     * @return first token from the command or null if command is empty
-     */
-	String getFirst();
+    List<String> getFullCommand();
 
 }

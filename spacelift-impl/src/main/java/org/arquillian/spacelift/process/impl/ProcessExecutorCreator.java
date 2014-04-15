@@ -3,10 +3,10 @@ package org.arquillian.spacelift.process.impl;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.arquillian.spacelift.SpaceliftBootstrap;
 import org.arquillian.spacelift.process.ProcessExecutor;
 import org.arquillian.spacelift.process.ProcessExecutorFactory;
 import org.arquillian.spacelift.process.event.ProcessExecutorCreated;
-import org.jboss.arquillian.config.descriptor.api.ArquillianDescriptor;
 import org.jboss.arquillian.core.api.Event;
 import org.jboss.arquillian.core.api.Instance;
 import org.jboss.arquillian.core.api.InstanceProducer;
@@ -29,7 +29,7 @@ public class ProcessExecutorCreator {
     @Inject
     private Event<ProcessExecutorCreated> processExecutorCreated;
 
-    public void createProcessExecutor(@Observes ArquillianDescriptor event) {
+    public void createProcessExecutor(@Observes SpaceliftBootstrap event) {
 
         ProcessExecutorFactory factory = serviceLoader.get().onlyOne(ProcessExecutorFactory.class,
             DefaultProcessExecutorFactory.class);

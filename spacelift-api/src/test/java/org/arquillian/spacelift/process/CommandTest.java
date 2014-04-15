@@ -39,109 +39,117 @@ import org.junit.Test;
  * @author <a href="@mailto:smikloso@redhat.com">Stefan Miklosovic</a>
  *
  */
-public class CommandTestCase {
+public class CommandTest {
 
     @Test
-    public void constructEmptyCommandTest() {
+    public void constructCommandWithoutParametersTest() {
 
-        CommandBuilder cb = new CommandBuilder();
+        CommandBuilder cb = new CommandBuilder("command");
         Command command = cb.build();
         Command command2 = cb.build();
 
         assertThat(command, not(sameInstance(command2)));
 
         assertThat(command, notNullValue());
-        assertThat(command.size(), equalTo(0));
-        assertThat(command.get(0), nullValue());
+        assertThat(command.getNumberOfParameters(), equalTo(0));
+        assertThat(command.getParameter(1), nullValue());
     }
 
     @Test
     public void commandListSeparationTest() {
 
-        CommandBuilder cb = new CommandBuilder();
+        CommandBuilder cb = new CommandBuilder("command");
         Command command = cb.build();
-        Command command2 = cb.add("some").add("command").build();
+        Command command2 = cb.parameter("some").parameter("command").build();
 
         assertThat(command, not(sameInstance(command2)));
-        assertThat(command.size(), equalTo(0));
-        assertThat(command2.size(), equalTo(2));
+        assertThat(command.getNumberOfParameters(), equalTo(0));
+        assertThat(command2.getNumberOfParameters(), equalTo(2));
     }
 
     @Test
     public void complexCommandTest() {
-        Command command = new CommandBuilder()
-            .add(Collections.<String> emptyList())
-            .add("some")
-            .add("command")
+        Command command = new CommandBuilder("command")
+            .parameters(Collections.<String> emptyList())
+            .parameter("some")
+            .parameter("command")
             .clear()
-            .add(new String[] { "some", "other", "complex", "command" })
+            .parameters(new String[] { "some", "other", "complex", "command" })
             .remove("complex")
             .build();
 
-        assertThat(command.size(), equalTo(3));
-        assertThat(command.getFirst(), equalTo("some"));
-        assertThat(command.getLast(), equalTo("command"));
-        assertThat(command.get(command.size() + 5), nullValue());
+        assertThat(command.getNumberOfParameters(), equalTo(3));
+        assertThat(command.getParameter(1), equalTo("some"));
+        assertThat(command.getParameter(command.getNumberOfParameters()), equalTo("command"));
+        assertThat(command.getParameter(command.getNumberOfParameters() + 5), nullValue());
     }
 
     @Test
     public void testDeleteTrailingSpaces() {
         String testString = " abcd   \"  a   \"  \"    c    d\" \"${HOME}\"";
 
-        Command c = new CommandBuilder().addTokenized(testString).build();
-        assertThat(c.getAsList(), hasItems("abcd", "  a   ", "    c    d", "${HOME}"));
+        Command c = new CommandBuilder("command").splitToParameters(testString).build();
+        assertThat(c.getParameters(), hasItems("abcd", "  a   ", "    c    d", "${HOME}"));
     }
 
     @Test
     public void testAddingStringBuilder() {
         StringBuilder sb = new StringBuilder("some");
-        Command command = new CommandBuilder().add(sb).build();
+        Command command = new CommandBuilder("command").parameter(sb).build();
 
-        assertThat(command.size(), equalTo(1));
-        assertThat(command.getFirst(), equalTo("some"));
+        assertThat(command.getNumberOfParameters(), equalTo(1));
+        assertThat(command.getParameter(1), equalTo("some"));
     }
 
     @Test
     public void testAddingStringBuilders() {
         StringBuilder sb = new StringBuilder("some");
         StringBuilder sb2 = new StringBuilder("someother");
-        Command command = new CommandBuilder().add(Arrays.asList(sb, sb2)).build();
+        Command command = new CommandBuilder("command").parameters(Arrays.asList(sb, sb2)).build();
 
-        assertThat(command.size(), equalTo(2));
-        assertThat(command.getFirst(), equalTo("some"));
-        assertThat(command.getLast(), equalTo("someother"));
+        assertThat(command.getNumberOfParameters(), equalTo(2));
+        assertThat(command.getParameter(1), equalTo("some"));
+        assertThat(command.getParameter(2), equalTo("someother"));
     }
 
     @Test
     public void testAddingStringBuilderTokenized() {
         StringBuilder sb = new StringBuilder("some").append(" ").append(" someother");
-        Command command = new CommandBuilder().addTokenized(sb).build();
+        Command command = new CommandBuilder("command").splitToParameters(sb).build();
 
-        assertThat(command.size(), equalTo(2));
-        assertThat(command.getFirst(), equalTo("some"));
-        assertThat(command.getLast(), equalTo("someother"));
+        assertThat(command.getNumberOfParameters(), equalTo(2));
+        assertThat(command.getParameter(1), equalTo("some"));
+        assertThat(command.getParameter(2), equalTo("someother"));
     }
 
     @Test
     public void testOutputTokenized() {
-        Command command = new CommandBuilder().addTokenized("foo bar").build();
-        assertThat(command.toString(), equalTo("foo bar"));
+        Command command = new CommandBuilder("command").splitToParameters("foo bar").build();
+        assertThat(command.toString(), equalTo("command foo bar"));
     }
 
     @Test
     public void testOutputEscaped() {
-        Command command = new CommandBuilder().add("foo bar").build();
+        Command command = new CommandBuilder("foo bar").build();
         assertThat(command.toString(), equalTo("\"foo bar\""));
     }
 
     @Test
     public void testOutputCombined() {
-        Command command = new CommandBuilder().add("java")
-            .add("/path/to/my dir with spaces")
-            .add("foo bar")
-            .addTokenized("-Dbar=foo -Dfoo=bar")
+        Command command = new CommandBuilder("java")
+            .parameter("/path/to/my dir with spaces")
+            .parameter("foo bar")
+            .splitToParameters("-Dbar=foo -Dfoo=bar")
             .build();
         assertThat(command.toString(), equalTo("java \"/path/to/my dir with spaces\" \"foo bar\" -Dbar=foo -Dfoo=bar"));
+    }
+
+    @Test
+    public void testBothConstructionApproachesAreEqual() {
+        Command command = new CommandBuilder("java", "-foo", "-bar").build();
+        Command command2 = new CommandBuilder("java").parameters("-foo", "-bar").build();
+
+        assertThat(command.toString(), equalTo(command2.toString()));
     }
 
 }

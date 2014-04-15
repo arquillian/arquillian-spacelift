@@ -59,7 +59,7 @@ public class ProcessNameTest {
     @Test
     public void invalidCommand() {
         exception.expect(ProcessExecutionException.class);
-        executor.execute(new CommandBuilder().add("foo-invalid-command", "-bar", "-baz").build());
+        executor.execute(new CommandBuilder("foo-invalid-command", "-bar", "-baz").build());
     }
 
     @Test
@@ -70,7 +70,7 @@ public class ProcessNameTest {
 
         exception.expect(ProcessExecutionException.class);
         exception.expectMessage(containsString("java -bar -baz"));
-        executor.execute(new CommandBuilder().add("java", "-bar", "-baz").build());
+        executor.execute(new CommandBuilder("java").parameters("-bar", "-baz").build());
     }
 
     @Test
@@ -86,7 +86,7 @@ public class ProcessNameTest {
         try {
             exception.expectMessage(containsString("java -bar -baz"));
             executor.execute(new ProcessInteractionBuilder().prefix("").outputs(".*").build(),
-                new CommandBuilder().add("java", "-bar", "-baz").build());
+                new CommandBuilder("java").parameters("-bar", "-baz").build());
         } catch (ProcessExecutionException e) {
             // ignore
         }
@@ -107,7 +107,7 @@ public class ProcessNameTest {
         try {
             exception.expectMessage(containsString("java -bar -baz"));
             executor.execute(new ProcessInteractionBuilder().outputs(".*").build(),
-                new CommandBuilder().add("java", "-bar", "-baz").build());
+                new CommandBuilder("java").parameters("-bar", "-baz").build());
         } catch (ProcessExecutionException e) {
             // ignore
         }

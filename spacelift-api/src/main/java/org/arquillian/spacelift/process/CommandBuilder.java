@@ -30,44 +30,68 @@ import java.util.regex.Pattern;
  */
 public class CommandBuilder {
 
-    private List<String> command;
+    private String programName;
+    private List<String> parameters;
 
-    public CommandBuilder() {
-        this.command = new ArrayList<String>();
+    /**
+     * Creates a command builder with program name and parameters to be executed
+     *
+     * @param command Program name with subsequent parameters
+     * @throws IllegalArgumentException If {@code command} is an empty array
+     */
+    public CommandBuilder(CharSequence... command) throws IllegalArgumentException {
+        if (command.length < 1) {
+            throw new IllegalArgumentException("Command must not be empty");
+        }
+        this.programName = command[0].toString();
+        this.parameters = new ArrayList<String>(command.length);
+        parameters(Arrays.copyOfRange(command, 1, command.length));
     }
 
     /**
-     * Adds a list of tokens to the command under construction, ignoring null and empty tokens.
+     * Creates a command builder with program name to be executed.
      *
-     * @param tokens tokens we are adding to the already existing list
+     * It is not checked whether {@code programName} is a valid command for current operating system
+     *
+     * @param programName
+     */
+    public CommandBuilder(CharSequence programName) {
+        this.programName = programName.toString();
+        this.parameters = new ArrayList<String>();
+    }
+
+    /**
+     * Adds a list of parameters to the command under construction, ignoring null and empty parameters.
+     *
+     * @param parameters parameters we are adding to the already existing list
      * @return instance of this {@link CommandBuilder}
      */
-    public CommandBuilder add(List<? extends CharSequence> tokens) {
-        for (CharSequence token : tokens) {
-            add(token.toString());
+    public CommandBuilder parameters(List<? extends CharSequence> parameters) {
+        for (CharSequence parameter : parameters) {
+            parameter(parameter.toString());
         }
         return this;
     }
 
     /**
-     * Adds tokens to the command under construction, ignoring null and empty tokens.
+     * Adds parameters to the command under construction, ignoring null and empty parameters.
      *
-     * @param tokens
+     * @param parameters
      * @return instance of this {@link CommandBuilder}
      */
-    public CommandBuilder add(CharSequence... tokens) {
-        return add(Arrays.asList(tokens));
+    public CommandBuilder parameters(CharSequence... parameters) {
+        return parameters(Arrays.asList(parameters));
     }
 
     /**
-     * Adds a token to the command under construction, ignoring null and empty token.
+     * Adds a parameter to the command under construction, ignoring null and empty parameter.
      *
-     * @param token token to add to the command list
+     * @param parameter parameter to add to the command list
      * @return instance of this {@link CommandBuilder}
      */
-    public CommandBuilder add(CharSequence token) {
-        if (token != null && token.length() > 0) {
-            command.add(token.toString());
+    public CommandBuilder parameter(CharSequence parameter) {
+        if (parameter != null && parameter.length() > 0) {
+            parameters.add(parameter.toString());
         }
         return this;
     }
@@ -77,35 +101,35 @@ public class CommandBuilder {
      * @return instance of this {@link CommandBuilder}
      * @return instance of this {@link CommandBuilder}
      */
-    public CommandBuilder addTokenized(CharSequence sequenceToBeParsed) {
+    public CommandBuilder splitToParameters(CharSequence sequenceToBeParsed) {
         if (sequenceToBeParsed != null && sequenceToBeParsed.length() > 0) {
-            add(StringUtils.tokenize(sequenceToBeParsed.toString()));
+            parameters(StringUtils.parameterize(sequenceToBeParsed.toString()));
         }
         return this;
     }
 
     /**
-     * Clears the command - all added tokens are removed.
+     * Clears the command - all added parameters are removed.
      *
      * @return instance of this {@link CommandBuilder}
      */
     public CommandBuilder clear() {
-        command.clear();
+        parameters.clear();
         return this;
     }
 
     /**
-     * Remove all occurrences of {@code token} from the command list.
+     * Remove all occurrences of {@code parameter} from the command list.
      *
-     * @param token token to remove
+     * @param parameter parameter to remove
      * @return instance of this {@link CommandBuilder}
      */
-    public CommandBuilder remove(CharSequence token) {
-        if (token == null || token.toString().trim().equals("")) {
+    public CommandBuilder remove(CharSequence parameter) {
+        if (parameter == null || parameter.toString().trim().equals("")) {
             return this;
         }
 
-        command.removeAll(Arrays.asList(token));
+        parameters.removeAll(Arrays.asList(parameter));
 
         return this;
     }
@@ -117,68 +141,69 @@ public class CommandBuilder {
      * @return built command
      */
     public Command build() {
-        CommandImpl command = new CommandImpl(this.command);
-        this.command = null;
-        this.command = new ArrayList<String>();
+        CommandImpl command = new CommandImpl(this.programName, this.parameters);
+        clear();
         return command;
     }
 
     private static class CommandImpl implements Command {
 
-        private final List<String> command;
+        private final String programName;
+        private final List<String> parameters;
 
-        public CommandImpl(List<String> command) {
-            this.command = new ArrayList<String>(command);
+        public CommandImpl(String programName, List<String> parameters) {
+            this.programName = programName;
+            this.parameters = new ArrayList<String>(parameters);
         }
 
         @Override
-        public int size() {
-            return command.size();
+        public int getNumberOfParameters() {
+            return parameters.size();
         }
 
         @Override
-        public List<String> getAsList() {
-            return command;
-        }
+        public String getParameter(int i) {
 
-        @Override
-        public String[] getAsArray() {
-            return command.toArray(new String[0]);
-        }
+            // return program name if 0 is passed
+            if (i == 0) {
+                return getProgramName();
+            }
 
-        @Override
-        public String get(int i) {
+            // return parameter
             try {
-                return command.get(i);
+                return parameters.get(i - 1);
             } catch (IndexOutOfBoundsException ex) {
                 return null;
             }
         }
 
         @Override
-        public String getLast() {
-            if (command.isEmpty()) {
-                return null;
-            }
-            return command.get(command.size() - 1);
+        public String getProgramName() {
+            return programName;
         }
 
         @Override
-        public String getFirst() {
-            if (command.isEmpty()) {
-                return null;
-            }
-            return command.get(0);
+        public List<String> getParameters() {
+            return new ArrayList<String>(parameters);
+        }
+
+        @Override
+        public List<String> getFullCommand() {
+            List<String> fullCommand = new ArrayList<String>(parameters.size() + 1);
+            fullCommand.add(programName);
+            fullCommand.addAll(parameters);
+            return fullCommand;
         }
 
         @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
             String delimiter = "";
-            for (String s : command) {
+
+            for (String s : getFullCommand()) {
                 sb.append(delimiter);
                 // check wheter we should print command in escaped form.
-                if (StringUtils.tokenize(s).size() > 1) {
+                if (StringUtils.parameterize(s).size() > 1) {
                     sb.append('"').append(s).append('"');
                 }
                 else {
@@ -194,13 +219,14 @@ public class CommandBuilder {
     static final class StringUtils {
 
         /**
-         * Parse string to tokens. Tokens are separated by whitespace. In case some token contains whitespace, the whole token
-         * has to be quoted. For instance string 'opt0 opt1=val1 "opt2=val2 with space"' results in three tokens.
+         * Parse string to parameters. Tokens are separated by whitespace. In case some parameter contains whitespace, the whole
+         * parameter
+         * has to be quoted. For instance string 'opt0 opt1=val1 "opt2=val2 with space"' results in three parameters.
          *
-         * @param stringToBeParsed - string to be parsed to tokens
-         * @return List of tokens, returns empty list rather that null value
+         * @param stringToBeParsed - string to be parsed to parameters
+         * @return List of parameters, returns empty list rather that null value
          */
-        public static List<String> tokenize(String stringToBeParsed) {
+        public static List<String> parameterize(String stringToBeParsed) {
 
             final String TOKEN = "\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\"|\\S+";
             final String QUOTED_TOKEN = "^\"(.*)\"$";

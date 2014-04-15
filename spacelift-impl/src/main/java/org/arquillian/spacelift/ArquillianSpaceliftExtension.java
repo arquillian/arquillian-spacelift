@@ -20,6 +20,7 @@ import org.arquillian.spacelift.process.ProcessExecutorFactory;
 import org.arquillian.spacelift.process.enricher.ProcessExecutorResourceProvider;
 import org.arquillian.spacelift.process.impl.DefaultProcessExecutorFactory;
 import org.arquillian.spacelift.process.impl.ProcessExecutorCreator;
+import org.arquillian.spacelift.tool.impl.ToolRegistrar;
 import org.jboss.arquillian.core.spi.LoadableExtension;
 import org.jboss.arquillian.test.spi.enricher.resource.ResourceProvider;
 
@@ -28,7 +29,7 @@ import org.jboss.arquillian.test.spi.enricher.resource.ResourceProvider;
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
  *
  */
-public class ArquillianNativePlatformExtension implements LoadableExtension {
+public class ArquillianSpaceliftExtension implements LoadableExtension {
 
     @Override
     public void register(ExtensionBuilder extension) {
@@ -36,6 +37,7 @@ public class ArquillianNativePlatformExtension implements LoadableExtension {
         extension.service(ProcessExecutorFactory.class, DefaultProcessExecutorFactory.class);
         extension.service(ResourceProvider.class, ProcessExecutorResourceProvider.class);
         extension.observer(ProcessExecutorCreator.class);
+        extension.observer(ToolRegistrar.class);
     }
 
 }
