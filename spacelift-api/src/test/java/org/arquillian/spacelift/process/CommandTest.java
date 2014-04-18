@@ -21,18 +21,18 @@
  */
 package org.arquillian.spacelift.process;
 
+import java.util.Arrays;
+
+import org.junit.Test;
+
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
+
 import static org.junit.Assert.assertThat;
-
-import java.util.Arrays;
-import java.util.Collections;
-
-import org.junit.Test;
 
 /**
  *
@@ -70,15 +70,10 @@ public class CommandTest {
     @Test
     public void complexCommandTest() {
         Command command = new CommandBuilder("command")
-            .parameters(Collections.<String> emptyList())
-            .parameter("some")
-            .parameter("command")
-            .clear()
             .parameters(new String[] { "some", "other", "complex", "command" })
-            .remove("complex")
             .build();
 
-        assertThat(command.getNumberOfParameters(), equalTo(3));
+        assertThat(command.getNumberOfParameters(), equalTo(4));
         assertThat(command.getParameter(1), equalTo("some"));
         assertThat(command.getParameter(command.getNumberOfParameters()), equalTo("command"));
         assertThat(command.getParameter(command.getNumberOfParameters() + 5), nullValue());

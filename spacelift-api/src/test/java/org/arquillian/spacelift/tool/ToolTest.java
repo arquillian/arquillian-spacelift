@@ -16,84 +16,43 @@
  */
 package org.arquillian.spacelift.tool;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.commons.lang3.SystemUtils;
+import org.arquillian.spacelift.execution.ExecutionService;
+import org.arquillian.spacelift.execution.ExecutionServiceFactory;
+import org.arquillian.spacelift.execution.Tasks;
 import org.arquillian.spacelift.process.Command;
-import org.arquillian.spacelift.process.CommandBuilder;
-import org.arquillian.spacelift.process.ProcessInteraction;
-import org.arquillian.spacelift.process.ProcessInteractionBuilder;
+import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.notNullValue;
 
 import static org.junit.Assert.assertThat;
 
 public class ToolTest {
 
-    static class JavaTool implements ExternalTool<JavaTool> {
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
 
-        private CommandBuilder command;
-
-        public JavaTool() {
-            if (SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC_OSX) {
-                this.command = new CommandBuilder("java");
+    @BeforeClass
+    public static void setup() {
+        Tasks.setDefaultExecutionServiceFactory(new ExecutionServiceFactory() {
+            @Override
+            public ExecutionService getExecutionServiceInstance() {
+                return new TestExecutionService();
             }
-            else if (SystemUtils.IS_OS_WINDOWS) {
-                this.command = new CommandBuilder("java.exe");
-            }
-            throw new UnsupportedOperationException("Java tool is not supported for " + SystemUtils.OS_NAME);
-        }
-
-        @Override
-        public Collection<String> aliases() {
-            return Arrays.asList("java");
-        }
-
-        @Override
-        public JavaTool parameter(CharSequence parameter) {
-            command.parameter(parameter);
-            return this;
-        }
-
-        @Override
-        public JavaTool parameters(CharSequence... parameters) {
-            command.parameters(parameters);
-            return this;
-        }
-
-        @Override
-        public JavaTool parameters(List<? extends CharSequence> parameters) {
-            command.parameters(parameters);
-            return this;
-        }
-
-        @Override
-        public JavaTool splitToParameters(CharSequence sequenceToBeParsed) {
-            command.splitToParameters(sequenceToBeParsed);
-            return this;
-        }
-
-        @Override
-        public Command build() {
-            return command.build();
-        }
-
-        @Override
-        public ProcessInteraction getInteraction() {
-            return new ProcessInteractionBuilder().outputs(".*").build();
-        }
+        });
     }
 
     @Test
     public void getJavaToolFromRegistry() {
 
         ToolRegistry registry = new TestToolRegistry();
-        registry.register(JavaTool.class);
+        registry.register(TestJavaTool.class);
 
-        Command javaCommand = registry.find(JavaTool.class).parameter("-foo").build();
+        Command javaCommand = registry.find(TestJavaTool.class).parameter("-foo").getCommand();
 
         if (SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC_OSX) {
             assertThat(javaCommand.toString(), equalTo("java -foo"));
@@ -104,38 +63,34 @@ public class ToolTest {
     }
 
     @Test
-    public void getJavaToolFromRegistryById() {
+    public void getJavaToolFromRegistryByAlias() {
 
         ToolRegistry registry = new TestToolRegistry();
-        registry.register(JavaTool.class);
+        registry.register(TestJavaTool.class);
 
-        Command javaCommand = registry.findExternalTool("java").parameter("-foo").build();
-
-        if (SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC_OSX) {
-            assertThat(javaCommand.toString(), equalTo("java -foo"));
-        }
-        else if (SystemUtils.IS_OS_WINDOWS) {
-            assertThat(javaCommand.toString(), equalTo("java.exe -foo"));
-        }
+        Tool<?, ?> tool = registry.find("java");
+        assertThat(tool, notNullValue());
     }
 
-    @Test(expected = InvalidToolException.class)
+    @Test
     public void getInvalidToolType() {
 
         ToolRegistry registry = new TestToolRegistry();
-        registry.register(JavaTool.class);
+        registry.register(TestJavaTool.class);
 
-        registry.findInternalTool("java").getCallable();
+        registry.find("java", Object.class, Object.class).execute();
+
+        exception.expect(ClassCastException.class);
+        @SuppressWarnings("unused")
+        Integer x = registry.find("java", Object.class, Integer.class).execute().waitFor();
     }
 
     @Test
     public void checkRegistryContent() {
         ToolRegistry registry = new TestToolRegistry();
-        registry.register(JavaTool.class);
+        registry.register(TestJavaTool.class);
 
         assertThat(registry.allTools().size(), equalTo(1));
-        assertThat(registry.allExternalTools().size(), equalTo(1));
-        assertThat(registry.allInternalTools().size(), equalTo(0));
     }
 
 }

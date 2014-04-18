@@ -51,5 +51,8 @@ public class ToolRegistrar {
 
         registry.register(DownloadTool.class);
         registry.register(UnzipTool.class);
+
+        registry.find(DownloadTool.class).from("").to("");
+
     }
 }

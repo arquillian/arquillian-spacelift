@@ -22,10 +22,11 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 
 import org.apache.commons.lang3.SystemUtils;
+import org.arquillian.spacelift.execution.ExecutionException;
+import org.arquillian.spacelift.execution.ExecutionService;
+import org.arquillian.spacelift.execution.ExecutionInteractionBuilder;
+import org.arquillian.spacelift.execution.impl.ExecutionServiceImpl;
 import org.arquillian.spacelift.process.CommandBuilder;
-import org.arquillian.spacelift.process.ProcessExecutionException;
-import org.arquillian.spacelift.process.ProcessExecutor;
-import org.arquillian.spacelift.process.ProcessInteractionBuilder;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Assume;
@@ -40,14 +41,14 @@ import static org.hamcrest.CoreMatchers.startsWith;
 
 public class ProcessNameTest {
 
-    private ProcessExecutor executor;
+    private ExecutionService executor;
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
     @Before
     public void setup() {
-        executor = new ProcessExecutorImpl();
+        executor = new ExecutionServiceImpl();
 
     }
 
@@ -58,8 +59,9 @@ public class ProcessNameTest {
 
     @Test
     public void invalidCommand() {
-        exception.expect(ProcessExecutionException.class);
-        executor.execute(new CommandBuilder("foo-invalid-command", "-bar", "-baz").build());
+        exception.expect(ExecutionException.class);
+        executor.execute(new CommandBuilder("foo-invalid-command", "-bar", "-baz").build(),
+            ExecutionInteractionBuilder.NO_INTERACTION);
     }
 
     @Test
@@ -68,9 +70,10 @@ public class ProcessNameTest {
         // run only on linux
         Assume.assumeThat(SystemUtils.IS_OS_LINUX, is(true));
 
-        exception.expect(ProcessExecutionException.class);
+        exception.expect(ExecutionException.class);
         exception.expectMessage(containsString("java -bar -baz"));
-        executor.execute(new CommandBuilder("java").parameters("-bar", "-baz").build());
+        executor.execute(new CommandBuilder("java").parameters("-bar", "-baz").build(),
+            ExecutionInteractionBuilder.NO_INTERACTION);
     }
 
     @Test
@@ -85,9 +88,9 @@ public class ProcessNameTest {
 
         try {
             exception.expectMessage(containsString("java -bar -baz"));
-            executor.execute(new ProcessInteractionBuilder().prefix("").outputs(".*").build(),
-                new CommandBuilder("java").parameters("-bar", "-baz").build());
-        } catch (ProcessExecutionException e) {
+            executor.execute(new CommandBuilder("java").parameters("-bar", "-baz").build(),
+                new ExecutionInteractionBuilder().prefix("").outputs(".*").build());
+        } catch (ExecutionException e) {
             // ignore
         }
         String output = errorOutput.toString(Charset.defaultCharset().name());
@@ -106,9 +109,9 @@ public class ProcessNameTest {
 
         try {
             exception.expectMessage(containsString("java -bar -baz"));
-            executor.execute(new ProcessInteractionBuilder().outputs(".*").build(),
-                new CommandBuilder("java").parameters("-bar", "-baz").build());
-        } catch (ProcessExecutionException e) {
+            executor.execute(new CommandBuilder("java").parameters("-bar", "-baz").build(),
+                new ExecutionInteractionBuilder().outputs(".*").build());
+        } catch (ExecutionException e) {
             // ignore
         }
         String output = errorOutput.toString(Charset.defaultCharset().name());

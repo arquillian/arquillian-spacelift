@@ -18,15 +18,16 @@ package org.arquillian.spacelift.tool.basic;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.concurrent.Callable;
 
-import org.arquillian.spacelift.tool.InternalTool;
+import org.arquillian.spacelift.execution.ExecutionException;
+import org.arquillian.spacelift.tool.Tool;
 
 /**
  * File downloader
@@ -34,7 +35,7 @@ import org.arquillian.spacelift.tool.InternalTool;
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
  *
  */
-public class DownloadTool implements InternalTool<DownloadTool, File> {
+public class DownloadTool extends Tool<Object, File> {
 
     private URL url;
 
@@ -68,8 +69,7 @@ public class DownloadTool implements InternalTool<DownloadTool, File> {
     }
 
     @Override
-    public Callable<File> getCallable() {
-
+    protected File process(Object input) throws Exception {
         if (url == null) {
             throw new IllegalStateException("Source URL was not set");
         }
@@ -77,41 +77,39 @@ public class DownloadTool implements InternalTool<DownloadTool, File> {
             throw new IllegalStateException("Destination file was not set");
         }
 
-        return new Callable<File>() {
-            @Override
-            public File call() throws Exception {
-                InputStream is = null;
-                FileOutputStream fos = null;
+        InputStream is = null;
+        FileOutputStream fos = null;
 
+        try {
+            try {
+                URLConnection urlConn = url.openConnection();// connect
+
+                is = urlConn.getInputStream(); // get connection inputstream
+                fos = new FileOutputStream(output); // open outputstream to local file
+
+                byte[] buffer = new byte[4096]; // declare 4KB buffer
+                int len;
+
+                // while we have availble data, continue downloading and storing to local file
+                while ((len = is.read(buffer)) > 0) {
+                    fos.write(buffer, 0, len);
+                }
+            } finally {
                 try {
-                    URLConnection urlConn = url.openConnection();// connect
-
-                    is = urlConn.getInputStream(); // get connection inputstream
-                    fos = new FileOutputStream(output); // open outputstream to local file
-
-                    byte[] buffer = new byte[4096]; // declare 4KB buffer
-                    int len;
-
-                    // while we have availble data, continue downloading and storing to local file
-                    while ((len = is.read(buffer)) > 0) {
-                        fos.write(buffer, 0, len);
+                    if (is != null) {
+                        is.close();
                     }
                 } finally {
-                    try {
-                        if (is != null) {
-                            is.close();
-                        }
-                    } finally {
-                        if (fos != null) {
-                            fos.close();
-                        }
+                    if (fos != null) {
+                        fos.close();
                     }
                 }
-
-                return output;
             }
+        } catch (IOException e) {
+            throw new ExecutionException(e, "Unable to download from {0} to {1}", url, output);
+        }
 
-        };
+        return output;
     }
 
 }

@@ -18,6 +18,8 @@ package org.arquillian.spacelift.tool;
 
 import java.util.Collection;
 
+import org.arquillian.spacelift.execution.Task;
+
 /**
  * Abstraction of a tool. Tool is able to run a command on current platform.
  *
@@ -29,7 +31,7 @@ import java.util.Collection;
  *
  * @param <TOOLTYPE> Type of the tool
  */
-public interface Tool<TOOLTYPE extends Tool<TOOLTYPE>> {
+public abstract class Tool<IN, OUT> extends Task<IN, OUT> {
 
     /**
      * Returns a collection of aliases for this tool. An alias can be used to get a tool
@@ -37,5 +39,5 @@ public interface Tool<TOOLTYPE extends Tool<TOOLTYPE>> {
      *
      * @return
      */
-    Collection<String> aliases();
+    protected abstract Collection<String> aliases();
 }

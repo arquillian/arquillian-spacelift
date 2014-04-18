@@ -65,4 +65,11 @@ public interface Command {
      */
     List<String> getFullCommand();
 
+    /**
+     * Returns {@code true} if command is expected to run as daemon and survive current JVM shutdown
+     *
+     * @return
+     */
+    boolean runsAsDeamon();
+
 }

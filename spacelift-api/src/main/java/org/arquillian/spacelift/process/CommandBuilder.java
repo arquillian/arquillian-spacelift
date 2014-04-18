@@ -33,6 +33,8 @@ public class CommandBuilder {
     private String programName;
     private List<String> parameters;
 
+    private boolean isDaemon;
+
     /**
      * Creates a command builder with program name and parameters to be executed
      *
@@ -108,29 +110,8 @@ public class CommandBuilder {
         return this;
     }
 
-    /**
-     * Clears the command - all added parameters are removed.
-     *
-     * @return instance of this {@link CommandBuilder}
-     */
-    public CommandBuilder clear() {
-        parameters.clear();
-        return this;
-    }
-
-    /**
-     * Remove all occurrences of {@code parameter} from the command list.
-     *
-     * @param parameter parameter to remove
-     * @return instance of this {@link CommandBuilder}
-     */
-    public CommandBuilder remove(CharSequence parameter) {
-        if (parameter == null || parameter.toString().trim().equals("")) {
-            return this;
-        }
-
-        parameters.removeAll(Arrays.asList(parameter));
-
+    public CommandBuilder runAsDaemon() {
+        this.isDaemon = true;
         return this;
     }
 
@@ -141,19 +122,19 @@ public class CommandBuilder {
      * @return built command
      */
     public Command build() {
-        CommandImpl command = new CommandImpl(this.programName, this.parameters);
-        clear();
-        return command;
+        return new CommandImpl(this.programName, this.parameters, isDaemon);
     }
 
     private static class CommandImpl implements Command {
 
         private final String programName;
         private final List<String> parameters;
+        private final boolean isDaemon;
 
-        public CommandImpl(String programName, List<String> parameters) {
+        public CommandImpl(String programName, List<String> parameters, boolean isDaemon) {
             this.programName = programName;
             this.parameters = new ArrayList<String>(parameters);
+            this.isDaemon = isDaemon;
         }
 
         @Override
@@ -193,6 +174,11 @@ public class CommandBuilder {
             fullCommand.add(programName);
             fullCommand.addAll(parameters);
             return fullCommand;
+        }
+
+        @Override
+        public boolean runsAsDeamon() {
+            return isDaemon;
         }
 
         @Override

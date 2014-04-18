@@ -29,9 +29,9 @@ public interface Installation {
 
     boolean isInstalled();
 
-    Collection<Class<? extends Tool<?>>> provides();
+    Collection<Class<? extends Tool<?, ?>>> provides();
 
-    Collection<Class<? extends Tool<?>>> dependsOn();
+    Collection<Class<? extends Tool<?, ?>>> dependsOn();
 
     List<InstallationStep> install();
 

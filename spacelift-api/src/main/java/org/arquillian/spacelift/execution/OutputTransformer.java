@@ -14,26 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.arquillian.spacelift.tool;
-
-import java.util.Collection;
-import java.util.Map;
+package org.arquillian.spacelift.execution;
 
 /**
- * Registry that contains all available tools.
+ * A transformer for execution output.
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
  *
  */
-public interface ToolRegistry {
+public interface OutputTransformer {
 
-    <IN, OUT, TOOL extends Tool<IN, OUT>> ToolRegistry register(Class<TOOL> tool) throws InvalidToolException;
-
-    <IN, OUT, TOOL extends Tool<IN, OUT>> TOOL find(Class<TOOL> toolType);
-
-    Tool<?, ?> find(String alias);
-
-    <IN, OUT> Tool<IN, OUT> find(String alias, Class<IN> inType, Class<OUT> outType) throws InvalidToolException;
-
-    Map<Collection<String>, Class<? extends Tool<?, ?>>> allTools();
+    /**
+     * Transforms process output to a different string. This might be handy
+     * if you want to visually distinguish in between outputs of differents processes.
+     *
+     * @param output Sentence to be transformed
+     * @return modified output
+     */
+    Sentence transform(Sentence output);
 }

@@ -38,17 +38,19 @@ import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.arquillian.spacelift.process.Answer;
+import org.arquillian.spacelift.execution.Answer;
+import org.arquillian.spacelift.execution.ExecutionInteraction;
+import org.arquillian.spacelift.execution.ExecutionInteractionBuilder;
+import org.arquillian.spacelift.execution.OutputTransformer;
+import org.arquillian.spacelift.execution.Sentence;
+import org.arquillian.spacelift.execution.impl.CountDownWatch;
+import org.arquillian.spacelift.execution.impl.SentenceImpl;
 import org.arquillian.spacelift.process.Command;
 import org.arquillian.spacelift.process.CommandBuilder;
-import org.arquillian.spacelift.process.OutputTransformer;
 import org.arquillian.spacelift.process.ProcessExecution;
 import org.arquillian.spacelift.process.ProcessExecutionException;
 import org.arquillian.spacelift.process.ProcessExecutor;
-import org.arquillian.spacelift.process.ProcessInteraction;
-import org.arquillian.spacelift.process.ProcessInteractionBuilder;
 import org.arquillian.spacelift.process.ProcessNamePrefixOutputTransformer;
-import org.arquillian.spacelift.process.Sentence;
 
 /**
  * Executor service which is able to execute external process as well as callables
@@ -143,14 +145,14 @@ public class ProcessExecutorImpl implements ProcessExecutor {
     }
 
     @Override
-    public ProcessExecution spawn(ProcessInteraction interaction, Command command) throws ProcessExecutionException {
+    public ProcessExecution spawn(ExecutionInteraction interaction, Command command) throws ProcessExecutionException {
         try {
             Future<Process> processFuture = service.submit(new SpawnedProcess(environment,
                 workingDirectory,
                 true,
                 command.getFullCommand()));
             Process process = processFuture.get();
-            ProcessExecution execution = new ProcessExecutionImpl(process, command.getProgramName());
+            ProcessExecution execution = new ProcessBasedExecution(process, command.getProgramName());
             service.submit(new ProcessOutputConsumer(execution, interaction));
             shutdownThreads.addHookFor(execution);
             return execution;
@@ -168,7 +170,7 @@ public class ProcessExecutorImpl implements ProcessExecutor {
     }
 
     @Override
-    public ProcessExecution execute(ProcessInteraction interaction, Command command) throws ProcessExecutionException {
+    public ProcessExecution execute(ExecutionInteraction interaction, Command command) throws ProcessExecutionException {
         Process process = null;
         try {
             Future<Process> processFuture = service.submit(new SpawnedProcess(environment,
@@ -176,13 +178,13 @@ public class ProcessExecutorImpl implements ProcessExecutor {
                 true,
                 command.getFullCommand()));
             process = processFuture.get();
-            Future<ProcessExecution> executionFuture = service.submit(new ProcessOutputConsumer(new ProcessExecutionImpl(process,
+            Future<ProcessExecution> executionFuture = service.submit(new ProcessOutputConsumer(new ProcessBasedExecution(process,
                 command.getProgramName()),
                 interaction));
             // wait for process to finish
             process.waitFor();
             // wait for process to finish IO
-            ProcessExecution execution = executionFuture.get();
+            ProcessExecution execution = executionFuture.result();
             if (execution.executionFailed()) {
                 throw new ProcessExecutionException("Invocation of \"{0}\" failed with {1}", new Object[] { command,
                     execution.getExitCode() });
@@ -234,13 +236,13 @@ public class ProcessExecutorImpl implements ProcessExecutor {
     }
 
     @Override
-    public ProcessExecution execute(ProcessInteraction interaction, String[] command) throws ProcessExecutionException {
+    public ProcessExecution execute(ExecutionInteraction interaction, String[] command) throws ProcessExecutionException {
         return execute(interaction, new CommandBuilder(command).build());
     }
 
     @Override
     public ProcessExecution execute(Command command) throws ProcessExecutionException {
-        return execute(ProcessInteractionBuilder.NO_INTERACTION, command);
+        return execute(ExecutionInteractionBuilder.NO_INTERACTION, command);
     }
 
     @Override
@@ -249,13 +251,13 @@ public class ProcessExecutorImpl implements ProcessExecutor {
     }
 
     @Override
-    public ProcessExecution spawn(ProcessInteraction interaction, String[] command) throws ProcessExecutionException {
+    public ProcessExecution spawn(ExecutionInteraction interaction, String[] command) throws ProcessExecutionException {
         return spawn(interaction, new CommandBuilder(command).build());
     }
 
     @Override
     public ProcessExecution spawn(Command command) throws ProcessExecutionException {
-        return spawn(ProcessInteractionBuilder.NO_INTERACTION, command);
+        return spawn(ExecutionInteractionBuilder.NO_INTERACTION, command);
     }
 
     @Override
@@ -331,9 +333,9 @@ public class ProcessExecutorImpl implements ProcessExecutor {
         private static final Logger log = Logger.getLogger(ProcessOutputConsumer.class.getName());
 
         private final ProcessExecution execution;
-        private final ProcessInteraction interaction;
+        private final ExecutionInteraction interaction;
 
-        public ProcessOutputConsumer(ProcessExecution execution, ProcessInteraction interaction) {
+        public ProcessOutputConsumer(ProcessExecution execution, ExecutionInteraction interaction) {
             this.execution = execution;
             this.interaction = interaction;
 

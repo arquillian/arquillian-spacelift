@@ -17,11 +17,10 @@
 package org.arquillian.spacelift.tool.basic;
 
 import java.io.File;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 
-import org.arquillian.spacelift.process.ProcessExecutor;
-import org.arquillian.spacelift.process.impl.ProcessExecutorImpl;
+import org.arquillian.spacelift.execution.ExecutionService;
+import org.arquillian.spacelift.execution.Tasks;
+import org.arquillian.spacelift.execution.impl.DefaultExecutionServiceFactory;
 import org.arquillian.spacelift.tool.ToolRegistry;
 import org.arquillian.spacelift.tool.impl.ToolRegistryImpl;
 import org.junit.Assert;
@@ -34,35 +33,28 @@ public class DownloadUnzipToolTest {
 
     static ToolRegistry registry;
 
-    static ProcessExecutor executor;
+    static ExecutionService service;
 
     @BeforeClass
     public static void setup() {
-        executor = new ProcessExecutorImpl();
+        Tasks.setDefaultExecutionServiceFactory(new DefaultExecutionServiceFactory());
         registry = new ToolRegistryImpl();
         registry.register(DownloadTool.class);
         registry.register(UnzipTool.class);
-
     }
 
     @Test
-    public void downloadFile() throws ExecutionException, InterruptedException {
+    public void downloadFileAndExtract() {
 
-        Callable<File> futureFile = registry.find(DownloadTool.class)
+        File jsonSmartExtracted = registry.find(DownloadTool.class)
             .from("http://search.maven.org/remotecontent?filepath=net/minidev/json-smart/1.2/json-smart-1.2.jar")
             .to("target/json-smart-1.2.jar")
-            .getCallable();
+            .then(UnzipTool.class)
+            .toDir("target/json-smart-extracted")
+            .execute().waitFor();
 
-        File jsonSmart = executor.submit(futureFile).get();
+        Assert.assertThat(jsonSmartExtracted, notNullValue());
 
-        Assert.assertThat(jsonSmart, notNullValue());
-
-        Callable<File> futureDir = registry.find(UnzipTool.class)
-            .from(jsonSmart).to("target/json-smart-extracted").getCallable();
-
-        File dir = executor.submit(futureDir).get();
-
-        Assert.assertThat(dir, notNullValue());
     }
 
 }

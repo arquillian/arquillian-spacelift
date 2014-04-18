@@ -17,11 +17,11 @@
 package org.arquillian.spacelift.tool.basic;
 
 import java.io.File;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 
-import org.arquillian.spacelift.process.ProcessExecutor;
-import org.arquillian.spacelift.process.impl.ProcessExecutorImpl;
+import org.arquillian.spacelift.execution.ExecutionService;
+import org.arquillian.spacelift.execution.Tasks;
+import org.arquillian.spacelift.execution.impl.DefaultExecutionServiceFactory;
+import org.arquillian.spacelift.execution.impl.ExecutionServiceImpl;
 import org.arquillian.spacelift.tool.ToolRegistry;
 import org.arquillian.spacelift.tool.impl.ToolRegistryImpl;
 import org.junit.Assert;
@@ -34,25 +34,21 @@ public class DownloadToolTest {
 
     static ToolRegistry registry;
 
-    static ProcessExecutor executor;
-
     @BeforeClass
     public static void setup() {
-        executor = new ProcessExecutorImpl();
+        Tasks.setDefaultExecutionServiceFactory(new DefaultExecutionServiceFactory());
         registry = new ToolRegistryImpl();
         registry.register(DownloadTool.class);
 
     }
 
     @Test
-    public void downloadFile() throws ExecutionException, InterruptedException {
+    public void downloadFile() {
 
-        Callable<File> futureFile = registry.find(DownloadTool.class)
+        File indexHtml = registry.find(DownloadTool.class)
             .from("http://www.arquillian.org")
             .to("target/index.html")
-            .getCallable();
-
-        File indexHtml = executor.submit(futureFile).get();
+            .execute().waitFor();
 
         Assert.assertThat(indexHtml, notNullValue());
     }

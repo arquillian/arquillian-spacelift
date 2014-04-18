@@ -14,30 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.arquillian.spacelift;
+package org.arquillian.spacelift.execution.impl;
 
+import org.arquillian.spacelift.execution.ExecutionService;
 import org.arquillian.spacelift.execution.ExecutionServiceFactory;
-import org.arquillian.spacelift.execution.enricher.ExecutionServiceResourceProvider;
-import org.arquillian.spacelift.execution.impl.DefaultExecutionServiceFactory;
-import org.arquillian.spacelift.execution.impl.ExecutionServiceCreator;
-import org.arquillian.spacelift.tool.impl.ToolRegistrar;
-import org.jboss.arquillian.core.spi.LoadableExtension;
-import org.jboss.arquillian.test.spi.enricher.resource.ResourceProvider;
 
 /**
+ * Default process execution factory
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
  *
  */
-public class ArquillianSpaceliftExtension implements LoadableExtension {
+public class DefaultExecutionServiceFactory implements ExecutionServiceFactory {
+
+    private static class ExecutionServiceHolder {
+        public static ExecutionService lastExecutor = new ExecutionServiceImpl();
+    }
+
+    private static ExecutionService getAsSingleton() {
+        return ExecutionServiceHolder.lastExecutor;
+    }
 
     @Override
-    public void register(ExtensionBuilder extension) {
-
-        extension.service(ExecutionServiceFactory.class, DefaultExecutionServiceFactory.class);
-        extension.service(ResourceProvider.class, ExecutionServiceResourceProvider.class);
-        extension.observer(ExecutionServiceCreator.class);
-        extension.observer(ToolRegistrar.class);
+    public ExecutionService getExecutionServiceInstance() {
+        return getAsSingleton();
     }
 
 }

@@ -14,26 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.arquillian.spacelift.tool;
+package org.arquillian.spacelift.execution.impl;
 
-import java.util.Collection;
-import java.util.Map;
+import org.jboss.arquillian.junit.Arquillian;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
-/**
- * Registry that contains all available tools.
- *
- * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
- *
- */
-public interface ToolRegistry {
+@RunWith(Arquillian.class)
+public class ExtensionLoadTest {
 
-    <IN, OUT, TOOL extends Tool<IN, OUT>> ToolRegistry register(Class<TOOL> tool) throws InvalidToolException;
-
-    <IN, OUT, TOOL extends Tool<IN, OUT>> TOOL find(Class<TOOL> toolType);
-
-    Tool<?, ?> find(String alias);
-
-    <IN, OUT> Tool<IN, OUT> find(String alias, Class<IN> inType, Class<OUT> outType) throws InvalidToolException;
-
-    Map<Collection<String>, Class<? extends Tool<?, ?>>> allTools();
+    @Test
+    public void ensureExtensionCanBeLoaded() {
+        // this does nothing
+        Assert.assertTrue(true);
+    }
 }

@@ -14,31 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.arquillian.spacelift.tool.impl;
+package org.arquillian.spacelift.execution;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 
 /**
- * SecurityActions
- *
  * A set of privileged actions that are not to leak out of this package
- *
  *
  * @author <a href="mailto:andrew.rubinger@jboss.org">ALR</a>
  * @author <a href="mailto:kpiwko@redhat.com">Karel Piwko</a>
- *
- * @version $Revision: $
  */
 final class SecurityActions {
 
     // -------------------------------------------------------------------------------||
-    // Constructor
-    // ------------------------------------------------------------------||
+    // Constructor -------------------------------------------------------------------||
     // -------------------------------------------------------------------------------||
 
     /**
@@ -49,115 +43,14 @@ final class SecurityActions {
     }
 
     // -------------------------------------------------------------------------------||
-    // Utility Methods
-    // --------------------------------------------------------------||
+    // Utility Methods ---------------------------------------------------------------||
     // -------------------------------------------------------------------------------||
 
-    static String getProperty(final String key) {
-        try {
-            String value = AccessController.doPrivileged(new PrivilegedExceptionAction<String>() {
-                public String run() {
-                    return System.getProperty(key);
-                }
-            });
-            return value;
-        }
-        // Unwrap
-        catch (final PrivilegedActionException pae) {
-            final Throwable t = pae.getCause();
-            // Rethrow
-            if (t instanceof SecurityException) {
-                throw (SecurityException) t;
-            }
-            if (t instanceof NullPointerException) {
-                throw (NullPointerException) t;
-            } else if (t instanceof IllegalArgumentException) {
-                throw (IllegalArgumentException) t;
-            } else {
-                // No other checked Exception thrown by System.getProperty
-                try {
-                    throw (RuntimeException) t;
-                }
-                // Just in case we've really messed up
-                catch (final ClassCastException cce) {
-                    throw new RuntimeException("Obtained unchecked Exception; this code should never be reached", t);
-                }
-            }
-        }
-    }
-
-    static String setProperty(final String key, final String value) {
-        try {
-            String oldValue = AccessController.doPrivileged(new PrivilegedExceptionAction<String>() {
-                public String run() {
-                    if (value == null) {
-                        return System.clearProperty(key);
-                    }
-                    return System.setProperty(key, value);
-                }
-            });
-            return oldValue;
-        }
-        // Unwrap
-        catch (final PrivilegedActionException pae) {
-            final Throwable t = pae.getCause();
-            // Rethrow
-            if (t instanceof SecurityException) {
-                throw (SecurityException) t;
-            }
-            if (t instanceof NullPointerException) {
-                throw (NullPointerException) t;
-            } else if (t instanceof IllegalArgumentException) {
-                throw (IllegalArgumentException) t;
-            } else {
-                // No other checked Exception thrown by System.getProperty
-                try {
-                    throw (RuntimeException) t;
-                }
-                // Just in case we've really messed up
-                catch (final ClassCastException cce) {
-                    throw new RuntimeException("Obtained unchecked Exception; this code should never be reached", t);
-                }
-            }
-        }
-    }
-
-    static Method getMethod(final Class<?> classType, final String name, final Class<?>... parameters) {
-        try {
-            Method method = AccessController.doPrivileged(new PrivilegedExceptionAction<Method>() {
-                @Override
-                public Method run() throws Exception {
-                    Method m = classType.getDeclaredMethod(name, parameters);
-                    m.setAccessible(true);
-                    return m;
-                }
-            });
-            return method;
-
-        }
-        // Unwrap
-        catch (final PrivilegedActionException pae) {
-            final Throwable t = pae.getCause();
-            // Rethrow
-            if (t instanceof SecurityException) {
-                throw (SecurityException) t;
-            }
-            if (t instanceof NullPointerException) {
-                throw (NullPointerException) t;
-            } else if (t instanceof IllegalArgumentException) {
-                throw (IllegalArgumentException) t;
-            } else {
-                // No other checked Exception thrown by System.getProperty
-                try {
-                    throw (RuntimeException) t;
-                }
-                // Just in case we've really messed up
-                catch (final ClassCastException cce) {
-                    throw new RuntimeException("Obtained unchecked Exception; this code should never be reached", t);
-                }
-            }
-        }
-
+    /**
+     * Obtains the Thread Context ClassLoader
+     */
+    static ClassLoader getThreadContextClassLoader() {
+        return AccessController.doPrivileged(GetTcclAction.INSTANCE);
     }
 
     static <T> T newInstance(Class<T> clazz) throws IllegalArgumentException, IllegalStateException, RuntimeException {
@@ -265,4 +158,22 @@ final class SecurityActions {
         constructor.append(")");
         return constructor.toString();
     }
+
+    // -------------------------------------------------------------------------------||
+    // Inner Classes
+    // ----------------------------------------------------------------||
+    // -------------------------------------------------------------------------------||
+
+    /**
+     * Single instance to get the TCCL
+     */
+    private enum GetTcclAction implements PrivilegedAction<ClassLoader> {
+        INSTANCE;
+
+        public ClassLoader run() {
+            return Thread.currentThread().getContextClassLoader();
+        }
+
+    }
+
 }

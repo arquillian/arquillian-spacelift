@@ -14,26 +14,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.arquillian.spacelift.tool;
+package org.arquillian.spacelift.execution;
 
-import java.util.Collection;
-import java.util.Map;
+import java.io.IOException;
 
 /**
- * Registry that contains all available tools.
+ * Represents an empty or no answer. It simply does nothing at all.
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
  *
  */
-public interface ToolRegistry {
+public enum NoAnswer implements Answer {
 
-    <IN, OUT, TOOL extends Tool<IN, OUT>> ToolRegistry register(Class<TOOL> tool) throws InvalidToolException;
+    INSTANCE;
 
-    <IN, OUT, TOOL extends Tool<IN, OUT>> TOOL find(Class<TOOL> toolType);
+    @Override
+    public int length() {
+        return 0;
+    }
 
-    Tool<?, ?> find(String alias);
+    @Override
+    public char charAt(int index) {
+        return 0;
+    }
 
-    <IN, OUT> Tool<IN, OUT> find(String alias, Class<IN> inType, Class<OUT> outType) throws InvalidToolException;
+    @Override
+    public CharSequence subSequence(int start, int end) {
+        return "";
+    }
 
-    Map<Collection<String>, Class<? extends Tool<?, ?>>> allTools();
+    @Override
+    public <RETURNTYPE> void reply(Execution<RETURNTYPE> execution) throws IOException {
+    }
+
+    @Override
+    public String toString() {
+        return "";
+    }
+
 }
