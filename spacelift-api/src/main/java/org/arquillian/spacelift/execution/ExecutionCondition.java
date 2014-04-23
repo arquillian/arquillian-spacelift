@@ -1,14 +1,12 @@
 package org.arquillian.spacelift.execution;
 
-import java.util.concurrent.TimeUnit;
-
 /**
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
  *
- * @param <OBJECT>
+ * @param <RESULT>
  */
-public interface ExecutionCondition<OBJECT> {
+public interface ExecutionCondition<RESULT> {
 
     /**
      * Evaluates a condition using {@code object}
@@ -16,7 +14,6 @@ public interface ExecutionCondition<OBJECT> {
      * @param object Object to be inspected
      * @return
      */
-    boolean satisfiedBy(OBJECT object) throws ExecutionException;
+    boolean satisfiedBy(RESULT object) throws ExecutionException;
 
-    ExecutionCondition<OBJECT> timeLeft(long timeout, TimeUnit unit);
 }

@@ -81,6 +81,7 @@ final class SecurityActions {
 
         try {
             Constructor<?> constructor = getConstructor(clazz, argumentTypes);
+            constructor.setAccessible(true);
             obj = constructor.newInstance(arguments);
         } catch (NoSuchMethodException e) {
             throw new IllegalStateException("Unable to find a constructor for implementation class "
@@ -124,7 +125,7 @@ final class SecurityActions {
         try {
             return AccessController.doPrivileged(new PrivilegedExceptionAction<Constructor<?>>() {
                 public Constructor<?> run() throws NoSuchMethodException {
-                    return clazz.getConstructor(argumentTypes);
+                    return clazz.getDeclaredConstructor(argumentTypes);
                 }
             });
         }

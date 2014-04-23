@@ -51,7 +51,7 @@ public class DownloadUnzipToolTest {
             .to("target/json-smart-1.2.jar")
             .then(UnzipTool.class)
             .toDir("target/json-smart-extracted")
-            .execute().waitFor();
+            .execute().await();
 
         Assert.assertThat(jsonSmartExtracted, notNullValue());
 

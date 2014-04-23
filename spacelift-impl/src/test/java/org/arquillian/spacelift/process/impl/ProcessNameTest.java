@@ -23,14 +23,12 @@ import java.nio.charset.Charset;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.arquillian.spacelift.execution.ExecutionException;
-import org.arquillian.spacelift.execution.ExecutionService;
 import org.arquillian.spacelift.execution.ExecutionInteractionBuilder;
-import org.arquillian.spacelift.execution.impl.ExecutionServiceImpl;
-import org.arquillian.spacelift.process.CommandBuilder;
-import org.junit.After;
+import org.arquillian.spacelift.execution.Tasks;
+import org.arquillian.spacelift.execution.impl.DefaultExecutionServiceFactory;
 import org.junit.Assert;
 import org.junit.Assume;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -41,27 +39,19 @@ import static org.hamcrest.CoreMatchers.startsWith;
 
 public class ProcessNameTest {
 
-    private ExecutionService executor;
-
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-    @Before
-    public void setup() {
-        executor = new ExecutionServiceImpl();
-
-    }
-
-    @After
-    public void tearDown() {
-        executor = null;
+    @BeforeClass
+    public static void setup() {
+        Tasks.setDefaultExecutionServiceFactory(new DefaultExecutionServiceFactory());
     }
 
     @Test
     public void invalidCommand() {
         exception.expect(ExecutionException.class);
-        executor.execute(new CommandBuilder("foo-invalid-command", "-bar", "-baz").build(),
-            ExecutionInteractionBuilder.NO_INTERACTION);
+
+        Tasks.prepare(CommandTool.class).programName("foo-invalid-command").parameters("-bar", "-baz").execute();
     }
 
     @Test
@@ -72,8 +62,9 @@ public class ProcessNameTest {
 
         exception.expect(ExecutionException.class);
         exception.expectMessage(containsString("java -bar -baz"));
-        executor.execute(new CommandBuilder("java").parameters("-bar", "-baz").build(),
-            ExecutionInteractionBuilder.NO_INTERACTION);
+
+        Tasks.prepare(CommandTool.class).programName("java").parameters("-bar", "-baz").execute();
+
     }
 
     @Test
@@ -88,8 +79,11 @@ public class ProcessNameTest {
 
         try {
             exception.expectMessage(containsString("java -bar -baz"));
-            executor.execute(new CommandBuilder("java").parameters("-bar", "-baz").build(),
-                new ExecutionInteractionBuilder().prefix("").outputs(".*").build());
+
+            Tasks.prepare(CommandTool.class).programName("java").parameters("-bar", "-baz")
+                .interaction(new ExecutionInteractionBuilder().prefix("").outputs(".*"))
+                .execute();
+
         } catch (ExecutionException e) {
             // ignore
         }
@@ -109,8 +103,11 @@ public class ProcessNameTest {
 
         try {
             exception.expectMessage(containsString("java -bar -baz"));
-            executor.execute(new CommandBuilder("java").parameters("-bar", "-baz").build(),
-                new ExecutionInteractionBuilder().outputs(".*").build());
+
+            Tasks.prepare(CommandTool.class).programName("java").parameters("-bar", "-baz")
+                .interaction(new ExecutionInteractionBuilder().outputs(".*"))
+                .execute();
+
         } catch (ExecutionException e) {
             // ignore
         }

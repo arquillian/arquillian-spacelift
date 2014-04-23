@@ -82,7 +82,7 @@ public class ToolTest {
 
         exception.expect(ClassCastException.class);
         @SuppressWarnings("unused")
-        Integer x = registry.find("java", Object.class, Integer.class).execute().waitFor();
+        Integer x = registry.find("java", Object.class, Integer.class).execute().await();
     }
 
     @Test

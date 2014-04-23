@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -30,7 +29,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.arquillian.spacelift.execution.Execution;
-import org.arquillian.spacelift.execution.ExecutionCondition;
 import org.arquillian.spacelift.execution.ExecutionService;
 import org.arquillian.spacelift.execution.TimeoutExecutionException;
 
@@ -102,40 +100,15 @@ public class ExecutionServiceImpl implements ExecutionService {
     @Override
     public <T> Execution<T> execute(Callable<T> task) throws org.arquillian.spacelift.execution.ExecutionException {
         Future<T> future = service.submit(task);
-        return new FutureBasedExecution<T>(future);
+        return new FutureBasedExecution<T>(this, task, future);
     }
 
     @Override
-    public <T> T repeat(Callable<T> task, ExecutionCondition<Future<T>> breakCondition, long step, long timeout, TimeUnit unit)
-        throws TimeoutExecutionException, org.arquillian.spacelift.execution.ExecutionException {
+    public <T> Execution<T> schedule(Callable<T> task, long delay, TimeUnit unit) throws TimeoutExecutionException,
+        org.arquillian.spacelift.execution.ExecutionException {
 
-        CountDownWatch countdown = new CountDownWatch(timeout, unit);
-        while (countdown.timeLeft() > 0) {
-            // delay by step
-            ScheduledFuture<T> future = scheduledService.schedule(task, step, unit);
-
-            Boolean result = false;
-            try {
-                // wait for true up to timeLeft
-                // this means we might get less steps then timeout/step
-                result = breakCondition.timeLeft(countdown.timeLeft(), unit).satisfiedBy(future);
-                if (result == true) {
-                    return future.get();
-                }
-            } catch (org.arquillian.spacelift.execution.ExecutionException e) {
-                continue;
-            }
-            // rewrap exception
-            catch (ExecutionException e) {
-                throw new org.arquillian.spacelift.execution.ExecutionException(e.getCause() != null ? e.getCause() : e,
-                    e.getMessage());
-            } catch (InterruptedException e) {
-                throw new org.arquillian.spacelift.execution.ExecutionException(e.getCause() != null ? e.getCause() : e,
-                    e.getMessage());
-            }
-        }
-
-        throw new TimeoutExecutionException("Unable to trigger condition within {0} {1}.", timeout, unit);
+        ScheduledFuture<T> future = scheduledService.schedule(task, delay, unit);
+        return new FutureBasedExecution<T>(this, task, future);
     }
 
     /*

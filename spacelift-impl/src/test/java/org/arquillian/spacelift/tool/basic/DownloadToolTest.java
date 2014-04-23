@@ -18,10 +18,8 @@ package org.arquillian.spacelift.tool.basic;
 
 import java.io.File;
 
-import org.arquillian.spacelift.execution.ExecutionService;
 import org.arquillian.spacelift.execution.Tasks;
 import org.arquillian.spacelift.execution.impl.DefaultExecutionServiceFactory;
-import org.arquillian.spacelift.execution.impl.ExecutionServiceImpl;
 import org.arquillian.spacelift.tool.ToolRegistry;
 import org.arquillian.spacelift.tool.impl.ToolRegistryImpl;
 import org.junit.Assert;
@@ -48,7 +46,7 @@ public class DownloadToolTest {
         File indexHtml = registry.find(DownloadTool.class)
             .from("http://www.arquillian.org")
             .to("target/index.html")
-            .execute().waitFor();
+            .execute().await();
 
         Assert.assertThat(indexHtml, notNullValue());
     }

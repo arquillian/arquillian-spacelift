@@ -42,7 +42,12 @@ public interface Execution<RESULT> {
      */
     Execution<RESULT> terminate() throws ExecutionException;
 
-    RESULT waitFor() throws ExecutionException;
+    RESULT await() throws ExecutionException;
 
-    RESULT waitFor(long timeout, TimeUnit unit) throws ExecutionException;
+    RESULT awaitAtMost(long timeout, TimeUnit unit) throws ExecutionException, TimeoutExecutionException;
+
+    Execution<RESULT> pollEvery(long step, TimeUnit unit);
+
+    RESULT until(long timeout, TimeUnit unit, ExecutionCondition<RESULT> condition) throws ExecutionException,
+        TimeoutExecutionException;
 }

@@ -19,7 +19,6 @@ package org.arquillian.spacelift.execution;
 import java.io.File;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import org.arquillian.spacelift.process.Command;
@@ -86,7 +85,7 @@ public interface ExecutionService {
      * reached.
      *
      * @param task Task to be executed
-     * @param breakCondition break condition, to
+     * @param breakCondition break condition
      * @param step Time to wait until next execution should be performed
      * @param timeout Total timeout
      * @param unit Timeout unit
@@ -94,7 +93,7 @@ public interface ExecutionService {
      * @throws TimeoutExecutionException
      * @throws ExecutionException
      */
-    <T> T repeat(Callable<T> task, ExecutionCondition<Future<T>> breakCondition, long step, long timeout, TimeUnit unit)
+    <T> Execution<T> schedule(Callable<T> task, long delay, TimeUnit unit)
         throws TimeoutExecutionException, ExecutionException;
 
 }

@@ -24,8 +24,10 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.arquillian.spacelift.execution.Execution;
+import org.arquillian.spacelift.execution.ExecutionCondition;
 import org.arquillian.spacelift.execution.ExecutionException;
 import org.arquillian.spacelift.execution.Sentence;
+import org.arquillian.spacelift.execution.TimeoutExecutionException;
 import org.arquillian.spacelift.execution.impl.ShutdownHooks;
 import org.arquillian.spacelift.process.ProcessDetails;
 
@@ -103,16 +105,6 @@ public class ProcessBasedExecution implements Execution<ProcessDetails> {
         return process.exitValue() != 0;
     }
 
-    @Override
-    public ProcessDetails result() throws ExecutionException {
-        return processDetails;
-    }
-
-    @Override
-    public ProcessDetails result(long timeout, TimeUnit unit) {
-        return processDetails;
-    }
-
     private static class ProcessDetailsImpl implements ProcessDetails {
 
         private final String processName;
@@ -154,6 +146,31 @@ public class ProcessBasedExecution implements Execution<ProcessDetails> {
             return this;
         }
 
+    }
+
+    @Override
+    public ProcessDetails await() throws ExecutionException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ProcessDetails awaitAtMost(long timeout, TimeUnit unit) throws ExecutionException, TimeoutExecutionException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Execution<ProcessDetails> pollEvery(long step, TimeUnit unit) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ProcessDetails until(long timeout, TimeUnit unit, ExecutionCondition<ProcessDetails> condition)
+        throws ExecutionException, TimeoutExecutionException {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

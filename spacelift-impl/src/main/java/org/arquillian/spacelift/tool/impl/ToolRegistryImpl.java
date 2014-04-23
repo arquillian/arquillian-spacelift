@@ -17,9 +17,9 @@
 package org.arquillian.spacelift.tool.impl;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,9 +38,15 @@ import org.arquillian.spacelift.tool.ToolRegistry;
  */
 public class ToolRegistryImpl implements ToolRegistry {
 
+    private final static Method ALIASES_METHOD;
+
     private Map<Class<? extends Tool<?, ?>>, Collection<String>> toolTypeAliases;
 
     private Map<String, Class<? extends Tool<?, ?>>> toolClasses;
+
+    static {
+        ALIASES_METHOD = SecurityActions.getMethod(Tool.class, "aliases", new Class<?>[0]);
+    }
 
     public ToolRegistryImpl() {
         this.toolTypeAliases = new HashMap<Class<? extends Tool<?, ?>>, Collection<String>>();
@@ -60,8 +66,6 @@ public class ToolRegistryImpl implements ToolRegistry {
             throw new InvalidToolException(e, "Unable to register tool {0}", tool);
         } catch (IllegalArgumentException e) {
             throw new InvalidToolException(e, "Unable to register tool {0}", tool);
-        } catch (RuntimeException e) {
-            throw new InvalidToolException(e, "Unable to register tool {0}", tool);
         }
 
         return this;
@@ -75,9 +79,11 @@ public class ToolRegistryImpl implements ToolRegistry {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Tool<?, ?> find(String alias) {
 
+        @SuppressWarnings("rawtypes")
         Class toolType = toolClasses.get(alias);
         if (toolType != null) {
             return (Tool<?, ?>) Tasks.prepare(toolType);
@@ -90,9 +96,10 @@ public class ToolRegistryImpl implements ToolRegistry {
     @Override
     public <IN, OUT> Tool<IN, OUT> find(String alias, Class<IN> inType, Class<OUT> outType) throws InvalidToolException {
 
-        Class toolType = toolClasses.get(alias);
+        @SuppressWarnings("unchecked")
+        Class<? extends Tool<IN, OUT>> toolType = (Class<? extends Tool<IN, OUT>>) toolClasses.get(alias);
         if (toolType != null) {
-            return (Tool<IN, OUT>) Tasks.prepare(toolType);
+            return Tasks.prepare(toolType);
         }
 
         // no such tool was registered
@@ -111,20 +118,19 @@ public class ToolRegistryImpl implements ToolRegistry {
         return allTools;
     }
 
-    private Collection<String> getAliases(Tool<?, ?> toolInstance) {
+    @SuppressWarnings("unchecked")
+    private Collection<String> getAliases(Tool<?, ?> toolInstance) throws InvalidToolException {
         try {
-            return (Collection<String>) SecurityActions.getMethod(Tool.class, "aliases").invoke(toolInstance);
+            return (Collection<String>) ALIASES_METHOD.invoke(toolInstance);
         } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new InvalidToolException(e, "Unable to register {0} tool, unable to get aliases.", toolInstance.getClass()
+                .getName());
         } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new InvalidToolException(e, "Unable to register {0} tool, unable to get aliases.", toolInstance.getClass()
+                .getName());
         } catch (InvocationTargetException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new InvalidToolException(e, "Unable to register {0} tool, unable to get aliases.", toolInstance.getClass()
+                .getName());
         }
-        return Collections.emptyList();
     }
-
 }

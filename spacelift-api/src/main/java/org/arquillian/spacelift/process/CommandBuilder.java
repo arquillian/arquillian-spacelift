@@ -125,6 +125,11 @@ public class CommandBuilder {
         return new CommandImpl(this.programName, this.parameters, isDaemon);
     }
 
+    @Override
+    public String toString() {
+        return build().toString();
+    }
+
     private static class CommandImpl implements Command {
 
         private final String programName;

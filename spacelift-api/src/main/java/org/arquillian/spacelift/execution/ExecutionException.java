@@ -14,6 +14,10 @@ public class ExecutionException extends RuntimeException {
         super(MessageFormat.format(messageFormat, parameters), cause);
     }
 
+    public ExecutionException prependMessage(String messageFormat, Object... parameters) {
+        return new ExecutionException(this.getCause(), messageFormat + ". " + this.getMessage(), parameters);
+    }
+
     public ExecutionException(Throwable cause) {
         super(cause);
     }
