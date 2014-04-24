@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.arquillian.spacelift.execution;
+package org.arquillian.spacelift.process;
 
 /**
  * Represents a line on execution input or output

@@ -27,13 +27,50 @@ import java.util.Map;
  */
 public interface ToolRegistry {
 
+    /**
+     * Registers tool into the registry
+     *
+     * @param tool
+     * @return
+     * @throws InvalidToolException
+     */
     <IN, OUT, TOOL extends Tool<IN, OUT>> ToolRegistry register(Class<TOOL> tool) throws InvalidToolException;
 
+    /**
+     * Finds tool by its type.
+     *
+     * @param toolType
+     * @return Either tool or {@code null}
+     */
     <IN, OUT, TOOL extends Tool<IN, OUT>> TOOL find(Class<TOOL> toolType);
 
+    /**
+     * Finds tool by its alias.
+     *
+     * This method should be used only by metadata bindings.
+     *
+     * @param alias the alias
+     * @return Either tool or {@code null}
+     */
     Tool<?, ?> find(String alias);
 
+    /**
+     * Finds tool by its alias.
+     *
+     * This method should be used only by metadata bindings.
+     *
+     * @param alias the alias
+     * @param inType the input type of the tool
+     * @param outType the output type of the tool
+     * @return Either tool or {@code null}
+     * @throws InvalidToolException in case that tool input/output type is different
+     */
     <IN, OUT> Tool<IN, OUT> find(String alias, Class<IN> inType, Class<OUT> outType) throws InvalidToolException;
 
+    /**
+     * Returns all registered tools
+     *
+     * @return
+     */
     Map<Collection<String>, Class<? extends Tool<?, ?>>> allTools();
 }

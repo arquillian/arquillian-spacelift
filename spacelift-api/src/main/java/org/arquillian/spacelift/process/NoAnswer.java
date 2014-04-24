@@ -14,9 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.arquillian.spacelift.execution;
+package org.arquillian.spacelift.process;
 
 import java.io.IOException;
+
+import org.arquillian.spacelift.execution.Execution;
 
 /**
  * Represents an empty or no answer. It simply does nothing at all.

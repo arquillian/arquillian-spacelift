@@ -1,10 +1,8 @@
 package org.arquillian.spacelift.tool;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.Writer;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.Random;
-import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -15,38 +13,27 @@ import org.arquillian.spacelift.execution.ExecutionServiceFactory;
 import org.arquillian.spacelift.execution.Task;
 import org.arquillian.spacelift.execution.Tasks;
 import org.arquillian.spacelift.execution.TimeoutExecutionException;
+import org.arquillian.spacelift.process.CommandTest;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static org.junit.Assert.assertThat;
-
 import static org.hamcrest.CoreMatchers.notNullValue;
+
+import static org.junit.Assert.assertThat;
 
 public class TaskChainTest {
 
-    public static class CreateFileTask extends Task<Object, File> {
-
-        private String name;
-
-        public CreateFileTask named(String name) {
-            this.name = name;
-            return this;
-        }
+    public static class CreateWriterTask extends Task<Object, StringWriter> {
 
         @Override
-        protected File process(Object input) throws Exception {
-            File file = new File(name);
-            if (file.exists()) {
-                file.delete();
-            }
-            file.createNewFile();
-            return file;
+        protected StringWriter process(Object input) throws Exception {
+            return new StringWriter();
         }
     }
 
-    public static class DataSampler extends Task<File, File> {
+    public static class DataSampler extends Task<StringWriter, StringReader> {
 
         private StringBuilder randomData = new StringBuilder();
 
@@ -58,20 +45,19 @@ public class TaskChainTest {
         }
 
         @Override
-        protected File process(File input) throws Exception {
+        protected StringReader process(StringWriter input) throws Exception {
 
-            Writer w = new FileWriter(input);
-            w.append(randomData);
-            w.close();
+            input.append(randomData);
+            input.close();
 
-            return input;
+            return new StringReader(input.toString());
         }
     }
 
-    public static class FileReader extends Task<File, String> {
+    public static class MyStringReader extends Task<StringReader, String> {
         @Override
-        protected String process(File input) throws Exception {
-            return new Scanner(input).useDelimiter("\\Z").next();
+        protected String process(StringReader input) throws Exception {
+            return input.toString();
         }
     }
 
@@ -108,11 +94,10 @@ public class TaskChainTest {
 
     @Test
     public void chainTools() {
-        String result = Tasks.prepare(CreateFileTask.class)
-            .named("target/foobar")
+        String result = Tasks.prepare(CreateWriterTask.class)
             .then(DataSampler.class)
             .generateRandomData(123)
-            .then(FileReader.class)
+            .then(MyStringReader.class)
             .execute().await();
 
         assertThat(result, notNullValue());
@@ -121,11 +106,10 @@ public class TaskChainTest {
     @Test
     public void scheduleTools() {
 
-        Tasks.prepare(CreateFileTask.class)
-            .named("target/foobar")
+        Tasks.prepare(CreateWriterTask.class)
             .then(DataSampler.class)
             .generateRandomData(123)
-            .then(FileReader.class)
+            .then(MyStringReader.class)
             .then(ExecutionCounter.class)
             .execute().until(3, TimeUnit.SECONDS, new ExecutionCondition<Integer>() {
                 @Override
@@ -139,14 +123,13 @@ public class TaskChainTest {
 
         exception.expect(TimeoutExecutionException.class);
 
-        Tasks.prepare(CreateFileTask.class)
-            .named("target/foobar")
+        Tasks.prepare(CreateWriterTask.class)
             .then(DataSampler.class)
             .generateRandomData(123)
-            .then(FileReader.class)
+            .then(MyStringReader.class)
             .then(ExecutionCounter.class)
             .execute()
-            .pollEvery(1, TimeUnit.SECONDS).until(3, TimeUnit.SECONDS, new ExecutionCondition<Integer>() {
+            .reexecuteEvery(1, TimeUnit.SECONDS).until(3, TimeUnit.SECONDS, new ExecutionCondition<Integer>() {
                 @Override
                 public boolean satisfiedBy(Integer object) throws ExecutionException {
                     return object >= 5;
@@ -157,12 +140,12 @@ public class TaskChainTest {
     @Test
     public void injectFirstParam() {
 
-        File preparedFile = Tasks.prepare(CreateFileTask.class)
-            .named("target/foobar").execute().await();
+        StringWriter preparedFile = Tasks.prepare(CreateWriterTask.class)
+            .execute().await();
 
         String result = Tasks.chain(preparedFile, DataSampler.class)
             .generateRandomData(123)
-            .then(FileReader.class)
+            .then(MyStringReader.class)
             .execute()
             .await();
 

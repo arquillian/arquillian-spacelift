@@ -19,21 +19,46 @@ package org.arquillian.spacelift.tool.impl;
 import java.util.List;
 
 import org.arquillian.spacelift.SpaceliftBootstrap;
+import org.arquillian.spacelift.execution.ExecutionServiceFactory;
+import org.arquillian.spacelift.execution.impl.DefaultExecutionServiceFactory;
+import org.arquillian.spacelift.execution.impl.ExecutionServiceCreator;
 import org.arquillian.spacelift.tool.ToolRegistry;
 import org.arquillian.spacelift.tool.basic.DownloadTool;
+import org.jboss.arquillian.core.api.annotation.ApplicationScoped;
+import org.jboss.arquillian.core.spi.ServiceLoader;
 import org.jboss.arquillian.core.spi.context.ApplicationContext;
 import org.jboss.arquillian.test.test.AbstractTestTestBase;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 
 import static org.junit.Assert.assertThat;
 
+@RunWith(MockitoJUnitRunner.class)
 public class ToolRegistryTest extends AbstractTestTestBase {
+
+    @Mock
+    private ServiceLoader serviceLoader;
+
+    @org.junit.Before
+    public void setMocks() {
+
+        Mockito.when(serviceLoader.onlyOne(ExecutionServiceFactory.class))
+            .thenReturn(new DefaultExecutionServiceFactory());
+        Mockito.when(serviceLoader.onlyOne(ExecutionServiceFactory.class, DefaultExecutionServiceFactory.class))
+            .thenReturn(new DefaultExecutionServiceFactory());
+
+        bind(ApplicationScoped.class, ServiceLoader.class, serviceLoader);
+    }
 
     @Override
     protected void addExtensions(List<Class<?>> extensions) {
+        extensions.add(ExecutionServiceCreator.class);
         extensions.add(ToolRegistrar.class);
     }
 

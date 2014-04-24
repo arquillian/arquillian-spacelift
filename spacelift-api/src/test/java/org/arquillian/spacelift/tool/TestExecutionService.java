@@ -126,7 +126,7 @@ class TestExecutionService implements ExecutionService {
         }
 
         @Override
-        public Execution<RESULT> pollEvery(long interval, TimeUnit unit) {
+        public Execution<RESULT> reexecuteEvery(long interval, TimeUnit unit) {
             this.pollInterval = interval;
             this.pollUnit = unit;
             return this;

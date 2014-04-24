@@ -16,20 +16,19 @@
  */
 package org.arquillian.spacelift.process.impl;
 
-import java.io.BufferedOutputStream;
-import java.io.InputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.arquillian.spacelift.execution.Execution;
 import org.arquillian.spacelift.execution.ExecutionCondition;
 import org.arquillian.spacelift.execution.ExecutionException;
-import org.arquillian.spacelift.execution.Sentence;
 import org.arquillian.spacelift.execution.TimeoutExecutionException;
 import org.arquillian.spacelift.execution.impl.ShutdownHooks;
-import org.arquillian.spacelift.process.ProcessDetails;
 
 /**
  * Representation of a process execution
@@ -37,28 +36,42 @@ import org.arquillian.spacelift.process.ProcessDetails;
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
  *
  */
-public class ProcessBasedExecution implements Execution<ProcessDetails> {
+public class ProcessBasedExecution<RESULT> implements Execution<RESULT> {
+    private static final Logger log = Logger.getLogger(ProcessBasedExecution.class.getName());
+
+    private final Execution<RESULT> processFutureExecution;
+    private final ProcessReference processReference;
+    private final String processName;
+    private final List<Integer> allowedExitCodes;
 
     private boolean shouldBeFinished;
-    private final ProcessDetails processDetails;
-    private final Process process;
 
     /**
      * Creates a process execution, add a name to the process
      *
-     * @param process
+     * @param processFutureExecution
      * @param processName
      */
-    public ProcessBasedExecution(Process process, String processName) {
-        this.process = process;
-        this.processDetails = new ProcessDetailsImpl(process, processName);
-
+    public ProcessBasedExecution(Execution<RESULT> processFutureExecution, ProcessReference processReference, String processName, List<Integer> allowedExitCodes) {
+        this.processFutureExecution = processFutureExecution;
+        this.processReference = processReference;
+        this.processName = processName;
+        this.allowedExitCodes = new ArrayList<Integer>(allowedExitCodes);
     }
 
     @Override
     public boolean isFinished() {
+
+        // if process is marked as finished, consider it so
+        if (isMarkedAsFinished()) {
+            return true;
+        }
+
         try {
-            process.exitValue();
+            if (!processReference.isInitialized()) {
+                return false;
+            }
+            processReference.getProcess().exitValue();
             return true;
         } catch (IllegalThreadStateException e) {
             return false;
@@ -71,106 +84,89 @@ public class ProcessBasedExecution implements Execution<ProcessDetails> {
     }
 
     @Override
-    public Execution<ProcessDetails> terminate() throws ExecutionException {
-        process.destroy();
-        try {
-            process.waitFor();
-        } catch (InterruptedException e) {
-            throw new ExecutionException(e,
-                "Interrupted while waiting for {0} to be terminated",
-                processDetails.getProcessName());
+    public Execution<RESULT> terminate() throws ExecutionException {
+
+        // if process has not yet started, terminate Future that would lead to its creation
+        if (!processReference.isInitialized()) {
+            processFutureExecution.terminate();
+            return markAsFinished();
         }
+
+        processReference.getProcess().destroy();
+        try {
+            processReference.getProcess().waitFor();
+        } catch (InterruptedException e) {
+            log.log(Level.WARNING, "Ignoring Interuption Exception while terminating the process {0}", processName);
+        }
+
+        // close STDIN of the process, if any
+        OutputStream ostream = processReference.getProcess().getOutputStream();
+        try {
+            if (ostream != null) {
+                ostream.flush();
+                ostream.close();
+            }
+        } catch (IOException e) {
+            log.log(Level.WARNING, "Ignoring IO exception while terminating the process {0}", processName);
+        }
+
         return this;
     }
 
     @Override
-    public Execution<ProcessDetails> markAsFinished() {
+    public Execution<RESULT> markAsFinished() {
         this.shouldBeFinished = true;
         return this;
     }
 
     @Override
-    public Execution<ProcessDetails> registerShutdownHook() {
+    public Execution<RESULT> registerShutdownHook() {
         ShutdownHooks.addHookFor(this);
         return this;
     }
 
     @Override
     public boolean hasFailed() {
-        // FIXME there are likely better ways how to do this
         if (!isFinished()) {
-            throw new IllegalStateException("Process " + processDetails.getProcessName() + " is not yet finished");
+            throw new IllegalStateException("Process " + processName
+                + " is not yet finished, cannot determine whether it failed.");
         }
 
-        return process.exitValue() != 0;
+        // check whether we have specified exit value and if not adhere to defaults
+        if (allowedExitCodes.isEmpty()) {
+            return processReference.getProcess().exitValue() != 0;
+        }
+
+        return !allowedExitCodes.contains(processReference.getProcess().exitValue());
     }
 
-    private static class ProcessDetailsImpl implements ProcessDetails {
-
-        private final String processName;
-        private final List<String> output;
-
-        private final OutputStream ostream;
-        private final InputStream istream;
-
-        public ProcessDetailsImpl(Process process, String processName) {
-            this.processName = processName;
-            this.output = new ArrayList<String>();
-            this.ostream = new BufferedOutputStream(process.getOutputStream());
-            this.istream = process.getInputStream();
+    @Override
+    public RESULT await() throws ExecutionException {
+        if (processFutureExecution.hasFailed()) {
+            return null;
         }
-
-        @Override
-        public String getProcessName() {
-            return processName;
-        }
-
-        @Override
-        public List<String> getOutput() {
-            return output;
-        }
-
-        @Override
-        public OutputStream getStdin() {
-            return ostream;
-        }
-
-        @Override
-        public InputStream getStdoutAndStdErr() {
-            return istream;
-        }
-
-        @Override
-        public ProcessDetails appendOutput(Sentence line) {
-            output.add(line.toString());
-            return this;
-        }
+        return processFutureExecution.await();
 
     }
 
     @Override
-    public ProcessDetails await() throws ExecutionException {
-        // TODO Auto-generated method stub
-        return null;
+    public RESULT awaitAtMost(long timeout, TimeUnit unit) throws ExecutionException, TimeoutExecutionException {
+        if (processFutureExecution.hasFailed()) {
+            return null;
+        }
+        return processFutureExecution.awaitAtMost(timeout, unit);
     }
 
     @Override
-    public ProcessDetails awaitAtMost(long timeout, TimeUnit unit) throws ExecutionException, TimeoutExecutionException {
-        // TODO Auto-generated method stub
-        return null;
+    public Execution<RESULT> reexecuteEvery(long step, TimeUnit unit) {
+        processFutureExecution.reexecuteEvery(step, unit);
+        return this;
     }
 
     @Override
-    public Execution<ProcessDetails> pollEvery(long step, TimeUnit unit) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+    public RESULT until(long timeout, TimeUnit unit, ExecutionCondition<RESULT> condition) throws ExecutionException,
+        TimeoutExecutionException {
 
-    @Override
-    public ProcessDetails until(long timeout, TimeUnit unit, ExecutionCondition<ProcessDetails> condition)
-        throws ExecutionException, TimeoutExecutionException {
-        // TODO Auto-generated method stub
-        return null;
+        return processFutureExecution.until(timeout, unit, condition);
     }
-
 }

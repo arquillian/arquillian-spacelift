@@ -14,10 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.arquillian.spacelift.execution;
+package org.arquillian.spacelift.process;
 
 /**
- * A transformer for execution output.
+ * A transformer for process execution output.
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
  *

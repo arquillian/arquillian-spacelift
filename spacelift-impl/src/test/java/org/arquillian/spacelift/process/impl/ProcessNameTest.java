@@ -23,9 +23,9 @@ import java.nio.charset.Charset;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.arquillian.spacelift.execution.ExecutionException;
-import org.arquillian.spacelift.execution.ExecutionInteractionBuilder;
 import org.arquillian.spacelift.execution.Tasks;
 import org.arquillian.spacelift.execution.impl.DefaultExecutionServiceFactory;
+import org.arquillian.spacelift.process.ExecutionInteractionBuilder;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.BeforeClass;
@@ -51,7 +51,7 @@ public class ProcessNameTest {
     public void invalidCommand() {
         exception.expect(ExecutionException.class);
 
-        Tasks.prepare(CommandTool.class).programName("foo-invalid-command").parameters("-bar", "-baz").execute();
+        Tasks.prepare(CommandTool.class).programName("foo-invalid-command").parameters("-bar", "-baz").execute().await();
     }
 
     @Test
@@ -63,8 +63,16 @@ public class ProcessNameTest {
         exception.expect(ExecutionException.class);
         exception.expectMessage(containsString("java -bar -baz"));
 
-        Tasks.prepare(CommandTool.class).programName("java").parameters("-bar", "-baz").execute();
+        Tasks.prepare(CommandTool.class).programName("java").parameters("-bar", "-baz").execute().await();
 
+    }
+
+    @Test
+    public void invalidResultMarkAsPassing() {
+
+        // run only on linux
+        Assume.assumeThat(SystemUtils.IS_OS_LINUX, is(true));
+        Tasks.prepare(CommandTool.class).programName("java").parameters("-bar", "-baz").shouldExitWith(1).execute().await();
     }
 
     @Test
@@ -82,7 +90,7 @@ public class ProcessNameTest {
 
             Tasks.prepare(CommandTool.class).programName("java").parameters("-bar", "-baz")
                 .interaction(new ExecutionInteractionBuilder().prefix("").outputs(".*"))
-                .execute();
+                .execute().await();
 
         } catch (ExecutionException e) {
             // ignore
@@ -106,7 +114,7 @@ public class ProcessNameTest {
 
             Tasks.prepare(CommandTool.class).programName("java").parameters("-bar", "-baz")
                 .interaction(new ExecutionInteractionBuilder().outputs(".*"))
-                .execute();
+                .execute().await();
 
         } catch (ExecutionException e) {
             // ignore

@@ -16,8 +16,6 @@
  */
 package org.arquillian.spacelift.process;
 
-import org.arquillian.spacelift.execution.OutputTransformer;
-import org.arquillian.spacelift.execution.Sentence;
 
 /**
  * A default implementation of process output transformer that adds a process name

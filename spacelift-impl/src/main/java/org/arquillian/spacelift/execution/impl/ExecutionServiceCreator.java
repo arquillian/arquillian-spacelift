@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 import org.arquillian.spacelift.SpaceliftBootstrap;
 import org.arquillian.spacelift.execution.ExecutionService;
 import org.arquillian.spacelift.execution.ExecutionServiceFactory;
+import org.arquillian.spacelift.execution.Tasks;
 import org.arquillian.spacelift.process.event.ExecutionServiceInitialized;
 import org.jboss.arquillian.core.api.Event;
 import org.jboss.arquillian.core.api.Instance;
@@ -55,6 +56,10 @@ public class ExecutionServiceCreator {
 
         ExecutionServiceFactory factory = serviceLoader.get().onlyOne(ExecutionServiceFactory.class,
             DefaultExecutionServiceFactory.class);
+
+        log.log(Level.FINE, "Registering ExecutionServiceFactory for Tasks creation");
+
+        Tasks.setDefaultExecutionServiceFactory(factory);
 
         log.log(Level.FINE, "Retrieving ExecutionService instance from factory");
 

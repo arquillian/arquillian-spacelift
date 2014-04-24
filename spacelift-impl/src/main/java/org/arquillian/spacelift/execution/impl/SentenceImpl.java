@@ -16,7 +16,7 @@
  */
 package org.arquillian.spacelift.execution.impl;
 
-import org.arquillian.spacelift.execution.Sentence;
+import org.arquillian.spacelift.process.Sentence;
 
 /**
  * Represents a line on standard output or standard error output

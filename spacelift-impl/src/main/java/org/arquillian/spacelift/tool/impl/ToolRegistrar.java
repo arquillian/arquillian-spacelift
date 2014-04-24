@@ -19,7 +19,7 @@ package org.arquillian.spacelift.tool.impl;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.arquillian.spacelift.SpaceliftBootstrap;
+import org.arquillian.spacelift.process.event.ExecutionServiceInitialized;
 import org.arquillian.spacelift.tool.ToolRegistry;
 import org.arquillian.spacelift.tool.basic.DownloadTool;
 import org.arquillian.spacelift.tool.basic.UnzipTool;
@@ -42,7 +42,7 @@ public class ToolRegistrar {
     @ApplicationScoped
     private InstanceProducer<ToolRegistry> toolRegistry;
 
-    public void createProcessExecutor(@Observes SpaceliftBootstrap event) {
+    public void createProcessExecutor(@Observes ExecutionServiceInitialized event) {
 
         ToolRegistry registry = new ToolRegistryImpl();
 

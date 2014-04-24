@@ -1,6 +1,6 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2013, Red Hat, Inc. and/or its affiliates, and individual
+ * Copyright 2014, Red Hat, Inc. and/or its affiliates, and individual
  * contributors by the @authors tag. See the copyright.txt in the
  * distribution for a full listing of individual contributors.
  *
@@ -14,50 +14,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.arquillian.spacelift.execution;
+package org.arquillian.spacelift.process;
 
 import java.io.IOException;
 
+import org.arquillian.spacelift.execution.Execution;
+
 /**
- * Represents an non-interactive user input to a sentence. Answer automatically appends new line character
+ * Represents an answer that causes process to be treated as finished
  *
- * @author <a href="mailto:kpiwko@redhat.com">Karel Piwko</a>
+ * @see ProcessExecution#isMarkedAsFinished()
+ *
+ * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
  *
  */
-public class TextAnswer implements Answer {
+public enum TerminateAnswer implements Answer {
 
-    private final String answerText;
-
-    public TextAnswer(String answerText) {
-        this.answerText = answerText;
-    }
+    INSTANCE;
 
     @Override
     public int length() {
-        return answerText.length();
+        return 0;
     }
 
     @Override
     public char charAt(int index) {
-        return answerText.charAt(index);
+        return 0;
     }
 
     @Override
     public CharSequence subSequence(int start, int end) {
-        return answerText.subSequence(start, end);
+        return null;
     }
 
     @Override
     public <RETURNTYPE> void reply(Execution<RETURNTYPE> execution) throws IOException {
-        // OutputStream ostream = execution.getStdin();
-        // ostream.flush();
-        // ostream.write(answerText.getBytes());
-        // ostream.flush();
-
-    }
-
-    @Override
-    public String toString() {
-        return answerText;
+        // mark process as finished just in case something might go wrong while working with streams
+        execution.markAsFinished();
+        execution.terminate();
     }
 }

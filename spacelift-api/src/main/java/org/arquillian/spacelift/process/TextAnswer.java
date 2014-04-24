@@ -14,9 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.arquillian.spacelift.execution;
+package org.arquillian.spacelift.process;
 
 import java.io.IOException;
+
+import org.arquillian.spacelift.execution.Execution;
 
 /**
  * Represents an non-interactive user input to a sentence. Answer automatically appends new line character
@@ -24,12 +26,40 @@ import java.io.IOException;
  * @author <a href="mailto:kpiwko@redhat.com">Karel Piwko</a>
  *
  */
-public interface Answer extends CharSequence {
+public class TextAnswer implements Answer {
 
-    /**
-     * Reply to the current process execution with the answer
-     *
-     * @param execution
-     */
-    <RETURNTYPE> void reply(Execution<RETURNTYPE> execution) throws IOException;
+    private final String answerText;
+
+    public TextAnswer(String answerText) {
+        this.answerText = answerText;
+    }
+
+    @Override
+    public int length() {
+        return answerText.length();
+    }
+
+    @Override
+    public char charAt(int index) {
+        return answerText.charAt(index);
+    }
+
+    @Override
+    public CharSequence subSequence(int start, int end) {
+        return answerText.subSequence(start, end);
+    }
+
+    @Override
+    public <RETURNTYPE> void reply(Execution<RETURNTYPE> execution) throws IOException {
+        // OutputStream ostream = execution.getStdin();
+        // ostream.flush();
+        // ostream.write(answerText.getBytes());
+        // ostream.flush();
+
+    }
+
+    @Override
+    public String toString() {
+        return answerText;
+    }
 }

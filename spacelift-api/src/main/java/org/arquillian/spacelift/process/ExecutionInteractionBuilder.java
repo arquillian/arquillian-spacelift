@@ -14,16 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.arquillian.spacelift.execution;
+package org.arquillian.spacelift.process;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
-
-import org.arquillian.spacelift.execution.ExecutionInteraction;
-import org.arquillian.spacelift.process.ProcessNamePrefixOutputTransformer;
 
 /**
  * Builder API for process interaction. It uses regular expression to match allowed and error output.

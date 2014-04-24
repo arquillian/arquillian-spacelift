@@ -1,5 +1,10 @@
 package org.arquillian.spacelift.execution;
 
+/**
+ *
+ * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
+ *
+ */
 public class Tasks {
 
     private static class ExecutionServiceFactoryHolder {

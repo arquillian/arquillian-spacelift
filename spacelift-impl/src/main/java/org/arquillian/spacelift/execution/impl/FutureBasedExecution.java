@@ -91,7 +91,7 @@ class FutureBasedExecution<RESULT> implements Execution<RESULT> {
     }
 
     @Override
-    public Execution<RESULT> pollEvery(long step, TimeUnit unit) {
+    public Execution<RESULT> reexecuteEvery(long step, TimeUnit unit) {
         this.pollInterval = step;
         this.pollUnit = unit;
         return this;
@@ -136,11 +136,16 @@ class FutureBasedExecution<RESULT> implements Execution<RESULT> {
 
     private static ExecutionException unwrapException(Throwable cause, String messageFormat, Object... parameters) {
         Throwable current = cause;
+        ExecutionException deepestCause = null;
         while (current != null) {
             if (current instanceof ExecutionException) {
-                return ((ExecutionException) current).prependMessage(messageFormat, parameters);
+                deepestCause = (ExecutionException) current;
             }
             current = current.getCause();
+        }
+
+        if (deepestCause != null) {
+            return deepestCause.prependMessage(messageFormat, parameters);
         }
 
         return new ExecutionException(cause, messageFormat, parameters);
