@@ -1,8 +1,8 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2013, Red Hat, Inc. and/or its affiliates, and individual
- * contributors by the @authors tag. See the copyright.txt in the
- * distribution for a full listing of individual contributors.
+ * Copyright 2014, Red Hat Middleware LLC, and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import org.arquillian.spacelift.execution.TimeoutExecutionException;
 import org.arquillian.spacelift.execution.impl.ShutdownHooks;
 
 /**
- * Representation of a process execution
+ * Representation of a process execution.
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
  *

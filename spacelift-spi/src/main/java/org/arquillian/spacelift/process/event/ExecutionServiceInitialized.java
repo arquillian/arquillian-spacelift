@@ -25,8 +25,4 @@ import org.arquillian.spacelift.execution.ExecutionService;
  *
  */
 public class ExecutionServiceInitialized {
-
-    public ExecutionServiceInitialized() {
-    }
-
 }

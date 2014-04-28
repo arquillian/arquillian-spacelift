@@ -20,7 +20,7 @@ import org.arquillian.spacelift.execution.ExecutionService;
 import org.arquillian.spacelift.execution.ExecutionServiceFactory;
 
 /**
- * Default process execution factory
+ * Default process execution factory.
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
  *

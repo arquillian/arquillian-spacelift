@@ -22,7 +22,16 @@ import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.arquillian.core.api.annotation.Observes;
 
 /**
- * Entry point for Arquillian Spacelift extension
+ * Entry point for Arquillian Spacelift extension.<br>
+ * <br>
+ * Observes:
+ * <ul>
+ * <li>{@link ArquillianDescriptor}</li>
+ * </ul>
+ * Fires:
+ * <ul>
+ * <li>{@link SpaceliftBootstrap}</li>
+ * </ul>
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
  *
@@ -32,7 +41,7 @@ public class ArquillianSpaceliftBooter {
     @Inject
     private Event<SpaceliftBootstrap> spaceliftBootstrap;
 
-    public void createProcessExecutor(@Observes ArquillianDescriptor event) {
+    public void onArquillianDescriptor(@Observes ArquillianDescriptor event) {
         spaceliftBootstrap.fire(new SpaceliftBootstrap());
     }
 }

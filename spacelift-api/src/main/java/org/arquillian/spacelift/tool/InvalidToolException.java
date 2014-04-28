@@ -18,6 +18,11 @@ package org.arquillian.spacelift.tool;
 
 import java.text.MessageFormat;
 
+/**
+ *
+ * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
+ *
+ */
 public class InvalidToolException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;

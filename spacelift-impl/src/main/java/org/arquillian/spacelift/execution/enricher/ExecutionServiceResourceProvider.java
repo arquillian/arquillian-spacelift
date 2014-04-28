@@ -33,7 +33,7 @@ import org.jboss.arquillian.test.spi.enricher.resource.ResourceProvider;
 public class ExecutionServiceResourceProvider implements ResourceProvider {
 
     @Inject
-    Instance<ExecutionService> executionService;
+    private Instance<ExecutionService> executionService;
 
     @Override
     public boolean canProvide(Class<?> type) {

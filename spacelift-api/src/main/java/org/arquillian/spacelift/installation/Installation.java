@@ -21,19 +21,53 @@ import java.util.List;
 
 import org.arquillian.spacelift.tool.Tool;
 
+/**
+ *
+ * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
+ *
+ */
 public interface Installation {
 
+    /**
+     *
+     * @return
+     */
     String id();
 
+    /**
+     *
+     * @param operationSystem
+     * @return
+     */
     boolean supports(String operationSystem);
 
+    /**
+     *
+     * @return
+     */
     boolean isInstalled();
 
+    /**
+     *
+     * @return
+     */
     Collection<Class<? extends Tool<?, ?>>> provides();
 
+    /**
+     *
+     * @return
+     */
     Collection<Class<? extends Tool<?, ?>>> dependsOn();
 
+    /**
+     *
+     * @return
+     */
     List<InstallationStep> install();
 
+    /**
+     *
+     * @return
+     */
     InstallationSource getSource();
 }

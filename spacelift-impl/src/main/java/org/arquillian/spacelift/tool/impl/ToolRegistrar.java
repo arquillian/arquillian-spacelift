@@ -23,13 +23,29 @@ import org.arquillian.spacelift.process.event.ExecutionServiceInitialized;
 import org.arquillian.spacelift.tool.ToolRegistry;
 import org.arquillian.spacelift.tool.basic.DownloadTool;
 import org.arquillian.spacelift.tool.basic.UnzipTool;
+import org.arquillian.spacelift.tool.event.ToolRegistryInitialized;
+import org.jboss.arquillian.core.api.Event;
 import org.jboss.arquillian.core.api.InstanceProducer;
 import org.jboss.arquillian.core.api.annotation.ApplicationScoped;
 import org.jboss.arquillian.core.api.annotation.Inject;
 import org.jboss.arquillian.core.api.annotation.Observes;
 
 /**
- * Creator of {@link ToolRegistry}
+ * Creator of {@link ToolRegistry}.<br>
+ * <br>
+ * Observes:
+ * <ul>
+ * <li>{@link ExecutionServiceInitialized}</li>
+ * </ul>
+ * Fires:
+ * <ul>
+ * <li>{@link ToolRegistryInitialized}</li>
+ * </ul>
+ * Registers:
+ * <ul>
+ * <li>{@link DownloadTool}</li>
+ * <li>{@link UnzipTool}</li>
+ * </ul>
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
  *
@@ -42,7 +58,10 @@ public class ToolRegistrar {
     @ApplicationScoped
     private InstanceProducer<ToolRegistry> toolRegistry;
 
-    public void createProcessExecutor(@Observes ExecutionServiceInitialized event) {
+    @Inject
+    private Event<ToolRegistryInitialized> toolRegistryInitializedEvent;
+
+    public void createToolRegistry(@Observes ExecutionServiceInitialized event) {
 
         ToolRegistry registry = new ToolRegistryImpl();
 
@@ -51,5 +70,7 @@ public class ToolRegistrar {
 
         registry.register(DownloadTool.class);
         registry.register(UnzipTool.class);
+
+        toolRegistryInitializedEvent.fire(new ToolRegistryInitialized());
     }
 }

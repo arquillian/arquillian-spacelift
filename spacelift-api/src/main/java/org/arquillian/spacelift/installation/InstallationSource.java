@@ -16,9 +16,20 @@
  */
 package org.arquillian.spacelift.installation;
 
+/**
+ *
+ * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
+ *
+ */
 public interface InstallationSource {
 
+    /**
+     * @return true if installation is cached, false otherwise
+     */
     boolean isCached();
 
+    /**
+     * Dowloads installation from some source.
+     */
     void download();
 }

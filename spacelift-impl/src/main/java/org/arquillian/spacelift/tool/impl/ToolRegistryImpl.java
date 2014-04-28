@@ -32,7 +32,6 @@ import org.arquillian.spacelift.tool.ToolRegistry;
  * Implementation of tool registry. This registry creates a new tool instance per each {@link ToolRegistry#find(Class)} or
  * {@link ToolRegistry#find(String)} call.
  *
- *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
  *
  */

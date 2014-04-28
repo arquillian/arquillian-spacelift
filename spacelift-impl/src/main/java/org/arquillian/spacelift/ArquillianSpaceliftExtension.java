@@ -25,6 +25,7 @@ import org.jboss.arquillian.core.spi.LoadableExtension;
 import org.jboss.arquillian.test.spi.enricher.resource.ResourceProvider;
 
 /**
+ * Spacelift extension registration.
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
  *
@@ -33,7 +34,6 @@ public class ArquillianSpaceliftExtension implements LoadableExtension {
 
     @Override
     public void register(ExtensionBuilder extension) {
-
         extension.service(ExecutionServiceFactory.class, DefaultExecutionServiceFactory.class);
         extension.service(ResourceProvider.class, ExecutionServiceResourceProvider.class);
         extension.observer(ExecutionServiceCreator.class);

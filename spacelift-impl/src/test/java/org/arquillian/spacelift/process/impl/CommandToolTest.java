@@ -5,7 +5,6 @@ import java.io.UnsupportedEncodingException;
 import org.apache.commons.lang3.SystemUtils;
 import org.arquillian.spacelift.execution.Execution;
 import org.arquillian.spacelift.execution.ExecutionException;
-import org.arquillian.spacelift.execution.Task;
 import org.arquillian.spacelift.execution.Tasks;
 import org.arquillian.spacelift.execution.impl.DefaultExecutionServiceFactory;
 import org.arquillian.spacelift.process.ProcessDetails;

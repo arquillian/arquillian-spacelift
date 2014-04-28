@@ -18,6 +18,11 @@ package org.arquillian.spacelift.installation;
 
 import java.io.File;
 
+/**
+ *
+ * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
+ *
+ */
 public interface InstallationContext {
 
     File getWorkspace();

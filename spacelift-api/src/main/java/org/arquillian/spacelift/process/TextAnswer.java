@@ -51,6 +51,7 @@ public class TextAnswer implements Answer {
 
     @Override
     public <RETURNTYPE> void reply(Execution<RETURNTYPE> execution) throws IOException {
+        // TODO
         // OutputStream ostream = execution.getStdin();
         // ostream.flush();
         // ostream.write(answerText.getBytes());

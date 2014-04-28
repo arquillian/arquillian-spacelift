@@ -16,8 +16,18 @@
  */
 package org.arquillian.spacelift.installation;
 
+/**
+ *
+ * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
+ *
+ */
 public interface InstallationStep {
 
+    /**
+     *
+     * @param previousState
+     * @return
+     */
     InstallationContext perform(InstallationContext previousState);
 
 }

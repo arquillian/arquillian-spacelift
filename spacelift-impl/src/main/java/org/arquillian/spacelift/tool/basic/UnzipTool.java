@@ -41,10 +41,20 @@ public class UnzipTool extends Tool<File, File> {
         return Arrays.asList("unzip");
     }
 
+    /**
+     *
+     * @param pathToDestination destination where to unzip a file
+     * @return
+     */
     public UnzipTool toDir(String pathToDestination) {
         return toDir(new File(pathToDestination));
     }
 
+    /**
+     *
+     * @param destination destination where to unzip a file
+     * @return
+     */
     public UnzipTool toDir(File destination) {
         this.dest = destination;
         return this;

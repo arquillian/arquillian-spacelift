@@ -19,7 +19,7 @@ package org.arquillian.spacelift.execution;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Representation of currently running execution that promises to return {@code RESULT} somewhen in the future
+ * Representation of currently running execution that promises to return {@code RESULT} somewhen in the future.
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
  *
@@ -28,35 +28,35 @@ import java.util.concurrent.TimeUnit;
 public interface Execution<RESULT> {
 
     /**
-     * Marks execution as finished. This means that we've discovered that it did the work we expected.
+     * Marks execution as finished. This means that we have discovered that it did the work we expected.
      *
      * @return
      */
     Execution<RESULT> markAsFinished();
 
     /**
-     * Registers a shutdown hook that is applied in case program is still running when JVM is going to terminate
+     * Registers a shutdown hook that is applied in case program is still running when JVM is going to terminate.
      */
     Execution<RESULT> registerShutdownHook();
 
     /**
-     * Checks whether process is marked as finished
+     * Checks whether process is marked as finished.
      *
-     * @return
+     * @return true if execution is marked as finished, false otherwise
      */
     boolean isMarkedAsFinished();
 
     /**
      * Checks whether process has finished
      *
-     * @return
+     * @return true if execution has finished, false otherwise
      */
     boolean isFinished();
 
     /**
-     * Checks whether execution failed
+     * Checks whether execution failed.
      *
-     * @return
+     * @return true if execution has failed, false otherwise
      * @throws IllegalStateException If execution status could not yet be determined
      */
     boolean hasFailed() throws IllegalStateException;
@@ -64,7 +64,7 @@ public interface Execution<RESULT> {
     /**
      * Immediately terminates execution evaluation.
      *
-     * @return
+     * @return immediate execution evaluation
      * @throws ExecutionException
      */
     Execution<RESULT> terminate() throws ExecutionException;
@@ -72,13 +72,13 @@ public interface Execution<RESULT> {
     /**
      * Blocks execution of current thread, waiting for the execution to be finished.
      *
-     * @return Result of execution
+     * @return result of execution
      * @throws ExecutionException
      */
     RESULT await() throws ExecutionException;
 
     /**
-     * Blocks execution of current thread, waiting for the execution to be finished
+     * Blocks execution of current thread, waiting for the execution to be finished.
      *
      * @param timeout the timeout
      * @param unit timeout unit

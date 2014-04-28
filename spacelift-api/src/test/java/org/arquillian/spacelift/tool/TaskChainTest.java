@@ -13,7 +13,6 @@ import org.arquillian.spacelift.execution.ExecutionServiceFactory;
 import org.arquillian.spacelift.execution.Task;
 import org.arquillian.spacelift.execution.Tasks;
 import org.arquillian.spacelift.execution.TimeoutExecutionException;
-import org.arquillian.spacelift.process.CommandTest;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;

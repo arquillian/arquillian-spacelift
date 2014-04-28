@@ -52,7 +52,7 @@ public class ExecutionServiceCreator {
     @Inject
     private Event<ExecutionServiceInitialized> executionServiceInitialized;
 
-    public void createProcessExecutor(@Observes SpaceliftBootstrap event) {
+    public void createExecutionService(@Observes SpaceliftBootstrap event) {
 
         ExecutionServiceFactory factory = serviceLoader.get().onlyOne(ExecutionServiceFactory.class,
             DefaultExecutionServiceFactory.class);
