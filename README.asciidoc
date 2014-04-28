@@ -42,7 +42,7 @@ How do I create new tasks?::
 Tasks.prepare(DownloadTool.class)
 ----
 +
-    Once task is created, you get access to API defined by task class itself.
+Once task is created, you get access to API defined by task class itself.
 I have task created. How do I execute it?::
     Just call +execute()+. This will asynchronously send task to execution service that will be responsible for its execution.
 How do I run more tasks together?::
