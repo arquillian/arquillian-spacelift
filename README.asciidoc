@@ -49,7 +49,7 @@ How do I run more tasks together?::
     Task can be chained together by using +then(NextTaskName.class)+ call. There is following rules for chaining tasks: Input of next task must much output of current task. 
     If next task input is type of +Object+, it can be chained to any task. +Object+ usually means that you don't care about input of next task at all.
 I already have input for a task. How do I pass it to the task?::
-    Just call Tasks.chain(input, NextTaskName.class)
+    Just call +Tasks.chain(input, NextTaskName.class)+
 How do I create my own tasks?::
     Extend abstract class +Task+ and implement +process(INPUT)+ method.
 
@@ -76,7 +76,7 @@ in order to install additional stuff to your test environment.
 How do I create a tool?::
     You can use +Tasks.prepare(TheTool.class)+
 How do I create my own tool?::
-    Extends abstract class +Tool+.
+    Extends abstract class +Tool+ and implement +process(INPUT)+ and +aliases()+ methods.
 
 Current tools are:
 
