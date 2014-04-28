@@ -17,10 +17,11 @@
 package org.arquillian.spacelift.execution;
 
 /**
+ * A condition to match {@see Execution} result.
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
  *
- * @param <RESULT>
+ * @param <RESULT> Type of the execution result
  */
 public interface ExecutionCondition<RESULT> {
 
@@ -28,7 +29,8 @@ public interface ExecutionCondition<RESULT> {
      * Evaluates a condition using {@code object}
      *
      * @param object Object to be inspected
-     * @return
+     * @return {@code true} if object matches condition, {@code false} otherwise
+     * @throws ExecutionException if execution of the result failed
      */
     boolean satisfiedBy(RESULT object) throws ExecutionException;
 

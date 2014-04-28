@@ -28,10 +28,12 @@ import org.arquillian.spacelift.execution.ExecutionService;
 import org.arquillian.spacelift.execution.TimeoutExecutionException;
 
 /**
+ * Execution that is based on {@see Future} and causes thread to block if await is called.
+ *
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
  *
- * @param <RESULT>
+ * @param <RESULT> Deferred result of the execution
  */
 class FutureBasedExecution<RESULT> implements Execution<RESULT> {
 

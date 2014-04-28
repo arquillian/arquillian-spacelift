@@ -25,7 +25,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.arquillian.spacelift.execution.ExecutionException;
 import org.arquillian.spacelift.execution.Tasks;
 import org.arquillian.spacelift.execution.impl.DefaultExecutionServiceFactory;
-import org.arquillian.spacelift.process.ExecutionInteractionBuilder;
+import org.arquillian.spacelift.process.ProcessInteractionBuilder;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.BeforeClass;
@@ -89,7 +89,7 @@ public class ProcessNameTest {
             exception.expectMessage(containsString("java -bar -baz"));
 
             Tasks.prepare(CommandTool.class).programName("java").parameters("-bar", "-baz")
-                .interaction(new ExecutionInteractionBuilder().prefix("").outputs(".*"))
+                .interaction(new ProcessInteractionBuilder().prefix("").outputs(".*"))
                 .execute().await();
 
         } catch (ExecutionException e) {
@@ -113,7 +113,7 @@ public class ProcessNameTest {
             exception.expectMessage(containsString("java -bar -baz"));
 
             Tasks.prepare(CommandTool.class).programName("java").parameters("-bar", "-baz")
-                .interaction(new ExecutionInteractionBuilder().outputs(".*"))
+                .interaction(new ProcessInteractionBuilder().outputs(".*"))
                 .execute().await();
 
         } catch (ExecutionException e) {

@@ -33,7 +33,7 @@ import org.jboss.arquillian.core.api.annotation.Observes;
 import org.jboss.arquillian.core.spi.ServiceLoader;
 
 /**
- * Initialization of {@link ExecutionService}
+ * Initialization of {@link ExecutionService} in Arquillian Spacelift extension
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
  *
@@ -44,7 +44,7 @@ public class ExecutionServiceCreator {
 
     @Inject
     @ApplicationScoped
-    private InstanceProducer<ExecutionService> processExecutorInstance;
+    private InstanceProducer<ExecutionService> executionServiceInstance;
 
     @Inject
     private Instance<ServiceLoader> serviceLoader;
@@ -61,10 +61,10 @@ public class ExecutionServiceCreator {
 
         Tasks.setDefaultExecutionServiceFactory(factory);
 
-        log.log(Level.FINE, "Retrieving ExecutionService instance from factory");
+        log.log(Level.FINE, "Retrieving ExecutionService instance from factory {0}", factory.getClass().getName());
 
         ExecutionService service = factory.getExecutionServiceInstance();
-        processExecutorInstance.set(service);
+        executionServiceInstance.set(service);
 
         executionServiceInitialized.fire(new ExecutionServiceInitialized());
     }

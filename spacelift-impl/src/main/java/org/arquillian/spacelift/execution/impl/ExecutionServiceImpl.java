@@ -33,7 +33,7 @@ import org.arquillian.spacelift.execution.ExecutionService;
 import org.arquillian.spacelift.execution.TimeoutExecutionException;
 
 /**
- * Executor service which is able to execute external process as well as callables
+ * Default execution service implementation. It uses cached threaded pool to execute or schedule callables to be run.
  *
  * @author <a href="mailto:kpiwko@redhat.com">Karel Piwko</a>
  *

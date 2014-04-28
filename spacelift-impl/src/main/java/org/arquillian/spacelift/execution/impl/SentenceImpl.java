@@ -19,7 +19,7 @@ package org.arquillian.spacelift.execution.impl;
 import org.arquillian.spacelift.process.Sentence;
 
 /**
- * Represents a line on standard output or standard error output
+ * Representation a line on standard output or standard error output
  *
  * @author <a href="mailto:kpiwko@redhat.com">Karel Piwko</a>
  *

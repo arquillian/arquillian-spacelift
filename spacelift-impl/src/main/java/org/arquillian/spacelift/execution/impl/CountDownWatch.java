@@ -16,14 +16,10 @@
  */
 package org.arquillian.spacelift.execution.impl;
 
-import java.text.MessageFormat;
-import java.util.EnumSet;
 import java.util.concurrent.TimeUnit;
 
 /**
  * A simple utility to measure time left from an timeout.
- *
- * Note that MICROSECONDS and MILLISECONDS are not supported as time units.
  *
  * @author <a href="mailto:kpiwko@redhat.com">Karel Piwko</a>
  *
@@ -41,11 +37,6 @@ public class CountDownWatch {
      * @param unit timeout unit
      */
     public CountDownWatch(long timeout, TimeUnit unit) {
-
-        if (EnumSet.of(TimeUnit.MICROSECONDS, TimeUnit.MILLISECONDS).contains(unit)) {
-            throw new IllegalArgumentException(MessageFormat.format("Time Unit {0} is not supported", unit));
-        }
-
         this.timeStart = System.currentTimeMillis();
         this.timeout = timeout;
         this.unit = unit;

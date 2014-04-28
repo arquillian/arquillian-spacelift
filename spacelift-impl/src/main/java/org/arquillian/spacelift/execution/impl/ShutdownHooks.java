@@ -19,6 +19,8 @@ package org.arquillian.spacelift.execution.impl;
 import org.arquillian.spacelift.execution.Execution;
 
 /**
+=======
+ * Utility class that registers a shutdown hook for execution.
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
  *
@@ -26,9 +28,9 @@ import org.arquillian.spacelift.execution.Execution;
 public class ShutdownHooks {
 
     /**
-     * Registers a new virtual-machine shutdown hook for {@code execution}.
+     * Register a shutdown hook for {@code execution} that is automatically called if JVM exits
      *
-     * @param execution an execution to add a shutdown hook for
+     * @param execution Execution to be terminated when JVM exits
      */
     public static <RETURNTYPE> void addHookFor(final Execution<RETURNTYPE> execution) {
 

@@ -24,17 +24,17 @@ import java.util.regex.Pattern;
 
 /**
  * Builder API for process interaction. It uses regular expression to match allowed and error output.
- *
- * @see ExecutionInteraction
+ * 
+ * @see ProcessInteraction
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
- *
+ * 
  */
-public class ExecutionInteractionBuilder {
+public class ProcessInteractionBuilder {
 
     /**
      * No interaction instance
      */
-    public static final ExecutionInteraction NO_INTERACTION = new ExecutionInteractionBuilder().build();
+    public static final ProcessInteraction NO_INTERACTION = new ProcessInteractionBuilder().build();
 
     private Map<Pattern, Answer> replyMap;
 
@@ -49,7 +49,7 @@ public class ExecutionInteractionBuilder {
     /**
      * Creates empty interaction builder
      */
-    public ExecutionInteractionBuilder() {
+    public ProcessInteractionBuilder() {
         this.replyMap = new LinkedHashMap<Pattern, Answer>();
         this.allowedOutput = new ArrayList<Pattern>();
         this.errorOutput = new ArrayList<Pattern>();
@@ -59,12 +59,12 @@ public class ExecutionInteractionBuilder {
 
     /**
      * Marks a line that should be considered as a question to be answered. Must be followed by
-     * {@link ExecutionInteractionBuilder#with(String)} call
-     *
+     * {@link ProcessInteractionBuilder#with(String)} call
+     * 
      * @param outputLine The question
      * @return current instance to allow chaining
      */
-    public ExecutionInteractionBuilder replyTo(String outputLine) {
+    public ProcessInteractionBuilder replyTo(String outputLine) {
         if (tuple.question != null) {
             throw new IllegalStateException("Unfinished replyTo().with() sequence, please append with(String) call");
         }
@@ -75,12 +75,12 @@ public class ExecutionInteractionBuilder {
 
     /**
      * Stores an answer for question defined by {@code replyTo} call
-     *
+     * 
      * @param response the answer
      * @return current instance to allow chaining
-     * @see ExecutionInteractionBuilder#replyTo(String)
+     * @see ProcessInteractionBuilder#replyTo(String)
      */
-    public ExecutionInteractionBuilder with(String response) {
+    public ProcessInteractionBuilder with(String response) {
         if (tuple.question == null) {
             throw new IllegalStateException("Unfinished replyTo().with() sequence, please prepend replyTo(String) call");
         }
@@ -94,12 +94,12 @@ public class ExecutionInteractionBuilder {
 
     /**
      * Stores an answer for question defined by {@code replyTo} call
-     *
+     * 
      * @param response the answer
      * @return current instance to allow chaining
-     * @see ExecutionInteractionBuilder#replyTo(String)
+     * @see ProcessInteractionBuilder#replyTo(String)
      */
-    public ExecutionInteractionBuilder with(Answer response) {
+    public ProcessInteractionBuilder with(Answer response) {
         if (tuple.question == null) {
             throw new IllegalStateException("Unfinished replyTo().with() sequence, please prepend replyTo(String) call");
         }
@@ -114,11 +114,11 @@ public class ExecutionInteractionBuilder {
 
     /**
      * Adds {@code outputLine} that should be printed out to standard output
-     *
+     * 
      * @param pattern the line
      * @return current instance to allow chaining
      */
-    public ExecutionInteractionBuilder outputs(String pattern) {
+    public ProcessInteractionBuilder outputs(String pattern) {
 
         Pattern p = Pattern.compile(pattern);
         allowedOutput.add(p);
@@ -127,11 +127,11 @@ public class ExecutionInteractionBuilder {
 
     /**
      * Adds {@code outputLine} that should be printed out to standard error output
-     *
+     * 
      * @param pattern the line
      * @return current instance to allow chaining
      */
-    public ExecutionInteractionBuilder errors(String pattern) {
+    public ProcessInteractionBuilder errors(String pattern) {
         Pattern p = Pattern.compile(pattern);
         errorOutput.add(p);
         return this;
@@ -140,11 +140,11 @@ public class ExecutionInteractionBuilder {
     /**
      * Defines a prefix for standard output and standard error output. Might be {@code null} or empty string, in such case no
      * prefix is added and process outputs cannot be distinguished
-     *
+     * 
      * @param prefix the prefix
      * @return current instance to allow chaining
      */
-    public ExecutionInteractionBuilder prefix(final String prefix) {
+    public ProcessInteractionBuilder prefix(final String prefix) {
         if (prefix == null || "".equals(prefix)) {
             this.transformer = new OutputTransformer() {
                 @Override
@@ -166,16 +166,16 @@ public class ExecutionInteractionBuilder {
     }
 
     /**
-     * Builds {@link ExecutionInteraction} object from defined data
-     *
-     * @return {@link ExecutionInteraction}
+     * Builds {@link ProcessInteraction} object from defined data
+     * 
+     * @return {@link ProcessInteraction}
      */
-    public ExecutionInteraction build() {
+    public ProcessInteraction build() {
         if (tuple.question != null) {
             throw new IllegalStateException("Unfinished replyTo().with() sequence, please append with(String) call");
         }
 
-        return new ExecutionInteractionImpl(replyMap, transformer, allowedOutput, errorOutput);
+        return new ProcessInteractionImpl(replyMap, transformer, allowedOutput, errorOutput);
     }
 
     private static class Tuple {
@@ -183,7 +183,7 @@ public class ExecutionInteractionBuilder {
         Answer answer;
     }
 
-    private static class ExecutionInteractionImpl implements ExecutionInteraction {
+    private static class ProcessInteractionImpl implements ProcessInteraction {
 
         private final Map<Pattern, Answer> replyMap;
 
@@ -193,7 +193,7 @@ public class ExecutionInteractionBuilder {
 
         private final OutputTransformer transformer;
 
-        ExecutionInteractionImpl(Map<Pattern, Answer> replyMap, OutputTransformer outputTransformer, List<Pattern> allowedOutput, List<Pattern> errorOutput) {
+        ProcessInteractionImpl(Map<Pattern, Answer> replyMap, OutputTransformer outputTransformer, List<Pattern> allowedOutput, List<Pattern> errorOutput) {
             this.replyMap = replyMap;
             this.transformer = outputTransformer;
             this.allowedOutput = allowedOutput;

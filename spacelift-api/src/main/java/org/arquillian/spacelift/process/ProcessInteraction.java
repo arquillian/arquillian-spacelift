@@ -24,7 +24,7 @@ package org.arquillian.spacelift.process;
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
  *
  */
-public interface ExecutionInteraction {
+public interface ProcessInteraction {
 
     /**
      * Checks whether process requires any interaction on its input

@@ -28,13 +28,15 @@ import org.arquillian.spacelift.execution.Execution;
 import org.arquillian.spacelift.execution.Task;
 import org.arquillian.spacelift.execution.impl.SentenceImpl;
 import org.arquillian.spacelift.process.Answer;
-import org.arquillian.spacelift.process.ExecutionInteraction;
+import org.arquillian.spacelift.process.ProcessInteraction;
 import org.arquillian.spacelift.process.OutputTransformer;
 import org.arquillian.spacelift.process.ProcessDetails;
 import org.arquillian.spacelift.process.ProcessNamePrefixOutputTransformer;
 import org.arquillian.spacelift.process.Sentence;
 
 /**
+=======
+ * An internal task that consumes process I/O and uses {@see ProcessInteraction} to communicate with the process
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
  *
@@ -43,7 +45,7 @@ class ConsumeProcessOutputTask extends Task<Execution<Process>, ProcessDetails> 
 
     private static final Logger log = Logger.getLogger(ConsumeProcessOutputTask.class.getName());
 
-    private ExecutionInteraction interaction;
+    private ProcessInteraction interaction;
     private String programName;
 
     public ConsumeProcessOutputTask programName(String programName) {
@@ -51,7 +53,7 @@ class ConsumeProcessOutputTask extends Task<Execution<Process>, ProcessDetails> 
         return this;
     }
 
-    public ConsumeProcessOutputTask interaction(ExecutionInteraction interaction) {
+    public ConsumeProcessOutputTask interaction(ProcessInteraction interaction) {
         this.interaction = interaction;
 
         // FIXME there should be a better way how to propagate process name

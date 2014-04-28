@@ -29,12 +29,14 @@ import org.arquillian.spacelift.execution.ExecutionException;
 import org.arquillian.spacelift.execution.Tasks;
 import org.arquillian.spacelift.process.Command;
 import org.arquillian.spacelift.process.CommandBuilder;
-import org.arquillian.spacelift.process.ExecutionInteraction;
-import org.arquillian.spacelift.process.ExecutionInteractionBuilder;
+import org.arquillian.spacelift.process.ProcessInteraction;
+import org.arquillian.spacelift.process.ProcessInteractionBuilder;
 import org.arquillian.spacelift.process.ProcessDetails;
 import org.arquillian.spacelift.tool.Tool;
 
 /**
+ * Tool that is able to execute an external, operating system dependent command.
+ *
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
  *
@@ -42,12 +44,12 @@ import org.arquillian.spacelift.tool.Tool;
 public class CommandTool extends Tool<Object, ProcessDetails> {
 
     protected CommandBuilder commandBuilder;
-    protected ExecutionInteraction interaction;
+    protected ProcessInteraction interaction;
     protected List<Integer> allowedExitCodes;
     protected ProcessReference processRef;
 
     public CommandTool() {
-        this.interaction = ExecutionInteractionBuilder.NO_INTERACTION;
+        this.interaction = ProcessInteractionBuilder.NO_INTERACTION;
         this.allowedExitCodes = new ArrayList<Integer>();
     }
 
@@ -56,51 +58,119 @@ public class CommandTool extends Tool<Object, ProcessDetails> {
         return Arrays.asList("run");
     }
 
-    public CommandTool programName(CharSequence programName) {
+    /**
+     * Sets executable to be executed. This can either a an absolute path or executed on path of underlying file system
+     *
+     * @param programName program name
+     * @return
+     * @throws IllegalArgumentException If program name is null or empty
+     */
+    public CommandTool programName(CharSequence programName) throws IllegalArgumentException {
+        Validate.notNullOrEmpty(programName, "Program name must not be empty nor null");
         this.commandBuilder = new CommandBuilder(programName);
         return this;
     }
 
+    /**
+     * Adds a list of parameters to the command to be executed
+     *
+     * @param parameters parameters
+     * @return
+     */
     public CommandTool parameters(List<? extends CharSequence> parameters) {
         commandBuilder.parameters(parameters);
         return this;
     }
 
+    /**
+     * Adds a list of parameters to the command to be executed
+     *
+     * @param parameters parameters
+     * @return
+     */
     public CommandTool parameters(CharSequence... parameters) {
         commandBuilder.parameters(parameters);
         return this;
     }
 
+    /**
+     * Adds a parameter to the command to be executed
+     *
+     * @param parameter parameter
+     * @return
+     */
     public CommandTool parameter(CharSequence parameter) {
         commandBuilder.parameter(parameter);
         return this;
     }
 
+    /**
+     * Splits {@code sequenceToBeParsed} into list of parameters, using unescaped spaces as delimiters
+     *
+     * @param sequenceToBeParsed string to be parsed
+     * @return
+     */
     public CommandTool splitToParameters(CharSequence sequenceToBeParsed) {
         commandBuilder.parameters(sequenceToBeParsed);
         return this;
     }
 
-    public CommandTool interaction(ExecutionInteraction interaction) {
+    /**
+     * Sets interaction for the command
+     *
+     * @param interaction the interaction
+     * @return
+     */
+    public CommandTool interaction(ProcessInteraction interaction) {
         this.interaction = interaction;
         return this;
     }
 
-    public CommandTool interaction(ExecutionInteractionBuilder interactionBuilder) {
+    /**
+     * Sets interaction for the command
+     *
+     * @param interactionBuilder the interaction
+     * @return
+     */
+    public CommandTool interaction(ProcessInteractionBuilder interactionBuilder) {
         this.interaction = interactionBuilder.build();
         return this;
     }
 
+    /**
+     * Sets the command. Overrides all previous parameters and program name
+     *
+     * @param command the command
+     * @return
+     */
     public CommandTool command(Command command) {
         this.commandBuilder = new CommandBuilder(command.getFullCommand().toArray(new String[0]));
         return this;
     }
 
+    /**
+     * Sets the command. Overrides all previous parameters and program name
+     *
+     * @param command the command
+     * @return
+     */
     public CommandTool command(CommandBuilder commandBuilder) {
         this.commandBuilder = commandBuilder;
         return this;
     }
 
+    /**
+     * Adds list of valid exit codes for the command. If command finishes execution and exit code does
+     * not match the one set, {@see ExecutionException} is thrown
+     *
+     * By default, allowed exit code is set to {@code 0}
+     *
+     *
+     * @param code the exit code
+     * @param others possible other codes
+     * @return
+     * @see ExecutionException
+     */
     public CommandTool shouldExitWith(Integer code, Integer... others) {
         allowedExitCodes.add(code);
         if (others.length > 0) {
