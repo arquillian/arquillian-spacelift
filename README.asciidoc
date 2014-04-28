@@ -15,32 +15,104 @@ In your project, import following artifact:
 </dependency>
 ----
 
-In your extension, inject instance of +ProcessExecutor+. This instance is created in +ArquillianDescriptor+ event and you can observe
-+ProcessExecutorCreated+ event if you will. The instance is singleton, so you will always retrieve the same instance.
+You can use Spacelift both with and without Arquillian. If you use extension without Arquillian, you need to make sure that you initialize factory for task execution.
 
 [source,java]
 ----
-@Instance<ProcessExecutor> processExecutor;
+Tasks.setDefaultExecutionServiceFactory(new DefaultExecutionServiceFactory());
 ----
+
+If you are running from an extension, after +ExecutionServiceInitialized+ event factory is initialized. There is also +ToolRegistryInitialized+ event, which denotes that all tools were registered and you can use them (TBD).
 
 == How to use the extension
 
-=== ProcessExecutor
+Arquillian Spacelift provides a set of tools (and tasks) that can be used to encapsulate execution of any command into block that can be executed asynchronously and repeated if needed.
+You reuse a set of existing tasks and implement your own tasks.
 
-ProcessExecutor allows your extension to execute any code, either external or internal. You have following possibilities:
+=== Task
 
-Execution::
-    Use +execute(...)+ method if you want to execute a command and wait for it to be finished
-Spawning::
-    Use +spawn(...)+ method if you want to execute a command as a daemon in different thread
-One time action::
-    Use +submit(...)+ method if you want to asynchronously execute a code block
-Periodical action::
-    Use +scheduleUntilTrue(...)+ method if you want to re-execute code block until condition is fulfilled
+Arquillian Spacelift provides you a concept of a task. Task is isolated amount of work, defined by its input, output and transition function that transforms input into output.
+Task is always executed asynchronously.
+
+How do I create new tasks?::
+    Task is defined by class that represents its payload. You prepare tasks by calling +Tasks+ utility
+    +
+[source,java]
+----
+Tasks.prepare(DownloadTool.class)
+----
+    +
+    Once task is created, you get access to API defined by task class itself.
+I have task created. How do I execute it?::
+    Just call +execute()+. This will asynchronously send task to execution service that will be responsible for its execution.
+How do I run more tasks together?::
+    Task can be chained together by using +then(NextTaskName.class)+ call. There is following rules for chaining tasks: Input of next task must much output of current task. 
+    If next task input is type of +Object+, it can be chained to any task. +Object+ usually means that you don't care about input of next task at all.
+I already have input for a task. How do I pass it to the task?::
+    Just call Tasks.chain(input, NextTaskName.class)
+How do I create my own tasks?::
+    Extend abstract class +Task+ and implement +process(INPUT)+ method.
+
+==== Execution
+
+Calling +execute()+ on a task will create an execution. You can use this object to reference execution in future.
+
+Blocking execution::
+    You can run +await()+ or +awaitAtMost(long,TimeUnit)+ to block current thread and get the result. For latter call, if result in not computed within time limit,
+    +TimeoutExecutionException+ is thrown.
+Scheduled execution::
+    You can force Spacelift to re-execute a chain of task periodically until results satisfies a condition or timeout is met by calling +until(long,TimeUnit,ExecutionCondition)+ call.
+    By default, this will be schedule to re-execute every 500 ms. You can change this behavior by +reexecuteEvery(long,TimeUnit)+ call.
+Terminating execution::
+    You can kill the execution by calling +terminate()+ method. After terminating, you might be able to retrieve partial execution value by calling +await()+ but this 
+    behavior cannot be guaranteed for all types of tasks, as execution might be atomic. In such circumstances, task should return +null+ if it figures out if was forcefully terminated 
+    before it finished the work.
+
+=== Tool
+
+Tool is a task that additionally defines a string based name. This name is used by +Installation+ steps to determine what tasks should be run
+in order to install additional stuff to your test environment.            
+
+How do I create a tool?::
+    You can use +Tasks.prepare(TheTool.class)+
+How do I create my own tool?::
+    Extends abstract class +Tool+.
+
+Current tools are:
+
+* DownloadTool: _Nothing -> File, download_ can download anything to a file
+* UnzipTool: _File -> File, unzip_ can unzip an archive to a directory
+* CommandTool: _Nothing -> ProcessDetails, run_ runs(spawns) an external command
+
+Command tool provides following API:
+
+Program name::
+    Program name is defined by +processName(String)+. It must be on system path or it must be a full path. Spacelift does not check for its validity.
+Program parameters::
+    Program parameters are defined by +parameter(String)+, +parameters(String...)+, +parameters(List<String>)+ and +splitToParameters(String)+. The last method splits a string into sequence
+    of parameters according to non-escaped spaces.
+Program command::
+    Instead of setting program name and program parameters, you can use +command(Command)+ and +command(CommandBuilder)+ methods to define what will be executed. These methods
+    will override any values set by prior program name and parameters calls.
+Process exit value::
+    Process is expected to exit with value +0+. It it exits with different value, +ExecutionException+ is thrown. However, you can override this behavior via +shouldExitWith(int...)+ call.
+Process interaction::
+    You can consume process output and provide an input to the process execution. Use +interaction(ProcessInteraction)+ or +interaction(ProcessInteractionBuilder)+ call.
+Working environment::
+    By default, process inherits working directory and environment of currently running JVM process. If you are not happy with such behavior, you can use +workingDir(String)+ 
+    and +addEnvironment(Map)+ or +addEnvironment(String...)+ methods to modify it.
+Cleanup::
+    By default, process is terminated with JVM shutdown. If you want to change that behavior, you can invoke +runAsDaemon(true)+ method.
+
+
+Command tool returns +ProcessDetails+. You can use this object for instance to check output returned by the command.
+
+CommandTool is nice but I want to have something platform independent. How do I achieve that?::
+    Create your own tool or command and reuse existing +CommandTool+ there.
 
 === ProcessInteraction
 
-ProcessInteraction defines how a command scheduled for execution input and output is handled. You have +ProcessInteractionBuilder+ convenience builder
+ProcessInteraction defines a way how to interact with and handle output of process executed by +CommandTool+. You have +ProcessInteractionBuilder+ convenience builder
 available:
 
 Input handling::
@@ -54,18 +126,6 @@ Process name::
 	By default, a process output is prefixed by process name, defined by first parameter of +Command+. Use +prefix(String)+ 
 	call to override this prefix. You can also set it to +null+ or empty string if you want process output to be indistinguishable
 	from other output
-
-=== ProcessExecutor in your test(s)
-
-You can inject +ProcessExecutor+ into test as an +ArquillianResource+ like this:
-
-[source, java]
-----
-@ArquillianResource ProcessExecutor executor;
-----
-
-After this, you can use process executor in your test methods in order to perform platform specific operations. You are free to inject 
-this resource into test method itself as well.
 
 == TODO
 
