@@ -36,12 +36,12 @@ Task is always executed asynchronously.
 
 How do I create new tasks?::
     Task is defined by class that represents its payload. You prepare tasks by calling +Tasks+ utility
-    +
++
 [source,java]
 ----
 Tasks.prepare(DownloadTool.class)
 ----
-    +
++
     Once task is created, you get access to API defined by task class itself.
 I have task created. How do I execute it?::
     Just call +execute()+. This will asynchronously send task to execution service that will be responsible for its execution.
