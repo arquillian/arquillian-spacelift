@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.arquillian.spacelift.execution.impl;
+package org.arquillian.spacelift.process.impl;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -23,16 +23,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.arquillian.spacelift.execution.ExecutionService;
+import org.arquillian.spacelift.execution.Tasks;
+import org.arquillian.spacelift.execution.impl.DefaultExecutionServiceFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class ExecutionServiceImplTest {
+public class CommandToolWorkingDirTest {
 
-    private ExecutionService service;
     private List<File> tempFiles;
 
     @Rule
@@ -40,13 +40,12 @@ public class ExecutionServiceImplTest {
 
     @Before
     public void setup() {
-        service = new ExecutionServiceImpl();
         tempFiles = new ArrayList<File>();
+        Tasks.setDefaultExecutionServiceFactory(new DefaultExecutionServiceFactory());
     }
 
     @After
     public void tearDown() {
-        service = null;
         deleteTempFiles();
     }
 
@@ -54,7 +53,7 @@ public class ExecutionServiceImplTest {
     public void testExistingWorkingDirectory() throws Exception {
         String existingDirectory = System.getProperty("user.dir");
 
-        service.setWorkingDirectory(existingDirectory);
+        Tasks.prepare(CommandTool.class).workingDir(existingDirectory);
     }
 
     @Test
@@ -63,20 +62,19 @@ public class ExecutionServiceImplTest {
 
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("does not exist");
-        service.setWorkingDirectory(nonexistentDirectory);
+        Tasks.prepare(CommandTool.class).workingDir(nonexistentDirectory);
     }
 
     @Test
     public void testFileAsWorkingDirectory() throws Exception {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("is not a directory");
-        service.setWorkingDirectory(createTempFile());
+        Tasks.prepare(CommandTool.class).workingDir(createTempFile().getAbsolutePath());
     }
 
     @Test
     public void testNullAsWorkingDirectory() throws Exception {
-        service.setWorkingDirectory((File) null);
-        service.setWorkingDirectory((String) null);
+        Tasks.prepare(CommandTool.class).workingDir(null);
     }
 
     private File createTempFile() throws IOException, IllegalStateException {

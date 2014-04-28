@@ -83,6 +83,10 @@ public class CommandToolTest {
         if (details != null) {
             Assert.assertThat(details.getOutput().size(), is(not(0)));
         }
+    }
 
+    @Test
+    public void workingDir() throws Exception {
+        Tasks.prepare(CommandTool.class).programName("yes").workingDir(null);
     }
 }

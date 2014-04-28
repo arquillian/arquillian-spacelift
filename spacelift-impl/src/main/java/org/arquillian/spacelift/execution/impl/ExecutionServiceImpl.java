@@ -16,10 +16,6 @@
  */
 package org.arquillian.spacelift.execution.impl;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -40,61 +36,12 @@ import org.arquillian.spacelift.execution.TimeoutExecutionException;
  */
 public class ExecutionServiceImpl implements ExecutionService {
 
-    private Map<String, String> environment;
-    private File workingDirectory;
     private final ExecutorService service;
     private final ScheduledExecutorService scheduledService;
 
     public ExecutionServiceImpl() {
         this.service = Executors.newCachedThreadPool();
         this.scheduledService = Executors.newScheduledThreadPool(1);
-        this.environment = new HashMap<String, String>();
-    }
-
-    @Override
-    public ExecutionService setEnvironment(Map<String, String> environment) throws IllegalStateException {
-        if (environment == null) {
-            throw new IllegalStateException(
-                "Environment properies map must not be null!");
-        }
-        this.environment = environment;
-        return this;
-    }
-
-    @Override
-    public ExecutionService setWorkingDirectory(String workingDirectory) throws IllegalArgumentException {
-        if (workingDirectory == null) {
-            this.workingDirectory = null;
-            return this;
-        }
-        return setWorkingDirectory(new File(workingDirectory));
-    }
-
-    @Override
-    public ExecutionService setWorkingDirectory(File workingDirectory) throws IllegalArgumentException {
-        if (workingDirectory == null) {
-            this.workingDirectory = null;
-            return this;
-        }
-        if (!workingDirectory.exists()) {
-            throw new IllegalArgumentException("Specified path " + workingDirectory.getAbsolutePath() + " does not exist!");
-        }
-        if (!workingDirectory.isDirectory()) {
-            throw new IllegalArgumentException("Specified path " + workingDirectory.getAbsolutePath() + " is not a directory!");
-        }
-
-        this.workingDirectory = workingDirectory;
-        return this;
-    }
-
-    @Override
-    public Map<String, String> getEnvironment() {
-        return Collections.unmodifiableMap(environment);
-    }
-
-    @Override
-    public File getWorkingDirectory() {
-        return workingDirectory;
     }
 
     @Override

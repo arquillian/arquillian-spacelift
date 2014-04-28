@@ -1,5 +1,7 @@
 package org.arquillian.spacelift.process.impl;
 
+import org.arquillian.spacelift.execution.ExecutionException;
+
 /**
  * Validate
  *
@@ -49,4 +51,20 @@ public final class Validate {
             throw new IllegalStateException(message);
         }
     }
+
+    /**
+     * Checks that obj is not null, throws exception if it is.
+     *
+     * @param obj The object to check
+     * @param message The exception message
+     * @param params The exception message parameters
+     * @throws ExecutionException Thrown if object is null
+     */
+    public static void executionNotNull(final Object obj, final String messageFormat, Object... params)
+        throws ExecutionException {
+        if (obj == null) {
+            throw new ExecutionException(messageFormat, params);
+        }
+    }
+
 }

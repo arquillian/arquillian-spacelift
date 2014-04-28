@@ -16,10 +16,11 @@
  */
 package org.arquillian.spacelift.execution.impl;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.arquillian.spacelift.execution.Execution;
 
 /**
-=======
  * Utility class that registers a shutdown hook for execution.
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
@@ -33,17 +34,36 @@ public class ShutdownHooks {
      * @param execution Execution to be terminated when JVM exits
      */
     public static <RETURNTYPE> void addHookFor(final Execution<RETURNTYPE> execution) {
-
-        Thread shutdownThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (execution != null) {
-                    if (!execution.isFinished() && !execution.isMarkedAsFinished()) {
-                        execution.terminate();
-                    }
-                }
-            }
-        });
+        Thread shutdownThread = new SpaceliftShutDownHook<RETURNTYPE>(execution);
         Runtime.getRuntime().addShutdownHook(shutdownThread);
     }
+
+    /**
+     * A shutdown thread for Spacelift that terminates running execution.
+     *
+     * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
+     *
+     * @param <RETURNTYPE>
+     */
+    public static class SpaceliftShutDownHook<RETURNTYPE> extends Thread {
+
+        private static AtomicInteger shutdownCounter = new AtomicInteger(1);
+
+        private final Execution<RETURNTYPE> execution;
+
+        public SpaceliftShutDownHook(Execution<RETURNTYPE> execution) {
+            super("spacelift-shutdown-hook-" + shutdownCounter.getAndIncrement());
+            this.execution = execution;
+        }
+
+        @Override
+        public void run() {
+            if (execution != null) {
+                if (!execution.isFinished() && !execution.isMarkedAsFinished()) {
+                    execution.terminate();
+                }
+            }
+        }
+    }
+
 }

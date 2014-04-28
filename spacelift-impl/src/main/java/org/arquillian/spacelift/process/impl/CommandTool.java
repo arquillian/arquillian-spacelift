@@ -16,22 +16,25 @@
  */
 package org.arquillian.spacelift.process.impl;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.arquillian.spacelift.execution.Execution;
 import org.arquillian.spacelift.execution.ExecutionException;
 import org.arquillian.spacelift.execution.Tasks;
 import org.arquillian.spacelift.process.Command;
 import org.arquillian.spacelift.process.CommandBuilder;
+import org.arquillian.spacelift.process.ProcessDetails;
 import org.arquillian.spacelift.process.ProcessInteraction;
 import org.arquillian.spacelift.process.ProcessInteractionBuilder;
-import org.arquillian.spacelift.process.ProcessDetails;
 import org.arquillian.spacelift.tool.Tool;
 
 /**
@@ -46,11 +49,18 @@ public class CommandTool extends Tool<Object, ProcessDetails> {
     protected CommandBuilder commandBuilder;
     protected ProcessInteraction interaction;
     protected List<Integer> allowedExitCodes;
+    protected File workingDirectory;
+    protected Map<String, String> environment;
+    protected boolean isDaemon;
+
     protected ProcessReference processRef;
 
     public CommandTool() {
         this.interaction = ProcessInteractionBuilder.NO_INTERACTION;
         this.allowedExitCodes = new ArrayList<Integer>();
+        this.workingDirectory = null;
+        this.environment = new HashMap<String, String>();
+        this.isDaemon = false;
     }
 
     @Override
@@ -179,6 +189,81 @@ public class CommandTool extends Tool<Object, ProcessDetails> {
         return this;
     }
 
+    /**
+     * Sets working directory for the command
+     *
+     * @param workingDirectory working directory, can be {@code null} to use current directory of running Java process
+     * @return
+     * @throws IllegalArgumentException if working directory does not exist
+     */
+    public CommandTool workingDir(String workingDirectory) throws IllegalArgumentException {
+
+        if (workingDirectory == null) {
+            this.workingDirectory = null;
+            return this;
+        }
+
+        File workingDirectoryFile = new File(workingDirectory);
+
+        if (!workingDirectoryFile.exists()) {
+            throw new IllegalArgumentException("Specified path " + workingDirectoryFile.getAbsolutePath() + " does not exist!");
+        }
+        if (!workingDirectoryFile.isDirectory()) {
+            throw new IllegalArgumentException("Specified path " + workingDirectoryFile.getAbsolutePath()
+                + " is not a directory!");
+        }
+
+        this.workingDirectory = workingDirectoryFile;
+        return this;
+    }
+
+    /**
+     * Adds a map of key, value environment variables to the default process environment
+     *
+     * @param envVariables environment variables. Value might be null.
+     * @return
+     * @throws IllegalArgumentException
+     */
+    public CommandTool addEnvironment(Map<String, String> envVariables) throws IllegalArgumentException {
+        Validate.notNull(envVariables, "Environment variables must not be null");
+        this.environment.putAll(envVariables);
+        return this;
+    }
+
+    /**
+     * Adds a sequence of key, value environment variables to the default process environment
+     *
+     * @param envVariables environment variables. Value might be null.
+     * @return
+     * @throws IllegalArgumentException If values do not form complete pairs or if key is null
+     */
+    public CommandTool addEnvironment(CharSequence... envVariables) throws IllegalArgumentException {
+
+        if (envVariables.length % 2 == 1) {
+            throw new IllegalArgumentException("Environment variables must be a sequence of key, value pairs.");
+        }
+
+        for (int i = 0; i < (envVariables.length / 2); i += 2) {
+            CharSequence key = envVariables[i];
+            CharSequence value = envVariables[i + 1];
+
+            Validate.notNull(key, "Environment variable name must not be null nor empty");
+            environment.put(key.toString(), value != null ? value.toString() : null);
+        }
+
+        return this;
+    }
+
+    /**
+     * Indicates that command should be executed as daemon and survive JVM process.
+     *
+     * @return
+     */
+    public CommandTool runAsDaemon() {
+        this.isDaemon = true;
+        return this;
+    }
+
     @Override
     public Execution<ProcessDetails> execute() throws ExecutionException {
         // here we rewrap future based execution into process based execution to get better details about execution
@@ -197,6 +282,8 @@ public class CommandTool extends Tool<Object, ProcessDetails> {
     @Override
     protected ProcessDetails process(Object input) throws Exception {
 
+        Validate.executionNotNull(commandBuilder, "Command must not be null");
+
         Command command = commandBuilder.build();
         Process process = null;
         try {
@@ -204,6 +291,9 @@ public class CommandTool extends Tool<Object, ProcessDetails> {
                 .redirectErrorStream(true)
                 .shouldExitWith(allowedExitCodes)
                 .command(command)
+                .workingDir(workingDirectory)
+                .addEnvironment(environment)
+                .runAsDaemon(isDaemon)
                 .execute();
 
             // wait for process to finish

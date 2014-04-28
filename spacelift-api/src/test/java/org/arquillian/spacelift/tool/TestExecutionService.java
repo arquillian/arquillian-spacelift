@@ -1,7 +1,5 @@
 package org.arquillian.spacelift.tool;
 
-import java.io.File;
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -16,31 +14,6 @@ import org.arquillian.spacelift.execution.ExecutionService;
 import org.arquillian.spacelift.execution.TimeoutExecutionException;
 
 class TestExecutionService implements ExecutionService {
-
-    @Override
-    public ExecutionService setEnvironment(Map<String, String> environment) throws IllegalStateException {
-        return null;
-    }
-
-    @Override
-    public Map<String, String> getEnvironment() {
-        return null;
-    }
-
-    @Override
-    public ExecutionService setWorkingDirectory(String workingDirectory) throws IllegalArgumentException {
-        return null;
-    }
-
-    @Override
-    public ExecutionService setWorkingDirectory(File workingDirectory) throws IllegalArgumentException {
-        return null;
-    }
-
-    @Override
-    public File getWorkingDirectory() {
-        return null;
-    }
 
     @Override
     public <T> Execution<T> execute(final Callable<T> task) throws ExecutionException {

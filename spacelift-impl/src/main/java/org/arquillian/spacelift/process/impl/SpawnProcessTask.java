@@ -16,7 +16,10 @@
  */
 package org.arquillian.spacelift.process.impl;
 
+import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.arquillian.spacelift.execution.Execution;
 import org.arquillian.spacelift.execution.ExecutionException;
@@ -33,9 +36,13 @@ class SpawnProcessTask extends Task<Object, Process> {
     private Command command;
     private boolean redirectErrorStream;
     private List<Integer> allowedExitCodes;
+    private File workingDirectory;
+    private Map<String, String> environment;
+    private boolean runsAsDaemon;
 
     public SpawnProcessTask redirectErrorStream(boolean redirectErrorStream) {
         this.redirectErrorStream = redirectErrorStream;
+        this.environment = new HashMap<String, String>();
         return this;
     }
 
@@ -44,13 +51,29 @@ class SpawnProcessTask extends Task<Object, Process> {
         return this;
     }
 
+    public SpawnProcessTask workingDir(File workingDirectory) {
+        this.workingDirectory = workingDirectory;
+        return this;
+    }
+
+    public SpawnProcessTask addEnvironment(Map<String, String> environment) {
+        this.environment = environment;
+        return this;
+    }
+
     public SpawnProcessTask shouldExitWith(List<Integer> allowedExitCodes) {
         this.allowedExitCodes = allowedExitCodes;
         return this;
     }
 
+    public SpawnProcessTask runAsDaemon(boolean isDaemon) {
+        this.runsAsDaemon = isDaemon;
+        return this;
+    }
+
     @Override
     public Execution<Process> execute() throws ExecutionException {
+
         // here we rewrap future based execution into process based execution to get better details about execution
         Execution<Process> processFutureExecution = super.execute();
 
@@ -63,7 +86,7 @@ class SpawnProcessTask extends Task<Object, Process> {
             allowedExitCodes);
 
         // register shutdown hook
-        if (!command.runsAsDeamon()) {
+        if (!runsAsDaemon) {
             execution.registerShutdownHook();
         }
 
@@ -72,9 +95,13 @@ class SpawnProcessTask extends Task<Object, Process> {
 
     @Override
     protected Process process(Object input) throws Exception {
+
+        Validate.executionNotNull(command, "Command must not be null");
+        Validate.executionNotNull(command.getProgramName(), "Command program name must not be null");
+
         ProcessBuilder builder = new ProcessBuilder(command.getFullCommand());
-        builder.directory(getExecutionService().getWorkingDirectory());
-        builder.environment().putAll(getExecutionService().getEnvironment());
+        builder.directory(workingDirectory);
+        builder.environment().putAll(environment);
         builder.redirectErrorStream(redirectErrorStream);
         return builder.start();
     }

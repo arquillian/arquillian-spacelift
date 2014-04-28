@@ -16,9 +16,7 @@
  */
 package org.arquillian.spacelift.execution.impl;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.arquillian.spacelift.SpaceliftBootstrap;
 import org.arquillian.spacelift.execution.ExecutionService;
@@ -78,21 +76,11 @@ public class DefaultExecutionServiceFactoryTest extends AbstractTestTestBase {
 
         ExecutionService executor3 = new DefaultExecutionServiceFactory().getExecutionServiceInstance();
         assertThat(executor3, sameInstance(executor1));
-
-        // if we change environment, it modifies all existing instances
-        Map<String, String> env = new HashMap<String, String>();
-        env.put("foo", "bar");
-        executor3.setEnvironment(env);
-
-        assertThat(executor3, sameInstance(executor1));
-
-        executor3.setWorkingDirectory(System.getProperty("user.dir"));
-        assertThat(executor3, sameInstance(executor1));
     }
 
     @Test
     public void fireBeforeSuite() {
-        //getManager().getContext(SuiteContext.class).activate();
+        // getManager().getContext(SuiteContext.class).activate();
         fire(new SpaceliftBootstrap());
 
         ExecutionService executor = getManager().getContext(ApplicationContext.class)

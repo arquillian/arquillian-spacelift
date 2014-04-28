@@ -16,8 +16,6 @@
  */
 package org.arquillian.spacelift.execution;
 
-import java.io.File;
-import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -32,44 +30,6 @@ import org.arquillian.spacelift.tool.Tool;
  *
  */
 public interface ExecutionService {
-
-    /**
-     * Adds given environment map to the default inherited environment be used for next process execution.
-     * Previous environments settings are discarded.
-     *
-     * @param environment The new environment settings addon
-     * @return Modified instance
-     * @throws IllegalStateException In case that environment is {@code null} or contains empty values
-     */
-    ExecutionService setEnvironment(Map<String, String> environment) throws IllegalStateException;
-
-    Map<String, String> getEnvironment();
-
-    /**
-     * Sets path to be used as a working directory for next process execution. The argument may be {@code null} which
-     * means to use the working directory of the current Java process.
-     *
-     * @see java.lang.ProcessBuilder#directory(java.io.File)
-     *
-     * @param workingDirectory The working directory
-     * @return Modified instance
-     * @throws IllegalArgumentException In case that specified path does not exist or is not a directory.
-     */
-    ExecutionService setWorkingDirectory(String workingDirectory) throws IllegalArgumentException;
-
-    /**
-     * Sets path to be used as a working directory for next process execution. The argument may be {@code null} which
-     * means to use the working directory of the current Java process.
-     *
-     * @see java.lang.ProcessBuilder#directory(java.io.File)
-     *
-     * @param workingDirectory The working directory
-     * @return Modified instance
-     * @throws IllegalArgumentException In case that specified path does not exist or is not a directory.
-     */
-    ExecutionService setWorkingDirectory(File workingDirectory) throws IllegalArgumentException;
-
-    File getWorkingDirectory();
 
     /**
      * Executes a task asynchronously.
