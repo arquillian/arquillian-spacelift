@@ -21,6 +21,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.arquillian.spacelift.execution.CountDownWatch;
 import org.arquillian.spacelift.execution.Execution;
 import org.arquillian.spacelift.execution.ExecutionCondition;
 import org.arquillian.spacelift.execution.ExecutionException;
@@ -186,5 +187,15 @@ class FutureBasedExecution<RESULT> implements Execution<RESULT> {
         }
 
         return new TimeoutExecutionException(cause, messageFormat, parameters);
+    }
+
+    @Override
+    public RESULT awaitAtMost(CountDownWatch timeout) throws ExecutionException, TimeoutExecutionException {
+        return awaitAtMost(timeout.timeout(), timeout.getTimeUnit());
+    }
+
+    @Override
+    public RESULT until(CountDownWatch timeout, ExecutionCondition<RESULT> condition) throws ExecutionException, TimeoutExecutionException {
+        return until(timeout.timeout(), timeout.getTimeUnit(), condition);
     }
 }
