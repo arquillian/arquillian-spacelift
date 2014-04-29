@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.arquillian.spacelift.execution.CountDownWatch;
 import org.arquillian.spacelift.execution.Execution;
 import org.arquillian.spacelift.execution.ExecutionCondition;
 import org.arquillian.spacelift.execution.ExecutionException;
@@ -168,5 +169,15 @@ public class ProcessBasedExecution<RESULT> implements Execution<RESULT> {
         TimeoutExecutionException {
 
         return processFutureExecution.until(timeout, unit, condition);
+    }
+
+    @Override
+    public RESULT awaitAtMost(CountDownWatch timeout) throws ExecutionException, TimeoutExecutionException {
+        return awaitAtMost(timeout.timeout(), timeout.getTimeUnit());
+    }
+
+    @Override
+    public RESULT until(CountDownWatch timeout, ExecutionCondition<RESULT> condition) throws ExecutionException, TimeoutExecutionException {
+        return until(timeout.timeout(), timeout.getTimeUnit(), condition);
     }
 }

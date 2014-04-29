@@ -89,6 +89,16 @@ public interface Execution<RESULT> {
     RESULT awaitAtMost(long timeout, TimeUnit unit) throws ExecutionException, TimeoutExecutionException;
 
     /**
+     * Blocks execution of current thread, waiting for the execution to be finished.
+     *
+     * @param timeout the timeout
+     * @return Result of execution
+     * @throws ExecutionException If execution failed
+     * @throws TimeoutExecutionException If execution was not retrieved during the timeout
+     */
+    RESULT awaitAtMost(CountDownWatch timeout) throws ExecutionException, TimeoutExecutionException;
+
+    /**
      * Sets interval for execution reexecution.
      *
      * @param step the time delay
@@ -109,5 +119,18 @@ public interface Execution<RESULT> {
      * @throws TimeoutExecutionException
      */
     RESULT until(long timeout, TimeUnit unit, ExecutionCondition<RESULT> condition) throws ExecutionException,
+        TimeoutExecutionException;
+
+    /**
+     * Continues (re)executing the execution until condition is satisfied. This call can be used to poll regularly for an
+     * external process status.
+     *
+     * @param timeout the timeout
+     * @param condition condition that determines whether reexecution should continue
+     * @return
+     * @throws ExecutionException
+     * @throws TimeoutExecutionException
+     */
+    RESULT until(CountDownWatch timeout, ExecutionCondition<RESULT> condition) throws ExecutionException,
         TimeoutExecutionException;
 }
