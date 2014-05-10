@@ -82,7 +82,7 @@ Current tools are:
 
 * DownloadTool: _Nothing -> File, download_ can download anything to a file
 * UnzipTool: _File -> File, unzip_ can unzip an archive to a directory
-* CommandTool: _Nothing -> ProcessDetails, run_ runs(spawns) an external command
+* CommandTool: _Nothing -> ProcessResult, run_ runs(spawns) an external command
 
 Command tool provides following API:
 
@@ -105,7 +105,7 @@ Cleanup::
     By default, process is terminated with JVM shutdown. If you want to change that behavior, you can invoke +runAsDaemon(true)+ method.
 
 
-Command tool returns +ProcessDetails+. You can use this object for instance to check output returned by the command.
+Command tool returns +ProcessResult+. You can use this object for instance to check output returned by the command.
 
 CommandTool is nice but I want to have something platform independent. How do I achieve that?::
     Create your own tool or command and reuse existing +CommandTool+ there.
@@ -127,8 +127,8 @@ Process name::
 	call to override this prefix. You can also set it to +null+ or empty string if you want process output to be indistinguishable
 	from other output
 Initial input::
-	Some commands might require you to provide input before the very first output is available. In such cases, you +whenStarts()+ 
-	and +typeIn(String)+ to provide text that will be written to process input right after process is started	
+	Some commands might require you to provide input before the very first output is available. In such cases, you can use +whenStarts()+ 
+	and +typeIn(String)+ combination to provide text that will be written to process input right after process is started	
 
 == TODO
 
