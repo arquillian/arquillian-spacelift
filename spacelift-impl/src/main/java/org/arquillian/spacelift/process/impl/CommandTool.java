@@ -17,9 +17,6 @@
 package org.arquillian.spacelift.process.impl;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,9 +29,9 @@ import org.arquillian.spacelift.execution.ExecutionException;
 import org.arquillian.spacelift.execution.Tasks;
 import org.arquillian.spacelift.process.Command;
 import org.arquillian.spacelift.process.CommandBuilder;
-import org.arquillian.spacelift.process.ProcessDetails;
 import org.arquillian.spacelift.process.ProcessInteraction;
 import org.arquillian.spacelift.process.ProcessInteractionBuilder;
+import org.arquillian.spacelift.process.ProcessResult;
 import org.arquillian.spacelift.tool.Tool;
 
 /**
@@ -44,7 +41,7 @@ import org.arquillian.spacelift.tool.Tool;
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
  *
  */
-public class CommandTool extends Tool<Object, ProcessDetails> {
+public class CommandTool extends Tool<Object, ProcessResult> {
 
     protected CommandBuilder commandBuilder;
     protected ProcessInteraction interaction;
@@ -265,13 +262,13 @@ public class CommandTool extends Tool<Object, ProcessDetails> {
     }
 
     @Override
-    public Execution<ProcessDetails> execute() throws ExecutionException {
+    public Execution<ProcessResult> execute() throws ExecutionException {
         // here we rewrap future based execution into process based execution to get better details about execution
         // and ability to terminate the process
         this.processRef = new ProcessReference(commandBuilder.build().getProgramName());
-        Execution<ProcessDetails> processFutureExecution = super.execute();
+        Execution<ProcessResult> processFutureExecution = super.execute();
 
-        ProcessBasedExecution<ProcessDetails> execution = new ProcessBasedExecution<ProcessDetails>(processFutureExecution,
+        ProcessBasedExecution<ProcessResult> execution = new ProcessBasedExecution<ProcessResult>(processFutureExecution,
             processRef,
             commandBuilder.build().getProgramName(),
             allowedExitCodes);
@@ -280,79 +277,41 @@ public class CommandTool extends Tool<Object, ProcessDetails> {
     }
 
     @Override
-    protected ProcessDetails process(Object input) throws Exception {
+    protected ProcessResult process(Object input) throws Exception {
 
         Validate.executionNotNull(commandBuilder, "Command must not be null");
 
         Command command = commandBuilder.build();
         Process process = null;
-        try {
-            Execution<Process> spawnedProcess = Tasks.prepare(SpawnProcessTask.class)
-                .redirectErrorStream(true)
-                .shouldExitWith(allowedExitCodes)
-                .command(command)
-                .workingDir(workingDirectory)
-                .addEnvironment(environment)
-                .runAsDaemon(isDaemon)
-                .execute();
 
-            // wait for process to finish
-            process = spawnedProcess.await();
+        Execution<Process> spawnedProcess = Tasks.prepare(SpawnProcessTask.class)
+            .redirectErrorStream(true)
+            .shouldExitWith(allowedExitCodes)
+            .command(command)
+            .workingDir(workingDirectory)
+            .addEnvironment(environment)
+            .runAsDaemon(isDaemon)
+            .execute();
 
-            // set processReference
-            processRef.setProcess(process);
+        // wait for process to finish
+        process = spawnedProcess.await();
 
-            // handle IO of spawned process
-            Execution<ProcessDetails> processConsumer = Tasks.chain(spawnedProcess, ConsumeProcessOutputTask.class)
-                .programName(command.getProgramName()).interaction(interaction).execute();
+        // set processReference
+        processRef.setProcess(process);
 
-            // FIXME could this be moved to execution itself
-            process.waitFor();
-            // wait for process to finish IO
-            ProcessDetails details = processConsumer.await();
+        // handle IO of spawned process
+        Execution<ProcessResult> processConsumer = Tasks.chain(spawnedProcess, ConsumeProcessOutputTask.class)
+            .programName(command.getProgramName()).interaction(interaction).execute();
 
-            if (spawnedProcess.hasFailed()) {
-                throw new ExecutionException("Invocation of \"{0}\" failed with {1}", new Object[] {
-                    command,
-                    details.getExitValue() });
-            }
+        // wait for process to finish IO
+        ProcessResult result = processConsumer.await();
 
-            return details;
+        if (spawnedProcess.hasFailed()) {
+            throw new ExecutionException("Invocation of \"{0}\" failed with {1}", new Object[] {
+                command,
+                result.exitValue() });
         }
-        // rewrap exception
-        catch (InterruptedException e) {
-            throw new ExecutionException(e.getCause() != null ? e.getCause() : e,
-                "Executing \"{0}\": {1}",
-                new Object[] {
-                    e.getMessage(),
-                    commandBuilder });
-        } finally {
-            // cleanup
-            if (process != null) {
-                InputStream in = process.getInputStream();
-                InputStream err = process.getErrorStream();
-                OutputStream out = process.getOutputStream();
-                if (in != null) {
-                    try {
-                        in.close();
-                    } catch (IOException ignore) {
-                    }
-                }
-                if (out != null) {
-                    try {
-                        out.close();
-                    } catch (IOException ignore) {
-                    }
-                }
-                if (err != null) {
-                    try {
-                        err.close();
-                    } catch (IOException ignore) {
-                    }
-                }
-                // just in case, something went wrong
-                process.destroy();
-            }
-        }
+
+        return result;
     }
 }

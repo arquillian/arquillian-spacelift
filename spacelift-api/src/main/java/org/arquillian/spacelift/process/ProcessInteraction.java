@@ -1,8 +1,8 @@
 /*
  * JBoss, Home of Professional Open Source
- * Copyright 2013, Red Hat, Inc. and/or its affiliates, and individual
- * contributors by the @authors tag. See the copyright.txt in the
- * distribution for a full listing of individual contributors.
+ * Copyright 2014, Red Hat Middleware LLC, and individual contributors
+ * by the @authors tag. See the copyright.txt in the distribution for a
+ * full listing of individual contributors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,12 @@
  */
 package org.arquillian.spacelift.process;
 
-
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
- * Represents a process interaction that is handled in non-interactive manner
+ * An object that encapsulates interaction with process.
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
  *
@@ -27,41 +29,45 @@ package org.arquillian.spacelift.process;
 public interface ProcessInteraction {
 
     /**
-     * Checks whether process requires any interaction on its input
+     * Returns text that is typed in after process is started, might be {@code null}
      *
-     * @return {@code true} if so, {@code false} otherwise
+     * @return
      */
-    boolean requiresInputInteraction();
+    String textTypedIn();
 
     /**
-     * Returns an answer that should be used to reply the question
+     * Returns a map that defines what should be written to stdin of running process based on its stdout
      *
-     * @param sentence the question
-     * @return Answer to be used to response to sentence
+     * @return
      */
-    Answer repliesTo(Sentence sentence);
+    Map<Pattern, String> replyMap();
 
     /**
-     * Checks if the current line should be propagate to standard output
+     * Returns a list of patterns that are propagated to standard output of process running this process via Spacelift
      *
-     * @param sentence current line
-     * @return {@code true} if output is to be printed out
+     * @return
      */
-    boolean shouldOutput(Sentence sentence);
+    List<Pattern> allowedOutput();
 
     /**
-     * Checks if the current line should be propagate to standard error output
+     * Returns a list of patterns that are propagated to error output of process running this process via Spacelift
      *
-     * @param sentence current line
-     * @return {@code true} if output is to be printed out to error output
+     * @return
      */
-    boolean shouldOutputToErr(Sentence sentence);
+    List<Pattern> errorOutput();
 
     /**
-     * Returns output transformer that is applied to sentences that should
-     * be propagated to either standard output or standard error output
+     * Returns a list of patterns that cause process to terminate forcefully
      *
-     * @return output transformer
+     * @return
      */
-    OutputTransformer outputTransformer();
+    List<Pattern> terminatingOutput();
+
+    /**
+     * Returns a transformer that can modify output printed to both standard and error output. Might be null to indicate that
+     * default {@link OutputTransformer} should be used
+     *
+     * @return
+     */
+    OutputTransformer transformer();
 }

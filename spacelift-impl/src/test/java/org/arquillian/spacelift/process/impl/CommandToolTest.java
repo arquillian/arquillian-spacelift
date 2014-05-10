@@ -7,7 +7,7 @@ import org.arquillian.spacelift.execution.Execution;
 import org.arquillian.spacelift.execution.ExecutionException;
 import org.arquillian.spacelift.execution.Tasks;
 import org.arquillian.spacelift.execution.impl.DefaultExecutionServiceFactory;
-import org.arquillian.spacelift.process.ProcessDetails;
+import org.arquillian.spacelift.process.ProcessResult;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.BeforeClass;
@@ -67,7 +67,7 @@ public class CommandToolTest {
         // run only on linux
         Assume.assumeThat(SystemUtils.IS_OS_LINUX, is(true));
 
-        Execution<ProcessDetails> yes = Tasks.prepare(CommandTool.class).programName("yes").parameters("spacelift")
+        Execution<ProcessResult> yes = Tasks.prepare(CommandTool.class).programName("yes").parameters("spacelift")
             .shouldExitWith(143)
             .execute();
 
@@ -79,9 +79,9 @@ public class CommandToolTest {
         yes.terminate();
         Assert.assertThat(yes.isFinished(), is(true));
 
-        ProcessDetails details = yes.await();
-        if (details != null) {
-            Assert.assertThat(details.getOutput().size(), is(not(0)));
+        ProcessResult result = yes.await();
+        if (result != null) {
+            Assert.assertThat(result.output().size(), is(not(0)));
         }
     }
 

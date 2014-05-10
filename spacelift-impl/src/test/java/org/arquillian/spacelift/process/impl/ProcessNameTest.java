@@ -89,7 +89,7 @@ public class ProcessNameTest {
             exception.expectMessage(containsString("java -bar -baz"));
 
             Tasks.prepare(CommandTool.class).programName("java").parameters("-bar", "-baz")
-                .interaction(new ProcessInteractionBuilder().prefix("").outputs(".*"))
+                .interaction(new ProcessInteractionBuilder().outputPrefix("").when(".*").printToOut())
                 .execute().await();
 
         } catch (ExecutionException e) {
@@ -113,7 +113,7 @@ public class ProcessNameTest {
             exception.expectMessage(containsString("java -bar -baz"));
 
             Tasks.prepare(CommandTool.class).programName("java").parameters("-bar", "-baz")
-                .interaction(new ProcessInteractionBuilder().outputs(".*"))
+                .interaction(new ProcessInteractionBuilder().when(".*").printToOut())
                 .execute().await();
 
         } catch (ExecutionException e) {

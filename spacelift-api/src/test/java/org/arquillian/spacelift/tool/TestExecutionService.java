@@ -139,7 +139,8 @@ class TestExecutionService implements ExecutionService {
         }
 
         @Override
-        public RESULT until(CountDownWatch timeout, ExecutionCondition<RESULT> condition) throws ExecutionException, TimeoutExecutionException {
+        public RESULT until(CountDownWatch timeout, ExecutionCondition<RESULT> condition) throws ExecutionException,
+            TimeoutExecutionException {
             return until(timeout.timeout(), timeout.getTimeUnit(), condition);
         }
     };

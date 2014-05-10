@@ -26,7 +26,7 @@ public interface OutputTransformer {
 
     /**
      * Transforms process output to a different string. This might be handy
-     * if you want to visually distinguish in between outputs of differents processes.
+     * if you want to visually distinguish in between outputs of different processes.
      *
      * @param output Sentence to be transformed
      * @return modified output

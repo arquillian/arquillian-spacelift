@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.arquillian.spacelift.execution.impl;
+package org.arquillian.spacelift.process.impl;
 
 import org.arquillian.spacelift.process.Sentence;
 
@@ -86,7 +86,7 @@ public class SentenceImpl implements Sentence {
      * @return
      */
     public boolean isEmpty() {
-        return sb.length() > 0;
+        return sb.length() == 0;
     }
 
     /**

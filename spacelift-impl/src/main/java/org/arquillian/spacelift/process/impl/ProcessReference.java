@@ -19,7 +19,7 @@ package org.arquillian.spacelift.process.impl;
 import org.arquillian.spacelift.execution.ExecutionException;
 
 /**
- * Holder of executed process that can be filled later on.
+ * Holder of executed process that can be asynchronously set later on.
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
  *

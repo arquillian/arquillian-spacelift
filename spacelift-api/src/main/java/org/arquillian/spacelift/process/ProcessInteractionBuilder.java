@@ -24,10 +24,10 @@ import java.util.regex.Pattern;
 
 /**
  * Builder API for process interaction. It uses regular expression to match allowed and error output.
- * 
+ *
  * @see ProcessInteraction
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
- * 
+ *
  */
 public class ProcessInteractionBuilder {
 
@@ -36,115 +36,130 @@ public class ProcessInteractionBuilder {
      */
     public static final ProcessInteraction NO_INTERACTION = new ProcessInteractionBuilder().build();
 
-    private Map<Pattern, Answer> replyMap;
+    private String textTypedIn;
+
+    private Map<Pattern, String> replyMap;
 
     private List<Pattern> allowedOutput;
 
     private List<Pattern> errorOutput;
 
+    private List<Pattern> terminatingOutput;
+
     private OutputTransformer transformer;
 
-    private Tuple tuple;
+    private Pattern lastPattern;
+
+    /**
+     * Definition of allowed actions when process starts
+     *
+     * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
+     *
+     */
+    public class StartingProcessInteractionBuilder {
+
+        /**
+         * Types in the {@code sentence} when process is started
+         *
+         * @param sentence the sentence
+         * @return current instance to allow chaining
+         */
+        public ProcessInteractionBuilder typeIn(String sentence) {
+            textTypedIn = sentence;
+            return ProcessInteractionBuilder.this;
+        }
+    }
+
+    /**
+     * Definition of allowed actions when output is matched
+     *
+     * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
+     *
+     */
+    public class MatchedOutputProcessInteractionBuilder {
+
+        /**
+         * Prints the {@code response} to stdin of the process
+         *
+         * @param response the response
+         * @return current instance to allow chaining
+         */
+        public ProcessInteractionBuilder replyWith(String response) {
+            replyMap.put(lastPattern, response);
+            return ProcessInteractionBuilder.this;
+        }
+
+        /**
+         * Forces current process to terminate
+         *
+         * @return current instance to allow chaining
+         */
+        public ProcessInteractionBuilder terminate() {
+            terminatingOutput.add(lastPattern);
+            return ProcessInteractionBuilder.this;
+        }
+
+        /**
+         * Echoes the line to standard output of the process running Spacelift
+         *
+         * @return current instance to allow chaining
+         */
+        public ProcessInteractionBuilder printToOut() {
+            allowedOutput.add(lastPattern);
+            return ProcessInteractionBuilder.this;
+        }
+
+        /**
+         * Echoes the line to error output of the process running Spacelift
+         *
+         * @return current instance to allow chaining
+         */
+        public ProcessInteractionBuilder printToErr() {
+            errorOutput.add(lastPattern);
+            return ProcessInteractionBuilder.this;
+        }
+
+    }
 
     /**
      * Creates empty interaction builder
      */
     public ProcessInteractionBuilder() {
-        this.replyMap = new LinkedHashMap<Pattern, Answer>();
+        this.replyMap = new LinkedHashMap<Pattern, String>();
         this.allowedOutput = new ArrayList<Pattern>();
         this.errorOutput = new ArrayList<Pattern>();
-        this.tuple = new Tuple();
-        this.transformer = new ProcessNamePrefixOutputTransformer();
+        this.terminatingOutput = new ArrayList<Pattern>();
+        this.transformer = null;
     }
 
     /**
-     * Marks a line that should be considered as a question to be answered. Must be followed by
-     * {@link ProcessInteractionBuilder#with(String)} call
-     * 
-     * @param outputLine The question
-     * @return current instance to allow chaining
-     */
-    public ProcessInteractionBuilder replyTo(String outputLine) {
-        if (tuple.question != null) {
-            throw new IllegalStateException("Unfinished replyTo().with() sequence, please append with(String) call");
-        }
-        tuple.question = Pattern.compile(outputLine);
-
-        return this;
-    }
-
-    /**
-     * Stores an answer for question defined by {@code replyTo} call
-     * 
-     * @param response the answer
-     * @return current instance to allow chaining
-     * @see ProcessInteractionBuilder#replyTo(String)
-     */
-    public ProcessInteractionBuilder with(String response) {
-        if (tuple.question == null) {
-            throw new IllegalStateException("Unfinished replyTo().with() sequence, please prepend replyTo(String) call");
-        }
-        tuple.answer = new TextAnswer(response);
-
-        replyMap.put(tuple.question, tuple.answer);
-        tuple = new Tuple();
-
-        return this;
-    }
-
-    /**
-     * Stores an answer for question defined by {@code replyTo} call
-     * 
-     * @param response the answer
-     * @return current instance to allow chaining
-     * @see ProcessInteractionBuilder#replyTo(String)
-     */
-    public ProcessInteractionBuilder with(Answer response) {
-        if (tuple.question == null) {
-            throw new IllegalStateException("Unfinished replyTo().with() sequence, please prepend replyTo(String) call");
-        }
-        tuple.answer = response;
-
-        replyMap.put(tuple.question, tuple.answer);
-        tuple = new Tuple();
-
-        return this;
-
-    }
-
-    /**
-     * Adds {@code outputLine} that should be printed out to standard output
-     * 
+     * Defines an interaction when {@code pattern} is matched
+     *
      * @param pattern the line
      * @return current instance to allow chaining
      */
-    public ProcessInteractionBuilder outputs(String pattern) {
-
-        Pattern p = Pattern.compile(pattern);
-        allowedOutput.add(p);
-        return this;
+    public MatchedOutputProcessInteractionBuilder when(String pattern) {
+        this.lastPattern = Pattern.compile(pattern);
+        return new MatchedOutputProcessInteractionBuilder();
     }
 
     /**
-     * Adds {@code outputLine} that should be printed out to standard error output
-     * 
-     * @param pattern the line
+     * Defines an interaction when process is started
+     *
      * @return current instance to allow chaining
      */
-    public ProcessInteractionBuilder errors(String pattern) {
-        Pattern p = Pattern.compile(pattern);
-        errorOutput.add(p);
-        return this;
+    public StartingProcessInteractionBuilder whenStarts() {
+        return new StartingProcessInteractionBuilder();
     }
 
     /**
      * Defines a prefix for standard output and standard error output. Might be {@code null} or empty string, in such case no
      * prefix is added and process outputs cannot be distinguished
-     * 
+     *
      * @param prefix the prefix
      * @return current instance to allow chaining
      */
-    public ProcessInteractionBuilder prefix(final String prefix) {
+    public ProcessInteractionBuilder outputPrefix(final String prefix) {
         if (prefix == null || "".equals(prefix)) {
             this.transformer = new OutputTransformer() {
                 @Override
@@ -167,78 +182,66 @@ public class ProcessInteractionBuilder {
 
     /**
      * Builds {@link ProcessInteraction} object from defined data
-     * 
+     *
      * @return {@link ProcessInteraction}
      */
     public ProcessInteraction build() {
-        if (tuple.question != null) {
-            throw new IllegalStateException("Unfinished replyTo().with() sequence, please append with(String) call");
-        }
-
-        return new ProcessInteractionImpl(replyMap, transformer, allowedOutput, errorOutput);
-    }
-
-    private static class Tuple {
-        Pattern question;
-        Answer answer;
+        return new ProcessInteractionImpl(replyMap, transformer, allowedOutput, errorOutput, terminatingOutput, textTypedIn);
     }
 
     private static class ProcessInteractionImpl implements ProcessInteraction {
 
-        private final Map<Pattern, Answer> replyMap;
+        private final String textTypedIn;
+
+        private final Map<Pattern, String> replyMap;
 
         private final List<Pattern> allowedOutput;
 
         private final List<Pattern> errorOutput;
 
+        private final List<Pattern> terminatingOutput;
+
         private final OutputTransformer transformer;
 
-        ProcessInteractionImpl(Map<Pattern, Answer> replyMap, OutputTransformer outputTransformer, List<Pattern> allowedOutput, List<Pattern> errorOutput) {
+        public ProcessInteractionImpl(Map<Pattern, String> replyMap, OutputTransformer outputTransformer, List<Pattern> allowedOutput,
+            List<Pattern> errorOutput, List<Pattern> terminatingOutput, String textTypedIn) {
             this.replyMap = replyMap;
             this.transformer = outputTransformer;
             this.allowedOutput = allowedOutput;
             this.errorOutput = errorOutput;
+            this.terminatingOutput = terminatingOutput;
+            this.textTypedIn = textTypedIn;
         }
 
         @Override
-        public Answer repliesTo(Sentence sentence) {
-            for (Map.Entry<Pattern, Answer> entry : replyMap.entrySet()) {
-                if (entry.getKey().matcher(sentence).matches()) {
-                    return entry.getValue();
-                }
-            }
-            return NoAnswer.INSTANCE;
+        public List<Pattern> allowedOutput() {
+            return allowedOutput;
         }
 
         @Override
-        public boolean shouldOutput(Sentence sentence) {
-            for (Pattern p : allowedOutput) {
-                if (p.matcher(sentence).matches()) {
-                    return true;
-                }
-            }
-            return false;
-
+        public List<Pattern> errorOutput() {
+            return errorOutput;
         }
 
         @Override
-        public boolean shouldOutputToErr(Sentence sentence) {
-            for (Pattern p : errorOutput) {
-                if (p.matcher(sentence).matches()) {
-                    return true;
-                }
-            }
-            return false;
+        public Map<Pattern, String> replyMap() {
+            return replyMap;
         }
 
         @Override
-        public boolean requiresInputInteraction() {
-            return !replyMap.isEmpty();
+        public List<Pattern> terminatingOutput() {
+            return terminatingOutput;
         }
 
         @Override
-        public OutputTransformer outputTransformer() {
+        public String textTypedIn() {
+            return textTypedIn;
+        }
+
+        @Override
+        public OutputTransformer transformer() {
             return transformer;
         }
+
     }
 }

@@ -16,42 +16,35 @@
  */
 package org.arquillian.spacelift.process;
 
-import java.io.IOException;
-
-import org.arquillian.spacelift.execution.Execution;
+import java.util.List;
 
 /**
- * Represents an empty or no answer. It simply does nothing at all.
+ * An abstraction for process execution result. Allows to get process output and exit value
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
  *
  */
-public enum NoAnswer implements Answer {
+public interface ProcessResult {
 
-    INSTANCE;
+    /**
+     * Returns name of the process that was executed
+     *
+     * @return
+     */
+    String processName();
 
-    @Override
-    public int length() {
-        return 0;
-    }
+    /**
+     * Returns output of the process split per line
+     *
+     * @return
+     */
+    List<String> output();
 
-    @Override
-    public char charAt(int index) {
-        return 0;
-    }
-
-    @Override
-    public CharSequence subSequence(int start, int end) {
-        return "";
-    }
-
-    @Override
-    public <RETURNTYPE> void reply(Execution<RETURNTYPE> execution) throws IOException {
-    }
-
-    @Override
-    public String toString() {
-        return "";
-    }
-
+    /**
+     * Returns exit value of the process
+     *
+     * @return
+     * @throws IllegalStateException If exit value could not have been determined
+     */
+    Integer exitValue() throws IllegalStateException;
 }
