@@ -116,16 +116,19 @@ ProcessInteraction defines a way how to interact with and handle output of proce
 available:
 
 Input handling::
-	Use +replyTo(String)+ and +with(String)+ or +with(Answer)+ to define non-interactive handling of process input.
-	Process output, split into separate lines is matched against pattern provided by +replyTo(String)+. Answer can either
-	be a string to be typed or you can force process termination by using +TerminateAnswer+
+	Use +when(String)+ and +replyWith(String)+ or +terminate()+ to define non-interactive handling of process input.
+	Process output, split into separate lines is matched against pattern provided by +when(String)+. Answer can either
+	be a string to be typed or you can force process termination by using +terminate()+
 Output/error printing::
-	Use +output(String)+ or +errors(String)+ to define pattern that if matched against output line, are printed either to 
+	Use +when(String)+ and +printToOut()+ or +printToErr(String)+ to define patterns that if matched against output line, are printed either to 
 	standard output or standard error output
 Process name::
-	By default, a process output is prefixed by process name, defined by first parameter of +Command+. Use +prefix(String)+ 
+	By default, a process output is prefixed by process name, defined by first parameter of +Command+. Use +outputPrefix(String)+ 
 	call to override this prefix. You can also set it to +null+ or empty string if you want process output to be indistinguishable
 	from other output
+Initial input::
+	Some commands might require you to provide input before the very first output is available. In such cases, you +whenStarts()+ 
+	and +typeIn(String)+ to provide text that will be written to process input right after process is started	
 
 == TODO
 
