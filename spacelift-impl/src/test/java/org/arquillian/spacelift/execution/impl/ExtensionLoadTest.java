@@ -16,17 +16,29 @@
  */
 package org.arquillian.spacelift.execution.impl;
 
+import org.arquillian.spacelift.execution.ExecutionService;
+import org.arquillian.spacelift.execution.Tasks;
 import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.arquillian.test.api.ArquillianResource;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+
 @RunWith(Arquillian.class)
 public class ExtensionLoadTest {
 
+    @ArquillianResource
+    ExecutionService executionService;
+
     @Test
     public void ensureExtensionCanBeLoaded() {
-        // this does nothing
-        Assert.assertTrue(true);
+        Assert.assertThat("Extension was loaded and ExecutionServiceFactory was set",
+            Tasks.getExecutionServiceFactoryInstance(),
+            is(notNullValue()));
+
+        Assert.assertThat("ExecutionService was injected", executionService, is(notNullValue()));
     }
 }

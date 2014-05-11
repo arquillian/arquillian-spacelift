@@ -36,6 +36,8 @@ public class ArquillianSpaceliftExtension implements LoadableExtension {
     public void register(ExtensionBuilder extension) {
         extension.service(ExecutionServiceFactory.class, DefaultExecutionServiceFactory.class);
         extension.service(ResourceProvider.class, ExecutionServiceResourceProvider.class);
+
+        extension.observer(ArquillianSpaceliftBooter.class);
         extension.observer(ExecutionServiceCreator.class);
         extension.observer(ToolRegistrar.class);
     }
