@@ -61,6 +61,19 @@ public class CommandBuilder {
     }
 
     /**
+     * Cloning constructor that creates a command builder based on this command builder.
+     * @param builder the builder to be cloned
+     * @throws IllegalArgumentException if {@code builder} in {@code null}
+     */
+    public CommandBuilder(CommandBuilder builder) {
+        if(builder == null) {
+            throw new IllegalArgumentException("CommandBuilder must not be null");
+        }
+        this.programName = builder.programName;
+        this.parameters = new ArrayList<String>(builder.parameters);
+    }
+
+    /**
      * Adds a list of parameters to the command under construction, ignoring null and empty parameters.
      *
      * @param parameters parameters we are adding to the already existing list

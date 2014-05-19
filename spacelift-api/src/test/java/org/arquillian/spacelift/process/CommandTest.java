@@ -147,4 +147,17 @@ public class CommandTest {
         assertThat(command.toString(), equalTo(command2.toString()));
     }
 
+    @Test
+    public void cloneBuilders() {
+        CommandBuilder command = new CommandBuilder("java", "-foo", "-bar");
+        CommandBuilder command2 = new CommandBuilder(command);
+
+        assertThat(command.toString(), equalTo(command2.toString()));
+
+        command.parameter("-baz");
+
+        assertThat(command.toString(), not(equalTo(command2.toString())));
+
+    }
+
 }

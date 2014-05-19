@@ -172,16 +172,14 @@ public class CommandTool extends Tool<Object, ProcessResult> {
      *
      * By default, allowed exit code is set to {@code 0}
      *
-     *
-     * @param code the exit code
+     * @param exitCodes the exit code
      * @param others possible other codes
      * @return
      * @see ExecutionException
      */
-    public CommandTool shouldExitWith(Integer code, Integer... others) {
-        allowedExitCodes.add(code);
-        if (others.length > 0) {
-            allowedExitCodes.addAll(Arrays.asList(others));
+    public CommandTool shouldExitWith(Integer... exitCodes) {
+        if (exitCodes.length > 0) {
+            allowedExitCodes.addAll(Arrays.asList(exitCodes));
         }
         return this;
     }
