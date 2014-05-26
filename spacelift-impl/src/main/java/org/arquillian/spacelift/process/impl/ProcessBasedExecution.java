@@ -17,6 +17,7 @@
 package org.arquillian.spacelift.process.impl;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -93,14 +94,7 @@ public class ProcessBasedExecution<RESULT> implements Execution<RESULT> {
             return markAsFinished();
         }
 
-        processReference.getProcess().destroy();
-        try {
-            processReference.getProcess().waitFor();
-        } catch (InterruptedException e) {
-            log.log(Level.WARNING, "Ignoring Interuption Exception while terminating the process {0}", processName);
-        }
-
-        // close STDIN of the process, if any
+        // close STDOUT of the process, if any
         OutputStream ostream = processReference.getProcess().getOutputStream();
         try {
             if (ostream != null) {
@@ -109,6 +103,33 @@ public class ProcessBasedExecution<RESULT> implements Execution<RESULT> {
             }
         } catch (IOException e) {
             log.log(Level.WARNING, "Ignoring IO exception while terminating the process {0}", processName);
+        }
+
+        // close STDERR of the process, if any
+        InputStream errorStream = processReference.getProcess().getErrorStream();
+        try {
+            if (errorStream != null) {
+                errorStream.close();
+            }
+        } catch (IOException e) {
+            log.log(Level.WARNING, "Ignoring IO exception while terminating the process {0}", processName);
+        }
+
+        // close STDIN of the process, if any
+        InputStream inputStream = processReference.getProcess().getInputStream();
+        try {
+            if (inputStream != null) {
+                inputStream.close();
+            }
+        } catch (IOException e) {
+            log.log(Level.WARNING, "Ignoring IO exception while terminating the process {0}", processName);
+        }
+
+        processReference.getProcess().destroy();
+        try {
+            processReference.getProcess().waitFor();
+        } catch (InterruptedException e) {
+            log.log(Level.WARNING, "Ignoring Interuption Exception while terminating the process {0}", processName);
         }
 
         return this;
