@@ -59,7 +59,7 @@ public class DaemonHookTest {
         Assume.assumeThat(SystemUtils.IS_OS_LINUX, is(true));
 
         Execution<ProcessResult> yes = Tasks.prepare(CommandTool.class).programName("yes").parameters("spacelift")
-            .shouldExitWith(143)
+            .shouldExitWith(141,143)
             .execute();
 
         // wait until process has started
@@ -83,7 +83,7 @@ public class DaemonHookTest {
         Assume.assumeThat(SystemUtils.IS_OS_LINUX, is(true));
 
         Execution<ProcessResult> yes = Tasks.prepare(CommandTool.class).programName("yes").parameters("spacelift")
-            .shouldExitWith(143)
+            .shouldExitWith(141,143)
             .runAsDaemon().execute();
 
         // wait until process has started

@@ -312,4 +312,11 @@ public class CommandTool extends Tool<Object, ProcessResult> {
 
         return result;
     }
+
+    @Override
+    public String toString() {
+        return new StringBuilder()
+            .append(commandBuilder)
+            .toString();
+    }
 }
