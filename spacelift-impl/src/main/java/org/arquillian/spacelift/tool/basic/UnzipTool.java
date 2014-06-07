@@ -24,6 +24,7 @@ import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
 import org.arquillian.spacelift.execution.ExecutionException;
+import org.arquillian.spacelift.execution.InvalidSetupException;
 import org.arquillian.spacelift.tool.Tool;
 
 /**
@@ -69,5 +70,12 @@ public class UnzipTool extends Tool<File, File> {
             throw new ExecutionException(e, "Unable to unzip {0} to {1}", input, dest);
         }
         return dest;
+    }
+
+    @Override
+    protected void validate() throws InvalidSetupException {
+        if (dest == null) {
+            throw new InvalidSetupException("Destination to unzip a file to can not be a null object!");
+        }
     }
 }

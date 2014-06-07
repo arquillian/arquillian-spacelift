@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.arquillian.spacelift.execution.Execution;
 import org.arquillian.spacelift.execution.ExecutionException;
+import org.arquillian.spacelift.execution.InvalidSetupException;
 import org.arquillian.spacelift.execution.Task;
 import org.arquillian.spacelift.process.Command;
 
@@ -104,6 +105,10 @@ class SpawnProcessTask extends Task<Object, Process> {
         builder.environment().putAll(environment);
         builder.redirectErrorStream(redirectErrorStream);
         return builder.start();
+    }
+
+    @Override
+    protected void validate() throws InvalidSetupException {        
     }
 
 }

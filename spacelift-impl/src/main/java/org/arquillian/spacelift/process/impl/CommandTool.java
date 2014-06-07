@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.arquillian.spacelift.execution.Execution;
 import org.arquillian.spacelift.execution.ExecutionException;
+import org.arquillian.spacelift.execution.InvalidSetupException;
 import org.arquillian.spacelift.execution.Tasks;
 import org.arquillian.spacelift.process.Command;
 import org.arquillian.spacelift.process.CommandBuilder;
@@ -311,5 +312,9 @@ public class CommandTool extends Tool<Object, ProcessResult> {
         }
 
         return result;
+    }
+
+    @Override
+    protected void validate() throws InvalidSetupException {
     }
 }

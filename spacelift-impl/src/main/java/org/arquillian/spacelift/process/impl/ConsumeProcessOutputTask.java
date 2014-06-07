@@ -31,6 +31,7 @@ import java.util.regex.Pattern;
 
 import org.arquillian.spacelift.execution.Execution;
 import org.arquillian.spacelift.execution.ExecutionException;
+import org.arquillian.spacelift.execution.InvalidSetupException;
 import org.arquillian.spacelift.execution.Task;
 import org.arquillian.spacelift.process.OutputTransformer;
 import org.arquillian.spacelift.process.ProcessInteraction;
@@ -272,6 +273,10 @@ class ConsumeProcessOutputTask extends Task<Execution<Process>, ProcessResult> {
         public boolean requiresInputInteraction() {
             return !interaction.replyMap().isEmpty() || (interaction.textTypedIn() != null && interaction.textTypedIn() != "");
         }
+    }
+
+    @Override
+    protected void validate() throws InvalidSetupException {
     }
 
 }

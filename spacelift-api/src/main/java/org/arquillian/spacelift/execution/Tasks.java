@@ -75,6 +75,10 @@ public class Tasks {
             return nextIn;
         }
 
+        @Override
+        protected void validate() throws InvalidSetupException { 
+        }
+
     }
 
 }

@@ -35,11 +35,20 @@ public abstract class Task<IN, OUT> {
      *
      * @return Execution object that allows later retrieved result of the task
      * @throws ExecutionException
+     * @throws InvalidSetupException
      */
-    public Execution<OUT> execute() throws ExecutionException {
+    public Execution<OUT> execute() throws ExecutionException, InvalidSetupException {
 
         if (getExecutionService() == null) {
             throw new ExecutionException("Unable to execute a task, execution service was not set.");
+        }
+
+        try {
+            Task.this.validate();
+        } catch (InvalidSetupException ex) {
+            throw new InvalidSetupException(
+                String.format("Task %s is not set up properly, it failed to pass the validation process.",
+                    Task.this.getClass().getName()));
         }
 
         return getExecutionService().execute(new Callable<OUT>() {
@@ -58,6 +67,13 @@ public abstract class Task<IN, OUT> {
      * @throws Exception if processing fails for any reason
      */
     protected abstract OUT process(IN input) throws Exception;
+
+    /**
+     * Validates an environment of a task before it is executed.
+     * 
+     * @throws InvalidSetupException in case task is badly set up
+     */
+    protected abstract void validate() throws InvalidSetupException;
 
     /**
      * Transforms a chain of tasks into action that will be executed asynchronously.
@@ -80,8 +96,8 @@ public abstract class Task<IN, OUT> {
     }
 
     /**
-     * Returns {@see ExecutionService}. If using {@see Tasks} or {@see ToolRegistry}, this method is guaranteed to never
-     * return {@code null}
+     * Returns {@see ExecutionService}. If using {@see Tasks} or {@see ToolRegistry}, this method is guaranteed to never return
+     * {@code null}
      *
      * @return
      */

@@ -10,6 +10,7 @@ import org.arquillian.spacelift.execution.ExecutionCondition;
 import org.arquillian.spacelift.execution.ExecutionException;
 import org.arquillian.spacelift.execution.ExecutionService;
 import org.arquillian.spacelift.execution.ExecutionServiceFactory;
+import org.arquillian.spacelift.execution.InvalidSetupException;
 import org.arquillian.spacelift.execution.Task;
 import org.arquillian.spacelift.execution.Tasks;
 import org.arquillian.spacelift.execution.TimeoutExecutionException;
@@ -19,7 +20,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
-
 import static org.junit.Assert.assertThat;
 
 public class TaskChainTest {
@@ -29,6 +29,10 @@ public class TaskChainTest {
         @Override
         protected StringWriter process(Object input) throws Exception {
             return new StringWriter();
+        }
+
+        @Override
+        protected void validate() throws InvalidSetupException {
         }
     }
 
@@ -51,12 +55,20 @@ public class TaskChainTest {
 
             return new StringReader(input.toString());
         }
+
+        @Override
+        protected void validate() throws InvalidSetupException {
+        }
     }
 
     public static class MyStringReader extends Task<StringReader, String> {
         @Override
         protected String process(StringReader input) throws Exception {
             return input.toString();
+        }
+
+        @Override
+        protected void validate() throws InvalidSetupException {
         }
     }
 
@@ -74,6 +86,10 @@ public class TaskChainTest {
             // System.out.println("Executing chain no. " + count.incrementAndGet());
             // return count.get();
             return count.incrementAndGet();
+        }
+
+        @Override
+        protected void validate() throws InvalidSetupException {
         }
 
     }

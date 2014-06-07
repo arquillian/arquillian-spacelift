@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.arquillian.spacelift.execution.ExecutionException;
+import org.arquillian.spacelift.execution.InvalidSetupException;
 import org.arquillian.spacelift.process.Command;
 import org.arquillian.spacelift.process.CommandBuilder;
 
@@ -57,5 +58,9 @@ class TestJavaTool extends Tool<Object, Object> {
 
     public Command getCommand() {
         return builder.build();
+    }
+
+    @Override
+    protected void validate() throws InvalidSetupException {
     }
 }
