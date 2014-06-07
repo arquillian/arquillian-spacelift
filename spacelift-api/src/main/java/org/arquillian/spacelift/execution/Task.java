@@ -35,9 +35,9 @@ public abstract class Task<IN, OUT> {
      *
      * @return Execution object that allows later retrieved result of the task
      * @throws ExecutionException
-     * @throws InvalidSetupException
+     * @throws ValidationException
      */
-    public Execution<OUT> execute() throws ExecutionException, InvalidSetupException {
+    public Execution<OUT> execute() throws ExecutionException, ValidationException {
 
         if (getExecutionService() == null) {
             throw new ExecutionException("Unable to execute a task, execution service was not set.");
@@ -45,10 +45,10 @@ public abstract class Task<IN, OUT> {
 
         try {
             Task.this.validate();
-        } catch (InvalidSetupException ex) {
-            throw new InvalidSetupException(
-                String.format("Task %s is not set up properly, it failed to pass the validation process.",
-                    Task.this.getClass().getName()));
+        } catch (ValidationException ex) {
+            throw new ValidationException(
+                String.format("Task %s is not set up properly, it failed to pass the validation process, reason: %s",
+                    Task.this.getClass().getName(), ex.getMessage()));
         }
 
         return getExecutionService().execute(new Callable<OUT>() {
@@ -71,9 +71,9 @@ public abstract class Task<IN, OUT> {
     /**
      * Validates an environment of a task before it is executed.
      * 
-     * @throws InvalidSetupException in case task is badly set up
+     * @throws ValidationException in case task is badly set up
      */
-    protected abstract void validate() throws InvalidSetupException;
+    protected abstract void validate() throws ValidationException;
 
     /**
      * Transforms a chain of tasks into action that will be executed asynchronously.

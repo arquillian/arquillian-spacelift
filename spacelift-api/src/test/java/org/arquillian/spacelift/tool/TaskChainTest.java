@@ -10,7 +10,7 @@ import org.arquillian.spacelift.execution.ExecutionCondition;
 import org.arquillian.spacelift.execution.ExecutionException;
 import org.arquillian.spacelift.execution.ExecutionService;
 import org.arquillian.spacelift.execution.ExecutionServiceFactory;
-import org.arquillian.spacelift.execution.InvalidSetupException;
+import org.arquillian.spacelift.execution.ValidationException;
 import org.arquillian.spacelift.execution.Task;
 import org.arquillian.spacelift.execution.Tasks;
 import org.arquillian.spacelift.execution.TimeoutExecutionException;
@@ -32,7 +32,7 @@ public class TaskChainTest {
         }
 
         @Override
-        protected void validate() throws InvalidSetupException {
+        protected void validate() throws ValidationException {
         }
     }
 
@@ -57,7 +57,7 @@ public class TaskChainTest {
         }
 
         @Override
-        protected void validate() throws InvalidSetupException {
+        protected void validate() throws ValidationException {
         }
     }
 
@@ -68,7 +68,7 @@ public class TaskChainTest {
         }
 
         @Override
-        protected void validate() throws InvalidSetupException {
+        protected void validate() throws ValidationException {
         }
     }
 
@@ -89,7 +89,7 @@ public class TaskChainTest {
         }
 
         @Override
-        protected void validate() throws InvalidSetupException {
+        protected void validate() throws ValidationException {
         }
 
     }

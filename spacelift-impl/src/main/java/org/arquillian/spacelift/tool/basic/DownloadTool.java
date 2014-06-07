@@ -27,7 +27,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.arquillian.spacelift.execution.ExecutionException;
-import org.arquillian.spacelift.execution.InvalidSetupException;
+import org.arquillian.spacelift.execution.ValidationException;
 import org.arquillian.spacelift.tool.Tool;
 
 /**
@@ -108,12 +108,12 @@ public class DownloadTool extends Tool<Object, File> {
     }
 
     @Override
-    protected void validate() throws InvalidSetupException {
+    protected void validate() throws ValidationException {
         if (url == null) {
-            throw new InvalidSetupException("Source URL was not set");
+            throw new ValidationException("Source URL was not set");
         }
         if (output == null) {
-            throw new InvalidSetupException("Destination file was not set");
+            throw new ValidationException("Destination file was not set");
         }
     }
 

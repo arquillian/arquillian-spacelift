@@ -22,23 +22,23 @@ package org.arquillian.spacelift.execution;
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
  *
  */
-public class InvalidSetupException extends RuntimeException {
+public class ValidationException extends RuntimeException {
 
     private static final long serialVersionUID = 5452817162681723234L;
 
-    public InvalidSetupException() {
+    public ValidationException() {
         super();
     }
 
-    public InvalidSetupException(String message, Throwable cause) {
+    public ValidationException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public InvalidSetupException(String message) {
+    public ValidationException(String message) {
         super(message);
     }
 
-    public InvalidSetupException(Throwable cause) {
+    public ValidationException(Throwable cause) {
         super(cause);
     }
 

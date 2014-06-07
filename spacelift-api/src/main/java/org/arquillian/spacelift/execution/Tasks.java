@@ -76,7 +76,7 @@ public class Tasks {
         }
 
         @Override
-        protected void validate() throws InvalidSetupException { 
+        protected void validate() throws ValidationException { 
         }
 
     }

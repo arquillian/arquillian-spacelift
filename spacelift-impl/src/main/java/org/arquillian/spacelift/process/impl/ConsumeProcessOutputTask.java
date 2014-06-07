@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 
 import org.arquillian.spacelift.execution.Execution;
 import org.arquillian.spacelift.execution.ExecutionException;
-import org.arquillian.spacelift.execution.InvalidSetupException;
+import org.arquillian.spacelift.execution.ValidationException;
 import org.arquillian.spacelift.execution.Task;
 import org.arquillian.spacelift.process.OutputTransformer;
 import org.arquillian.spacelift.process.ProcessInteraction;
@@ -276,7 +276,7 @@ class ConsumeProcessOutputTask extends Task<Execution<Process>, ProcessResult> {
     }
 
     @Override
-    protected void validate() throws InvalidSetupException {
+    protected void validate() throws ValidationException {
     }
 
 }
