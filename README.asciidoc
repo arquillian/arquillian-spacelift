@@ -52,6 +52,10 @@ I already have input for a task. How do I pass it to the task?::
     Just call +Tasks.chain(input, NextTaskName.class)+
 How do I create my own tasks?::
     Extend abstract class +Task+ and implement +process(INPUT)+ method.
+How is my task validated?::
+    In order to be sure that your task has everything it needs in order to be executed properly, you are welcome to implement +validate+ method of +Task+ class.
+    This method is automatically called upon task execution. The most common implementation of this method would check if 
+    variables exposed to user of that task are set properly (meaning they are e.g. not null objects). Any arbitrary checking logic is possible as well.
 
 ==== Execution
 
