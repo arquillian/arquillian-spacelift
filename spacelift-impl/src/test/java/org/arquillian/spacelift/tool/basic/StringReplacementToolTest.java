@@ -16,16 +16,12 @@
  */
 package org.arquillian.spacelift.tool.basic;
 
-import static org.junit.Assert.*;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Scanner;
-
 import org.arquillian.spacelift.execution.Tasks;
 import org.arquillian.spacelift.execution.impl.DefaultExecutionServiceFactory;
+import org.arquillian.spacelift.task.io.FileReader;
+import org.arquillian.spacelift.task.io.FileWriter;
+import org.arquillian.spacelift.task.selector.FileSelector;
+import org.arquillian.spacelift.tool.io.WriteToFileTool;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -33,26 +29,36 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
 /**
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
 @RunWith(JUnit4.class)
-public class SedToolTest {
+public class StringReplacementToolTest {
 
     private File tempFile = null;
 
     private String contentBefore = "this is some testing (temporary) file where I want to\n" +
-        "replace strings for another ones by Spacelift Sed tool\n" +
-        "This is the third row in it.";
+            "replace strings for another ones by Spacelift Sed tool\n" +
+            "This is the third row in it.";
 
     private String contentAfter1 = "this is sOme testing (tempOrary) file where I want tO\n" +
-        "replace strings fOr anOther Ones by Spacelift Sed tOOl\n" +
-        "This is the third rOw in it.";
+            "replace strings fOr anOther Ones by Spacelift Sed tOOl\n" +
+            "This is the third rOw in it.";
 
     private String contentAfter2 = ".... .. .... ....... ........... .... ..... . .... ..\n" +
-        "....... ....... ... ....... .... .. ......... ... ....\n" +
-        ".... .. ... ..... ... .. ...";
+            "....... ....... ... ....... .... .. ......... ... ....\n" +
+            ".... .. ... ..... ... .. ...";
+
+    private String contentAfter3 = "thisisis isisis some testing (temporary) file where I want to\n" +
+            "replace strings for another ones by Spacelift Sed tool\n" +
+            "Thisisis isisis the third row in it.";
 
     @BeforeClass
     public static void setup() {
@@ -62,6 +68,10 @@ public class SedToolTest {
     @Before
     public void before() throws IOException {
         tempFile = File.createTempFile("sed-test", ".tmp");
+
+        Tasks.prepare(WriteToFileTool.class)
+                .write(contentBefore).to(tempFile)
+                .execute().await();
     }
 
     @After
@@ -73,44 +83,38 @@ public class SedToolTest {
 
     @Test
     public void replacementTest() throws Exception {
+        Tasks.prepare(StringReplacementTool.class)
+                .in(tempFile)
+                .replace("o").with("O")
+                .execute().await();
 
-        writeToFile(tempFile, contentBefore);
-
-        Tasks.prepare(SedTool.class).file(tempFile)
-            .replace("o")
-            .replaceWith("O")
-            .execute().await();
-
-        assertEquals(contentAfter1, readFromFile(tempFile));
+        assertThat(readFromFile(tempFile), is(contentAfter1));
     }
 
     @Test
     public void replacementRegexTest() throws Exception {
+        Tasks.prepare(StringReplacementTool.class)
+                .in(tempFile)
+                .replace("[^ \n]").with(".")
+                .execute().await();
 
-        writeToFile(tempFile, contentBefore);
-
-        Tasks.prepare(SedTool.class).file(tempFile)
-            .replace("[^ ]")
-            .replaceWith(".")
-            .execute().await();
-
-        assertEquals(contentAfter2, readFromFile(tempFile));
+        assertThat(readFromFile(tempFile), is(contentAfter2));
     }
 
-    private String readFromFile(File file) throws FileNotFoundException {
-        Scanner scanner = new Scanner(file).useDelimiter("\\Z");
+    @Test
+    public void replacementRegexGroupTest() {
+        Tasks.prepare(StringReplacementTool.class)
+                .in(tempFile)
+                .replace("(is)").with("$1$1$1")
+                .execute().await();
 
-        String text = null;
-
-        text = scanner.next();
-        scanner.close();
-
-        return text;
+        assertThat(readFromFile(tempFile), is(contentAfter3));
     }
 
-    private void writeToFile(File file, String text) throws FileNotFoundException, IOException {
-        FileOutputStream out = new FileOutputStream(file);
-        out.write(text.getBytes());
-        out.close();
+    private String readFromFile(File file) {
+        return Tasks.prepare(FileSelector.class)
+                .select(file)
+                .then(FileReader.class)
+                .execute().await().values().iterator().next();
     }
 }
