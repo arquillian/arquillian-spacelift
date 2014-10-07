@@ -33,7 +33,7 @@ public class SpaceliftThreadFactory implements ThreadFactory {
     public Thread newThread(Runnable r) {
         Thread spaceliftThread = new Thread(r);
 
-        spaceliftThread.setName("spacelift-thread-" + atomicInteger.incrementAndGet());
+        spaceliftThread.setName("spacelift-thread-" + atomicInteger.getAndIncrement());
 
         return spaceliftThread;
     }
