@@ -22,6 +22,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import org.arquillian.spacelift.execution.Execution;
@@ -40,8 +41,11 @@ public class ExecutionServiceImpl implements ExecutionService {
     private final ScheduledExecutorService scheduledService;
 
     public ExecutionServiceImpl() {
-        this.service = Executors.newCachedThreadPool();
-        this.scheduledService = Executors.newScheduledThreadPool(1);
+
+        final ThreadFactory threadFactory = new SpaceliftThreadFactory();
+
+        this.service = Executors.newCachedThreadPool(threadFactory);
+        this.scheduledService = Executors.newScheduledThreadPool(1, threadFactory);
     }
 
     @Override
