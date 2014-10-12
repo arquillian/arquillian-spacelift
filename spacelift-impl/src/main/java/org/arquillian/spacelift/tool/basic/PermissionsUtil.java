@@ -19,7 +19,7 @@ package org.arquillian.spacelift.tool.basic;
 import java.io.File;
 
 /**
- * File util
+ * Permissions util
  *
  * @author <a href="asotobu@gmail.com">Alex Soto</a>
  *
