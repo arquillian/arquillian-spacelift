@@ -76,8 +76,7 @@ public abstract class UncompressTool extends Tool<File, File> {
             File file = new File(this.dest, entry.getName());
 
             if (entry.isDirectory()) {
-                File f = file;
-                f.mkdirs();
+                file.mkdirs();
             } else {
 
                 if (!file.getParentFile().exists()) {
