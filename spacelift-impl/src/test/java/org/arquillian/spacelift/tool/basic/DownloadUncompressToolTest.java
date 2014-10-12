@@ -29,7 +29,7 @@ import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 
-public class DownloadUnzipToolTest {
+public class DownloadUncompressToolTest {
 
     static ToolRegistry registry;
 
