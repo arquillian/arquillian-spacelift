@@ -41,7 +41,7 @@ public class UncompressToolTest {
 
     @Test
     public void extractZipFile() {
-        File helloExtracted = Tasks.chain(new File("target/classes/hello.zip"), UnzipTool.class)
+        File helloExtracted = Tasks.chain(new File("src/test/resources/hello.zip"), UnzipTool.class)
               .toDir("target/hellozip")
               .execute()
               .await();
@@ -50,7 +50,7 @@ public class UncompressToolTest {
 
     @Test
     public void extractTarGzFile() {
-        File helloExtracted = Tasks.chain(new File("target/classes/hello.tgz"), UntarTool.class)
+        File helloExtracted = Tasks.chain(new File("src/test/resources/hello.tgz"), UntarTool.class)
               .toDir("target/hellotgz")
               .execute()
               .await();
