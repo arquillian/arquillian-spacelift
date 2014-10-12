@@ -17,55 +17,67 @@
 package org.arquillian.spacelift.tool.basic;
 
 import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
-import org.apache.commons.compress.archivers.zip.AsiExtraField;
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
-import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
-import org.apache.commons.compress.archivers.zip.ZipExtraField;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.arquillian.spacelift.execution.ExecutionException;
 
 /**
- * Unzip Tool
+ * Untar Tool
  *
  * @author <a href="asotobu@gmail.com">Alex Soto</a>
  *
  */
-public class UnzipTool extends UncompressTool {
+public class UntarTool extends UncompressTool {
+
+    private boolean isGzipped = true;
+
+    public UntarTool gzip(boolean isGzip) {
+        this.isGzipped = isGzip;
+        return this;
+    }
 
     @Override
     protected ArchiveInputStream compressedInputStream(InputStream compressedFile) {
+
         BufferedInputStream in = new BufferedInputStream(compressedFile);
-        return new ZipArchiveInputStream(in);
+        TarArchiveInputStream tarIn = null;
+        if (this.isGzipped) {
+            GzipCompressorInputStream gzIn;
+            try {
+                gzIn = new GzipCompressorInputStream(in);
+                tarIn = new TarArchiveInputStream(gzIn);
+            } catch (IOException e) {
+                throw new ExecutionException(e);
+            }
+        } else {
+            tarIn = new TarArchiveInputStream(in);
+        }
+
+        return tarIn;
+
     }
 
     @Override
     protected int permissionsMode(ArchiveEntry archiveEntry) {
-        if (archiveEntry instanceof ZipArchiveEntry) {
-            ZipArchiveEntry zipArchiveEntry = (ZipArchiveEntry) archiveEntry;
-
-            ZipExtraField[] extraFields = zipArchiveEntry.getExtraFields();
-            for (ZipExtraField zipExtraField : extraFields) {
-                if (zipExtraField instanceof AsiExtraField) {
-                    AsiExtraField asiExtraField = (AsiExtraField) zipExtraField;
-                    return asiExtraField.getMode();
-                }
-            }
-
+        if (archiveEntry instanceof TarArchiveEntry) {
+            TarArchiveEntry tarArchiveEntry = (TarArchiveEntry) archiveEntry;
+            return tarArchiveEntry.getMode();
         } else {
-            throw new ExecutionException("No ZipEntry has been passed to a Unzip method.");
+            throw new ExecutionException("No TarEntry has been passed to a Tar method.");
         }
-
-        return 0;
     }
 
     @Override
     protected Collection<String> aliases() {
-        return Arrays.asList("unzip");
+        return Arrays.asList("tar");
     }
 
 }
