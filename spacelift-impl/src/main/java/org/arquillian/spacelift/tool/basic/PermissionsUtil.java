@@ -70,24 +70,9 @@ public class PermissionsUtil {
 
     public static void applyPermission(File file, FilePermission permissions) {
 
-        setExecutable(file, permissions.isOwnerCanExecute(),
-                !permissions.isGroupCanExecute() && !permissions.isOthersCanExecute());
-        setWritable(file, permissions.isOwnerCanWrite(),
-                !permissions.isGroupCanWrite() && !permissions.isOthersCanWrite());
-        setReadable(file, permissions.isOwnerCanRead(), !permissions.isGroupCanRead() && !permissions.isOthersCanRead());
+        file.setExecutable(permissions.isOwnerCanExecute(), !permissions.isGroupCanExecute() && !permissions.isOthersCanExecute());
+        file.setWritable(permissions.isOwnerCanWrite(), !permissions.isGroupCanWrite() && !permissions.isOthersCanWrite());
+        file.setReadable(permissions.isOwnerCanRead(), !permissions.isGroupCanRead() && !permissions.isOthersCanRead());
 
     }
-
-    private static void setReadable(File file, boolean ownerCanRead, boolean group) {
-        file.setReadable(ownerCanRead, group);
-    }
-
-    private static void setWritable(File file, boolean ownerCanWrite, boolean group) {
-        file.setWritable(ownerCanWrite, group);
-    }
-
-    private static void setExecutable(File file, boolean ownerCanExecute, boolean group) {
-        file.setExecutable(ownerCanExecute, group);
-    }
-
 }
