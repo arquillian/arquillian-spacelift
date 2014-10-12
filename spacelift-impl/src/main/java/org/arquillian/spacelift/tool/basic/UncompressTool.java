@@ -45,7 +45,7 @@ public abstract class UncompressTool extends Tool<File, File> {
     /**
      *
      * @param pathToDestination
-     *            destination where to unzip a file
+     *            destination where to uncompress a file
      * @return
      */
     public UncompressTool toDir(String pathToDestination) {
@@ -55,7 +55,7 @@ public abstract class UncompressTool extends Tool<File, File> {
     /**
      *
      * @param destination
-     *            destination where to unzip a file
+     *            destination where to uncompress a file
      * @return
      */
     public UncompressTool toDir(File destination) {
@@ -67,7 +67,7 @@ public abstract class UncompressTool extends Tool<File, File> {
     protected File process(File input) throws Exception {
         ArchiveEntry entry = null;
 
-        /** Read the tar entries using the getNextEntry method **/
+        /** Read entries using the getNextEntry method **/
 
         ArchiveInputStream compressedInputStream = compressedInputStream(new FileInputStream(input));
 
