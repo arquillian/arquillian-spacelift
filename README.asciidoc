@@ -1,4 +1,4 @@
-= Arquillian Spacelift
+= Arquillian Spacelift image:https://travis-ci.org/arquillian/arquillian-spacelift.svg?branch=master["Build Status", link="https://travis-ci.org/arquillian/arquillian-spacelift"]
 
 Arquillian process and package manager. Makes executing an external process or fetching platform depends dependencies an easier job.
 
