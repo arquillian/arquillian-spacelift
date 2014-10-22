@@ -35,7 +35,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * File downloader
+ * Tool which handles downloading a file. If the {@link #followRedirects} is true,
+ * it will try to follow the redirects until it reaches the file or detects a redirection loop.
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
  */
@@ -76,16 +77,37 @@ public class DownloadTool extends Tool<Object, File> {
         return this;
     }
 
+    /**
+     * Sets the read timeout of the HTTP request.
+     *
+     * @param timeout
+     * @return
+     * @see HttpURLConnection#setReadTimeout(int)
+     */
     public DownloadTool timeout(int timeout) {
         this.timeout = timeout;
         return this;
     }
 
+    /**
+     * Sets a HTTP property with the given key. If the key already has a value, it will be overwritten by the new one.
+     *
+     * @param key
+     * @param value
+     * @return
+     * @see HttpURLConnection#setRequestProperty(String, String)
+     */
     public DownloadTool property(String key, String value) {
         properties.put(key, value);
         return this;
     }
 
+    /**
+     * Sets whether to follow redirects. Defaults to true.
+     *
+     * @param followRedirects
+     * @return
+     */
     public DownloadTool followRedirects(boolean followRedirects) {
         this.followRedirects = followRedirects;
         return this;

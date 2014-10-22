@@ -17,6 +17,7 @@
 package org.arquillian.spacelift.task.io;
 
 import org.arquillian.spacelift.execution.Task;
+import org.arquillian.spacelift.util.CharsetUtil;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -24,15 +25,25 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Task for reading text files. Its input is a {@link List} of {@link File}s and it outputs {@link Map} with the
+ * files as keys and their contents as values.
+ */
 public class FileReader extends Task<List<File>, Map<File, String>> {
 
-    private Charset charset = StandardCharsets.UTF_8;
+    private Charset charset = CharsetUtil.getUtf8OrDefault();
 
+    /**
+     * Sets the charset which will be used to read all the files. The default charset is UTF8 or the system's default.
+     *
+     * @param charset The charset to be used.
+     * @return The same instance of FileReader.
+     * @see CharsetUtil#getUtf8OrDefault()
+     */
     public FileReader charset(Charset charset) {
         this.charset = charset;
         return this;
@@ -50,7 +61,6 @@ public class FileReader extends Task<List<File>, Map<File, String>> {
 
     private String readFile(File file) throws IOException {
         InputStream inputStream = null;
-        StringBuilder builder;
         ByteArrayOutputStream contentStream = new ByteArrayOutputStream();
         try {
             inputStream = new FileInputStream(file);

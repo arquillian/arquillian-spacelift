@@ -16,30 +16,50 @@
  */
 package org.arquillian.spacelift.task;
 
-public class ReplacementTuple<T> {
-    private final T parent;
+import org.arquillian.spacelift.tool.basic.StringReplacementTool;
+
+/**
+ * A class for making the API of {@link StringReplacementTask} and {@link StringReplacementTool} fluent.
+ *
+ * @param <PARENT> Preferably the type of the parent, but can be anything to help with the fluent API.
+ */
+public class ReplacementTuple<PARENT> {
+    private final PARENT parent;
 
     private String regex;
     private String replacement;
 
-    public ReplacementTuple(T parent, String regex) {
+    /**
+     * @param parent Should be an instance of the creator. It will be returned when replacement is set in
+     *               {@link #with(String)}. Its purpose is to allow for making the API fluent.
+     * @param regex  Regex to be used for matching.
+     */
+    public ReplacementTuple(PARENT parent, String regex) {
         this.parent = parent;
         this.regex = regex;
     }
 
     /**
+     * Sets the replacement for the given regex.
+     *
      * @param replacement If null, it will be ignored by the replacement task.
-     * @return
+     * @return The instance of {@link PARENT} given in the constructor.
      */
-    public T with(String replacement) {
+    public PARENT with(String replacement) {
         this.replacement = replacement;
         return parent;
     }
 
+    /**
+     * Returns the regex used for matching.
+     */
     public String getRegex() {
         return regex;
     }
 
+    /**
+     * Returns the string to be used for the replacement.
+     */
     public String getReplacement() {
         return replacement;
     }

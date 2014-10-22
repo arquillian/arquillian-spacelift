@@ -17,19 +17,30 @@
 package org.arquillian.spacelift.task.io;
 
 import org.arquillian.spacelift.execution.Task;
+import org.arquillian.spacelift.util.CharsetUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Task for writing text to files. Its input is a {@link Map} of {@link File}s as keys and {@link String}s as values
+ * and it outputs {@link List} of the files written.
+ */
 public class FileWriter extends Task<Map<File, String>, List<File>> {
-    private Charset charset = StandardCharsets.UTF_8;
+    private Charset charset = CharsetUtil.getUtf8OrDefault();
 
+    /**
+     * Sets the charset which will be used to write all the files. The default charset is UTF8 or the system's default.
+     *
+     * @param charset The charset to be used.
+     * @return The same instance of FileWriter.
+     * @see CharsetUtil#getUtf8OrDefault()
+     */
     public FileWriter charset(Charset charset) {
         this.charset = charset;
         return this;
