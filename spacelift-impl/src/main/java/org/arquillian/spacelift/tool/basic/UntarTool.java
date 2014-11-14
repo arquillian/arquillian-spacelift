@@ -26,6 +26,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.arquillian.spacelift.execution.ExecutionException;
 
@@ -37,10 +38,50 @@ import org.arquillian.spacelift.execution.ExecutionException;
  */
 public class UntarTool extends UncompressTool {
 
-    private boolean isGzipped = true;
+    private enum Compression {
+        GZIP {
+            @Override
+            public ArchiveInputStream wrap(BufferedInputStream input) {
+                GzipCompressorInputStream gzIn;
+                try {
+                    gzIn = new GzipCompressorInputStream(input);
+                    return new TarArchiveInputStream(gzIn);
+                } catch (IOException e) {
+                    throw new ExecutionException(e);
+                }
+            }
+        },
+        BZIP2 {
+            @Override
+            public ArchiveInputStream wrap(BufferedInputStream input) {
+                BZip2CompressorInputStream bzip2;
+                try {
+                    bzip2 = new BZip2CompressorInputStream(input);
+                    return new TarArchiveInputStream(bzip2);
+                } catch (IOException e) {
+                    throw new ExecutionException(e);
+                }
+            }
+        },
+        NONE {
+            @Override
+            public ArchiveInputStream wrap(BufferedInputStream input) {
+                return new TarArchiveInputStream(input);
+            }
+        };
+
+        public abstract ArchiveInputStream wrap(BufferedInputStream input);
+    }
+
+    private Compression compression = Compression.GZIP;
 
     public UntarTool gzip(boolean isGzip) {
-        this.isGzipped = isGzip;
+        this.compression = (isGzip) ? Compression.GZIP : Compression.NONE;
+        return this;
+    }
+
+    public UntarTool bzip2(boolean isBZip2) {
+        this.compression = (isBZip2) ? Compression.BZIP2 : Compression.NONE;
         return this;
     }
 
@@ -48,21 +89,8 @@ public class UntarTool extends UncompressTool {
     protected ArchiveInputStream compressedInputStream(InputStream compressedFile) {
 
         BufferedInputStream in = new BufferedInputStream(compressedFile);
-        TarArchiveInputStream tarIn = null;
-        if (this.isGzipped) {
-            GzipCompressorInputStream gzIn;
-            try {
-                gzIn = new GzipCompressorInputStream(in);
-                tarIn = new TarArchiveInputStream(gzIn);
-            } catch (IOException e) {
-                throw new ExecutionException(e);
-            }
-        } else {
-            tarIn = new TarArchiveInputStream(in);
-        }
 
-        return tarIn;
-
+        return compression.wrap(in);
     }
 
     @Override

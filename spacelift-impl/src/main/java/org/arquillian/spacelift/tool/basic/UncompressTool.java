@@ -81,7 +81,7 @@ public abstract class UncompressTool extends Tool<File, File> {
      * @param replacement replacement of the path in archive
      * @return
      */
-    public ReplacementTuple<UncompressTool> replace(String pattern) {
+    public ReplacementTuple<UncompressTool> remap(String pattern) {
         ReplacementTuple<UncompressTool> replacement = new ReplacementTuple<UncompressTool>(this, pattern);
         replacements.add(replacement);
         return replacement;

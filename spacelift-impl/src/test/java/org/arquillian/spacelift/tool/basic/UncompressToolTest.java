@@ -59,6 +59,17 @@ public class UncompressToolTest {
         Assert.assertThat(helloExtracted, notNullValue());
         Assert.assertThat(helloExtracted.exists(), is(true));    
     }
+    
+    @Test
+    public void extractTarBzip2File() {
+        File helloExtracted = Tasks.chain(new File("src/test/resources/hello.tbz"), UntarTool.class)
+            .bzip2(true)
+            .toDir("target/hellotbz")
+            .execute()
+            .await();
+        Assert.assertThat(helloExtracted, notNullValue());
+        Assert.assertThat(helloExtracted.exists(), is(true));    
+    }
 
     @Test
     public void extractZipNested() {
@@ -75,7 +86,7 @@ public class UncompressToolTest {
     @Test
     public void extractZipWithTextRemap() {
         File helloExtracted = Tasks.chain(new File("src/test/resources/nested.zip"), UnzipTool.class)
-            .replace("zipfolder/").with("")
+            .remap("zipfolder/").with("")
             .toDir("target/nested1")
             .execute()
             .await();
@@ -88,8 +99,8 @@ public class UncompressToolTest {
     @Test
     public void extractZipWithDoubleTextRemap() {
         File helloExtracted = Tasks.chain(new File("src/test/resources/nested.zip"), UnzipTool.class)
-            .replace("zipfolder/").with("")
-            .replace("bar/").with("foobar/")
+            .remap("zipfolder/").with("")
+            .remap("bar/").with("foobar/")
             .toDir("target/nested2")
             .execute()
             .await();
@@ -102,7 +113,7 @@ public class UncompressToolTest {
     @Test
     public void extractZipWithCutRemap() {
         File helloExtracted = Tasks.chain(new File("src/test/resources/nested.zip"), UnzipTool.class)
-            .replace("^/?([^/]+)/(.*)").with("$2")
+            .remap("^/?([^/]+)/(.*)").with("$2")
             .toDir("target/nested3")
             .execute()
             .await();
@@ -115,8 +126,8 @@ public class UncompressToolTest {
     @Test
     public void extractZipWithCutRemapTwice() {
         File helloExtracted = Tasks.chain(new File("src/test/resources/nested.zip"), UnzipTool.class)
-            .replace("^/?([^/]+)/(.*)").with("$2")
-            .replace("^/?([^/]+)/(.*)").with("$2")
+            .remap("^/?([^/]+)/(.*)").with("$2")
+            .remap("^/?([^/]+)/(.*)").with("$2")
             .toDir("target/nested4")
             .execute()
             .await();
