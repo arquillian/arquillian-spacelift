@@ -17,6 +17,7 @@
 package org.arquillian.spacelift.tool.basic;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.is;
 
 import java.io.File;
 
@@ -42,18 +43,109 @@ public class UncompressToolTest {
     @Test
     public void extractZipFile() {
         File helloExtracted = Tasks.chain(new File("src/test/resources/hello.zip"), UnzipTool.class)
-              .toDir("target/hellozip")
-              .execute()
-              .await();
+            .toDir("target/hellozip")
+            .execute()
+            .await();
         Assert.assertThat(helloExtracted, notNullValue());
+        Assert.assertThat(helloExtracted.exists(), is(true));
     }
 
     @Test
     public void extractTarGzFile() {
         File helloExtracted = Tasks.chain(new File("src/test/resources/hello.tgz"), UntarTool.class)
-              .toDir("target/hellotgz")
-              .execute()
-              .await();
+            .toDir("target/hellotgz")
+            .execute()
+            .await();
         Assert.assertThat(helloExtracted, notNullValue());
+        Assert.assertThat(helloExtracted.exists(), is(true));    
     }
+
+    @Test
+    public void extractZipNested() {
+        File helloExtracted = Tasks.chain(new File("src/test/resources/nested.zip"), UnzipTool.class)            
+            .toDir("target/nested0")
+            .execute()
+            .await();
+
+        File present = new File(helloExtracted, "zipfolder");
+        Assert.assertThat(present, notNullValue());
+        Assert.assertThat(present.exists(), is(true));        
+    }
+    
+    @Test
+    public void extractZipWithTextRemap() {
+        File helloExtracted = Tasks.chain(new File("src/test/resources/nested.zip"), UnzipTool.class)
+            .replace("zipfolder/").with("")
+            .toDir("target/nested1")
+            .execute()
+            .await();
+
+        File present = new File(helloExtracted, "bar");
+        Assert.assertThat(present, notNullValue());
+        Assert.assertThat(present.exists(), is(true));        
+    }
+
+    @Test
+    public void extractZipWithDoubleTextRemap() {
+        File helloExtracted = Tasks.chain(new File("src/test/resources/nested.zip"), UnzipTool.class)
+            .replace("zipfolder/").with("")
+            .replace("bar/").with("foobar/")
+            .toDir("target/nested2")
+            .execute()
+            .await();
+
+        File present = new File(helloExtracted, "foobar");
+        Assert.assertThat(present, notNullValue());
+        Assert.assertThat(present.exists(), is(true));
+    }
+
+    @Test
+    public void extractZipWithCutRemap() {
+        File helloExtracted = Tasks.chain(new File("src/test/resources/nested.zip"), UnzipTool.class)
+            .replace("^/?([^/]+)/(.*)").with("$2")
+            .toDir("target/nested3")
+            .execute()
+            .await();
+
+        File present = new File(helloExtracted, "bar");
+        Assert.assertThat(present, notNullValue());
+        Assert.assertThat(present.exists(), is(true));
+    }
+
+    @Test
+    public void extractZipWithCutRemapTwice() {
+        File helloExtracted = Tasks.chain(new File("src/test/resources/nested.zip"), UnzipTool.class)
+            .replace("^/?([^/]+)/(.*)").with("$2")
+            .replace("^/?([^/]+)/(.*)").with("$2")
+            .toDir("target/nested4")
+            .execute()
+            .await();
+
+        File present = new File(helloExtracted, "baz");
+        Assert.assertThat(present, notNullValue());
+        Assert.assertThat(present.exists(), is(true));
+        
+        present = new File(helloExtracted, "foo");
+        Assert.assertThat(present, notNullValue());
+        Assert.assertThat(present.exists(), is(true));        
+    }
+    
+    @Test
+    public void extractZipWithCutdirsTwice() {
+        File helloExtracted = Tasks.chain(new File("src/test/resources/nested.zip"), UnzipTool.class)
+            .cutdirs()
+            .cutdirs()
+            .toDir("target/nested5")
+            .execute()
+            .await();
+
+        File present = new File(helloExtracted, "baz");
+        Assert.assertThat(present, notNullValue());
+        Assert.assertThat(present.exists(), is(true));
+        
+        present = new File(helloExtracted, "foo");
+        Assert.assertThat(present, notNullValue());
+        Assert.assertThat(present.exists(), is(true));        
+    }
+
 }

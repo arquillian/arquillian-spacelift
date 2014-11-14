@@ -21,9 +21,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.arquillian.spacelift.task.ReplacementTuple;
 import org.arquillian.spacelift.tool.Tool;
 
 /**
@@ -34,7 +37,12 @@ import org.arquillian.spacelift.tool.Tool;
  */
 public abstract class UncompressTool extends Tool<File, File> {
 
+    protected static final String CUT_DIR_PATTERN = "^/?([^/]+)/(.*)";
+    protected static final String CUT_DIR_REPLACEMENT = "$2";
+
     private static final int BUFFER = 2048;
+
+    private List<ReplacementTuple<?>> replacements = new ArrayList<ReplacementTuple<?>>();
 
     private File dest;
 
@@ -45,7 +53,7 @@ public abstract class UncompressTool extends Tool<File, File> {
     /**
      *
      * @param pathToDestination
-     *            destination where to uncompress a file
+     *        destination where to uncompress a file
      * @return
      */
     public UncompressTool toDir(String pathToDestination) {
@@ -55,11 +63,39 @@ public abstract class UncompressTool extends Tool<File, File> {
     /**
      *
      * @param destination
-     *            destination where to uncompress a file
+     *        destination where to uncompress a file
      * @return
      */
     public UncompressTool toDir(File destination) {
         this.dest = destination;
+        return this;
+    }
+
+    /**
+     * Applies renaming for entries in compressed file. Uses standard Java regex notation.
+     * 
+     * Also ensures that prior replacement all filesystem delimiters are mapped to forward slash '/'.
+     * You can define multiple patterns, if so, they are applied in order there are specified.
+     * 
+     * @param pattern pattern to be find in archive
+     * @param replacement replacement of the path in archive
+     * @return
+     */
+    public ReplacementTuple<UncompressTool> replace(String pattern) {
+        ReplacementTuple<UncompressTool> replacement = new ReplacementTuple<UncompressTool>(this, pattern);
+        replacements.add(replacement);
+        return replacement;
+    }
+
+    /**
+     * Applies renaming for entries in compressed file by removing the first directory in there.
+     * 
+     * @return
+     */
+    public UncompressTool cutdirs() {
+        ReplacementTuple<UncompressTool> replacement = new ReplacementTuple<UncompressTool>(this, CUT_DIR_PATTERN);
+        replacement.with(CUT_DIR_REPLACEMENT);
+        replacements.add(replacement);
         return this;
     }
 
@@ -73,7 +109,7 @@ public abstract class UncompressTool extends Tool<File, File> {
 
         while ((entry = compressedInputStream.getNextEntry()) != null) {
 
-            File file = new File(this.dest, entry.getName());
+            File file = new File(this.dest, remapEntryName(entry.getName()));
 
             if (entry.isDirectory()) {
                 file.mkdirs();
@@ -104,6 +140,19 @@ public abstract class UncompressTool extends Tool<File, File> {
         compressedInputStream.close();
 
         return this.dest;
+    }
+
+    private String remapEntryName(String entryName) {
+
+        if (entryName == null) {
+            return entryName;
+        }
+
+        String finalName = entryName.replaceAll("\\\\", "/");
+        for (ReplacementTuple<?> remap : replacements) {
+            finalName = finalName.replaceAll(remap.getRegex(), remap.getReplacement());
+        }
+        return finalName;
     }
 
 }
