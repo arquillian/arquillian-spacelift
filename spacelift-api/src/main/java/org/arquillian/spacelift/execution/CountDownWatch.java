@@ -48,7 +48,7 @@ public class CountDownWatch {
     public long timeLeft() {
         long currentTime = System.currentTimeMillis();
         long timeoutInMillis = TimeUnit.MILLISECONDS.convert(timeout, unit);
-        return unit.convert(timeoutInMillis - (currentTime - timeStart), TimeUnit.MILLISECONDS);
+        return timeoutInMillis - (currentTime - timeStart);
     }
 
     /**
