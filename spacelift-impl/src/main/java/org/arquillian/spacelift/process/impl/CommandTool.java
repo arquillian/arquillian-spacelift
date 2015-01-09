@@ -118,7 +118,7 @@ public class CommandTool extends Tool<Object, ProcessResult> {
      * @return
      */
     public CommandTool splitToParameters(CharSequence sequenceToBeParsed) {
-        commandBuilder.parameters(sequenceToBeParsed);
+        commandBuilder.splitToParameters(sequenceToBeParsed);
         return this;
     }
 

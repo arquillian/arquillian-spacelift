@@ -7,6 +7,7 @@ import org.arquillian.spacelift.execution.Execution;
 import org.arquillian.spacelift.execution.ExecutionException;
 import org.arquillian.spacelift.execution.Tasks;
 import org.arquillian.spacelift.execution.impl.DefaultExecutionServiceFactory;
+import org.arquillian.spacelift.process.CommandBuilder;
 import org.arquillian.spacelift.process.ProcessResult;
 import org.junit.Assert;
 import org.junit.Assume;
@@ -28,7 +29,7 @@ public class CommandToolTest {
     }
 
     @Test
-    public void runJavaCommandHelp() throws UnsupportedEncodingException {
+    public void runJavaCommandHelp() {
 
         // run only on linux
         Assume.assumeThat(SystemUtils.IS_OS_LINUX, is(true));
@@ -38,7 +39,7 @@ public class CommandToolTest {
     }
 
     @Test
-    public void runJavaCommandInvalid() throws UnsupportedEncodingException {
+    public void runJavaCommandInvalid() {
 
         // run only on linux
         Assume.assumeThat(SystemUtils.IS_OS_LINUX, is(true));
@@ -58,7 +59,12 @@ public class CommandToolTest {
         Tasks.prepare(CommandTool.class).programName("java").parameters("-foo", "-bar")
             .shouldExitWith(1)
             .execute();
+    }
 
+    @Test
+    public void splitToParameters() throws Exception{
+        CommandBuilder cb = Tasks.prepare(CommandTool.class).programName("java").splitToParameters("-foo -bar").commandBuilder;
+        Assert.assertThat(cb.build().getNumberOfParameters(), is(2));
     }
 
     @Test
