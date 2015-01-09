@@ -1,5 +1,8 @@
 package org.arquillian.spacelift.tool;
 
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Random;
@@ -8,19 +11,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.arquillian.spacelift.execution.ExecutionCondition;
 import org.arquillian.spacelift.execution.ExecutionException;
-import org.arquillian.spacelift.execution.ExecutionService;
-import org.arquillian.spacelift.execution.ExecutionServiceFactory;
 import org.arquillian.spacelift.execution.Task;
 import org.arquillian.spacelift.execution.Tasks;
 import org.arquillian.spacelift.execution.TimeoutExecutionException;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
-import static org.hamcrest.CoreMatchers.notNullValue;
-
-import static org.junit.Assert.assertThat;
 
 public class TaskChainTest {
 
@@ -80,16 +76,6 @@ public class TaskChainTest {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
-
-    @BeforeClass
-    public static void setup() {
-        Tasks.setDefaultExecutionServiceFactory(new ExecutionServiceFactory() {
-            @Override
-            public ExecutionService getExecutionServiceInstance() {
-                return new TestExecutionService();
-            }
-        });
-    }
 
     @Test
     public void chainTools() {

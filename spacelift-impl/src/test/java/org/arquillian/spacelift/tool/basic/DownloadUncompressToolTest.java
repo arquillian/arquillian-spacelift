@@ -16,18 +16,16 @@
  */
 package org.arquillian.spacelift.tool.basic;
 
+import static org.hamcrest.CoreMatchers.notNullValue;
+
 import java.io.File;
 
 import org.arquillian.spacelift.execution.ExecutionService;
-import org.arquillian.spacelift.execution.Tasks;
-import org.arquillian.spacelift.execution.impl.DefaultExecutionServiceFactory;
 import org.arquillian.spacelift.tool.ToolRegistry;
 import org.arquillian.spacelift.tool.impl.ToolRegistryImpl;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.notNullValue;
 
 public class DownloadUncompressToolTest {
 
@@ -37,7 +35,6 @@ public class DownloadUncompressToolTest {
 
     @BeforeClass
     public static void setup() {
-        Tasks.setDefaultExecutionServiceFactory(new DefaultExecutionServiceFactory());
         registry = new ToolRegistryImpl();
         registry.register(DownloadTool.class);
         registry.register(UnzipTool.class);

@@ -16,6 +16,11 @@
  */
 package org.arquillian.spacelift.execution;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.arquillian.spacelift.execution.Invokable.InvocationException;
+
 /**
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
@@ -23,9 +28,19 @@ package org.arquillian.spacelift.execution;
  */
 public class Tasks {
 
+    private static final Logger log = Logger.getLogger(Tasks.class.getName());
+
     private static class ExecutionServiceFactoryHolder {
-        // FIXME this might be loaded dynamically from classpath via SPI
-        public static ExecutionServiceFactory lastFactory = null;
+        public static ExecutionServiceFactory lastFactory;
+        static {
+            try {
+                lastFactory = ImplementationLoader.implementationOf(ExecutionServiceFactory.class);
+            } catch (InvocationException e) {
+                log.log(Level.SEVERE,
+                    "Unable to find default implemenation of {0} on classpath, make sure that you set one programatically.",
+                    ExecutionServiceFactory.class.getName());
+            }
+        }
     }
 
     private static ExecutionServiceFactory getAsSingleton() {
@@ -35,7 +50,7 @@ public class Tasks {
     public static ExecutionServiceFactory getExecutionServiceFactoryInstance() throws IllegalStateException {
         ExecutionServiceFactory factory = getAsSingleton();
         if (factory == null) {
-            throw new IllegalStateException("ExecutionServiceFactory was null. If you are not running from Arquillian, make sure that you set it up first.");
+            throw new IllegalStateException("ExecutionServiceFactory was null. Make sure that you set it up first either by registering implementation via SPI or by programatically calling setter method.");
         }
         return factory;
     }

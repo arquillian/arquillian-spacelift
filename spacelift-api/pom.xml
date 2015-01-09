@@ -18,7 +18,7 @@
     <name>Arquillian Spacelift API</name>
     <description>Arquillian Process and Package Manager</description>
 
-    <dependencies>
+    <dependencies>        
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

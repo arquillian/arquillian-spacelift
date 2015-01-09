@@ -16,35 +16,20 @@
  */
 package org.arquillian.spacelift.tool;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+
 import org.apache.commons.lang3.SystemUtils;
-import org.arquillian.spacelift.execution.ExecutionService;
-import org.arquillian.spacelift.execution.ExecutionServiceFactory;
-import org.arquillian.spacelift.execution.Tasks;
 import org.arquillian.spacelift.process.Command;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.notNullValue;
-
-import static org.junit.Assert.assertThat;
 
 public class ToolTest {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
-
-    @BeforeClass
-    public static void setup() {
-        Tasks.setDefaultExecutionServiceFactory(new ExecutionServiceFactory() {
-            @Override
-            public ExecutionService getExecutionServiceInstance() {
-                return new TestExecutionService();
-            }
-        });
-    }
 
     @Test
     public void getJavaToolFromRegistry() {

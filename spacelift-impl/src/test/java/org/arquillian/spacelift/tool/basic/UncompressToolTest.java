@@ -16,29 +16,16 @@
  */
 package org.arquillian.spacelift.tool.basic;
 
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 
 import java.io.File;
 
-import org.arquillian.spacelift.execution.ExecutionService;
 import org.arquillian.spacelift.execution.Tasks;
-import org.arquillian.spacelift.execution.impl.DefaultExecutionServiceFactory;
-import org.arquillian.spacelift.tool.ToolRegistry;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class UncompressToolTest {
-
-    static ToolRegistry registry;
-
-    static ExecutionService service;
-
-    @BeforeClass
-    public static void setup() {
-        Tasks.setDefaultExecutionServiceFactory(new DefaultExecutionServiceFactory());
-    }
 
     @Test
     public void extractZipFile() {
@@ -57,9 +44,9 @@ public class UncompressToolTest {
             .execute()
             .await();
         Assert.assertThat(helloExtracted, notNullValue());
-        Assert.assertThat(helloExtracted.exists(), is(true));    
+        Assert.assertThat(helloExtracted.exists(), is(true));
     }
-    
+
     @Test
     public void extractTarBzip2File() {
         File helloExtracted = Tasks.chain(new File("src/test/resources/hello.tbz"), UntarTool.class)
@@ -68,21 +55,21 @@ public class UncompressToolTest {
             .execute()
             .await();
         Assert.assertThat(helloExtracted, notNullValue());
-        Assert.assertThat(helloExtracted.exists(), is(true));    
+        Assert.assertThat(helloExtracted.exists(), is(true));
     }
 
     @Test
     public void extractZipNested() {
-        File helloExtracted = Tasks.chain(new File("src/test/resources/nested.zip"), UnzipTool.class)            
+        File helloExtracted = Tasks.chain(new File("src/test/resources/nested.zip"), UnzipTool.class)
             .toDir("target/nested0")
             .execute()
             .await();
 
         File present = new File(helloExtracted, "zipfolder");
         Assert.assertThat(present, notNullValue());
-        Assert.assertThat(present.exists(), is(true));        
+        Assert.assertThat(present.exists(), is(true));
     }
-    
+
     @Test
     public void extractZipWithTextRemap() {
         File helloExtracted = Tasks.chain(new File("src/test/resources/nested.zip"), UnzipTool.class)
@@ -93,7 +80,7 @@ public class UncompressToolTest {
 
         File present = new File(helloExtracted, "bar");
         Assert.assertThat(present, notNullValue());
-        Assert.assertThat(present.exists(), is(true));        
+        Assert.assertThat(present.exists(), is(true));
     }
 
     @Test
@@ -135,12 +122,12 @@ public class UncompressToolTest {
         File present = new File(helloExtracted, "baz");
         Assert.assertThat(present, notNullValue());
         Assert.assertThat(present.exists(), is(true));
-        
+
         present = new File(helloExtracted, "foo");
         Assert.assertThat(present, notNullValue());
-        Assert.assertThat(present.exists(), is(true));        
+        Assert.assertThat(present.exists(), is(true));
     }
-    
+
     @Test
     public void extractZipWithCutdirsTwice() {
         File helloExtracted = Tasks.chain(new File("src/test/resources/nested.zip"), UnzipTool.class)
@@ -153,10 +140,10 @@ public class UncompressToolTest {
         File present = new File(helloExtracted, "baz");
         Assert.assertThat(present, notNullValue());
         Assert.assertThat(present.exists(), is(true));
-        
+
         present = new File(helloExtracted, "foo");
         Assert.assertThat(present, notNullValue());
-        Assert.assertThat(present.exists(), is(true));        
+        Assert.assertThat(present.exists(), is(true));
     }
 
 }

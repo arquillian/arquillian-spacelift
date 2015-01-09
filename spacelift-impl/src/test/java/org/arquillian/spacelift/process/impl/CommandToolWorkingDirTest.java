@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.arquillian.spacelift.execution.Tasks;
-import org.arquillian.spacelift.execution.impl.DefaultExecutionServiceFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -41,7 +40,6 @@ public class CommandToolWorkingDirTest {
     @Before
     public void setup() {
         tempFiles = new ArrayList<File>();
-        Tasks.setDefaultExecutionServiceFactory(new DefaultExecutionServiceFactory());
     }
 
     @After

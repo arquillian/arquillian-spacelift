@@ -16,23 +16,21 @@
  */
 package org.arquillian.spacelift.process.impl;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+
 import java.lang.reflect.Field;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.SystemUtils;
 import org.arquillian.spacelift.execution.Execution;
 import org.arquillian.spacelift.execution.Tasks;
-import org.arquillian.spacelift.execution.impl.DefaultExecutionServiceFactory;
 import org.arquillian.spacelift.execution.impl.ShutdownHooks;
 import org.arquillian.spacelift.process.ProcessResult;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
 
 /**
  * Test shutdown hook activation for command
@@ -41,11 +39,6 @@ import static org.hamcrest.CoreMatchers.not;
  *
  */
 public class DaemonHookTest {
-
-    @BeforeClass
-    public static void setup() {
-        Tasks.setDefaultExecutionServiceFactory(new DefaultExecutionServiceFactory());
-    }
 
     @Before
     public void resetCounter() throws Exception {
