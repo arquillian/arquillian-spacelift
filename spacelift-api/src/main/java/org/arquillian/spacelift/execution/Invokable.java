@@ -130,27 +130,27 @@ class Invokable {
             Constructor<?> con = classType.getConstructor(parameterTypes);
             return con.newInstance(parameters);
         } catch (NoSuchMethodException e) {
-            throw new InvocationException(e, "Unable to invoke constructor {0}({1}) with parameters {3}",
+            throw new InvocationException(e, "Unable to invoke constructor {0}({1}) with parameters {2}",
                     classType.getSimpleName(),
                     parameterTypes, parameters);
         } catch (SecurityException e) {
-            throw new InvocationException(e, "Unable to invoke constructor {0}({1}) with parameters {3}",
+            throw new InvocationException(e, "Unable to invoke constructor {0}({1}) with parameters {2}",
                     classType.getSimpleName(),
                     parameterTypes, parameters);
         } catch (InstantiationException e) {
-            throw new InvocationException(e, "Unable to invoke constructor {0}({1}) with parameters {3}",
+            throw new InvocationException(e, "Unable to invoke constructor {0}({1}) with parameters {2}",
                     classType.getSimpleName(),
                     parameterTypes, parameters);
         } catch (IllegalAccessException e) {
-            throw new InvocationException(e, "Unable to invoke constructor {0}({1}) with parameters {3}",
+            throw new InvocationException(e, "Unable to invoke constructor {0}({1}) with parameters {2}",
                     classType.getSimpleName(),
                     parameterTypes, parameters);
         } catch (IllegalArgumentException e) {
-            throw new InvocationException(e, "Unable to invoke constructor {0}({1}) with parameters {3}",
+            throw new InvocationException(e, "Unable to invoke constructor {0}({1}) with parameters {2}",
                     classType.getSimpleName(),
                     parameterTypes, parameters);
         } catch (InvocationTargetException e) {
-            throw new InvocationException(e, "Unable to invoke constructor {0}({1}) with parameters {3}",
+            throw new InvocationException(e, "Unable to invoke constructor {0}({1}) with parameters {2}",
                     classType.getSimpleName(),
                     parameterTypes, parameters);
         }
@@ -179,18 +179,6 @@ class Invokable {
                 iterator = iterator.getSuperclass();
             }
         }
-
-        /*
-         * for (Class<?> iface : classType.getInterfaces()) {
-         * try {
-         * m = iface.getDeclaredMethod(name, parameterTypes);
-         * m.setAccessible(true);
-         * return m;
-         * } catch (NoSuchMethodException e) {
-         * // ignore, try next
-         * }
-         * }
-         */
 
         throw new InvocationException(
                 "Unable to find method {0}({1}) in class {2} nor its superclasses or implemented interfaces", name,
