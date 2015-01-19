@@ -43,6 +43,12 @@ import org.arquillian.spacelift.tool.Tool;
  */
 public class CommandTool extends Tool<Object, ProcessResult> {
 
+    /**
+     * Representation of current process working directory for purposes of
+     * spawning new process
+     */
+    public static final File CURRENT_USER_DIR = null;
+
     protected CommandBuilder commandBuilder;
     protected ProcessInteraction interaction;
     protected List<Integer> allowedExitCodes;
@@ -184,6 +190,25 @@ public class CommandTool extends Tool<Object, ProcessResult> {
         return this;
     }
 
+    public CommandTool workingDirectory(File workingDirectory) throws IllegalArgumentException {
+
+        if (workingDirectory == null) {
+            this.workingDirectory = null;
+            return this;
+        }
+
+        if (!workingDirectory.exists()) {
+            throw new IllegalArgumentException("Specified path " + workingDirectory.getAbsolutePath() + " does not exist!");
+        }
+        if (!workingDirectory.isDirectory()) {
+            throw new IllegalArgumentException("Specified path " + workingDirectory.getAbsolutePath()
+                + " is not a directory!");
+        }
+
+        this.workingDirectory = workingDirectory;
+        return this;
+    }
+
     /**
      * Sets working directory for the command
      *
@@ -191,25 +216,18 @@ public class CommandTool extends Tool<Object, ProcessResult> {
      * @return
      * @throws IllegalArgumentException if working directory does not exist
      */
-    public CommandTool workingDir(String workingDirectory) throws IllegalArgumentException {
-
+    public CommandTool workingDirectory(String workingDirectory) throws IllegalArgumentException {
         if (workingDirectory == null) {
             this.workingDirectory = null;
             return this;
         }
 
-        File workingDirectoryFile = new File(workingDirectory);
+        return workingDirectory(new File(workingDirectory));
+    }
 
-        if (!workingDirectoryFile.exists()) {
-            throw new IllegalArgumentException("Specified path " + workingDirectoryFile.getAbsolutePath() + " does not exist!");
-        }
-        if (!workingDirectoryFile.isDirectory()) {
-            throw new IllegalArgumentException("Specified path " + workingDirectoryFile.getAbsolutePath()
-                + " is not a directory!");
-        }
-
-        this.workingDirectory = workingDirectoryFile;
-        return this;
+    @Deprecated
+    public CommandTool workingDir(String workingDirectory) throws IllegalArgumentException {
+        return workingDirectory(workingDirectory);
     }
 
     /**
@@ -286,7 +304,7 @@ public class CommandTool extends Tool<Object, ProcessResult> {
             .redirectErrorStream(true)
             .shouldExitWith(allowedExitCodes)
             .command(command)
-            .workingDir(workingDirectory)
+            .workingDirectory(workingDirectory)
             .addEnvironment(environment)
             .runAsDaemon(isDaemon)
             .execute();

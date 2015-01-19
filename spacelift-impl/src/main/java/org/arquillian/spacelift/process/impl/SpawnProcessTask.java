@@ -51,7 +51,7 @@ class SpawnProcessTask extends Task<Object, Process> {
         return this;
     }
 
-    public SpawnProcessTask workingDir(File workingDirectory) {
+    public SpawnProcessTask workingDirectory(File workingDirectory) {
         this.workingDirectory = workingDirectory;
         return this;
     }

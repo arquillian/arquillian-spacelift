@@ -86,6 +86,6 @@ public class CommandToolTest {
 
     @Test
     public void workingDir() throws Exception {
-        Tasks.prepare(CommandTool.class).programName("yes").workingDir(null);
+        Tasks.prepare(CommandTool.class).programName("yes");
     }
 }

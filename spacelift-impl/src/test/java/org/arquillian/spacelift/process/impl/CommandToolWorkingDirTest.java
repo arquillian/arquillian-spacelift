@@ -48,10 +48,17 @@ public class CommandToolWorkingDirTest {
     }
 
     @Test
-    public void testExistingWorkingDirectory() throws Exception {
+    public void testExistingWorkingDir() throws Exception {
         String existingDirectory = System.getProperty("user.dir");
 
         Tasks.prepare(CommandTool.class).workingDir(existingDirectory);
+    }
+
+    @Test
+    public void testExistingWorkingDirectory() throws Exception {
+        String existingDirectory = System.getProperty("user.dir");
+
+        Tasks.prepare(CommandTool.class).workingDirectory(existingDirectory);
     }
 
     @Test
@@ -60,19 +67,25 @@ public class CommandToolWorkingDirTest {
 
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("does not exist");
-        Tasks.prepare(CommandTool.class).workingDir(nonexistentDirectory);
+
+        Tasks.prepare(CommandTool.class).workingDirectory(nonexistentDirectory);
     }
 
     @Test
     public void testFileAsWorkingDirectory() throws Exception {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("is not a directory");
-        Tasks.prepare(CommandTool.class).workingDir(createTempFile().getAbsolutePath());
+        Tasks.prepare(CommandTool.class).workingDirectory(createTempFile().getAbsolutePath());
     }
 
     @Test
     public void testNullAsWorkingDirectory() throws Exception {
         Tasks.prepare(CommandTool.class).workingDir(null);
+    }
+
+    @Test
+    public void testUserDirAsWorkingDirectory() throws Exception {
+        Tasks.prepare(CommandTool.class).workingDirectory(CommandTool.CURRENT_USER_DIR);
     }
 
     private File createTempFile() throws IOException, IllegalStateException {
