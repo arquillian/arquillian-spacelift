@@ -16,7 +16,7 @@
  */
 package org.arquillian.spacelift.task.io;
 
-import org.arquillian.spacelift.execution.Task;
+import org.arquillian.spacelift.task.Task;
 import org.arquillian.spacelift.util.CharsetUtil;
 
 import java.io.File;

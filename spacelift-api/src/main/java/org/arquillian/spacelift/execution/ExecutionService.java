@@ -20,10 +20,10 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import org.arquillian.spacelift.process.Command;
-import org.arquillian.spacelift.tool.Tool;
+import org.arquillian.spacelift.task.Task;
 
 /**
- * Tool to execute a task, based on {@link Callable}, {@link Command} or {@link Tool}.
+ * Wrapper to execute a task, based on {@link Callable}, {@link Command} or {@link Task}.
  * Allows both synchronous and asynchronous task execution
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>

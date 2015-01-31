@@ -133,7 +133,6 @@
     <!-- Modules -->
     <modules>
         <module>spacelift-api</module>
-        <module>spacelift-impl</module>
-        <module>spacelift-spi</module>
+        <module>spacelift-impl</module>        
     </modules>
 </project>

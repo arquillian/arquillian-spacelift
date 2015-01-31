@@ -36,19 +36,14 @@
             <groupId>org.arquillian.spacelift</groupId>
             <artifactId>arquillian-spacelift-api</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.arquillian.spacelift</groupId>
-            <artifactId>arquillian-spacelift-spi</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+        </dependency>        
         <dependency>
             <groupId>org.jboss.shrinkwrap.resolver</groupId>
             <artifactId>shrinkwrap-resolver-depchain</artifactId>
             <type>pom</type>
         </dependency>
 
-        <!-- Uncompress tool -->
+        <!-- Uncompress task -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>

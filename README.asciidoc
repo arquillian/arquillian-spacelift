@@ -15,14 +15,7 @@ In your project, import following artifact:
 </dependency>
 ----
 
-You can use Spacelift both with and without Arquillian. If you use extension without Arquillian, you need to make sure that you initialize factory for task execution.
-
-[source,java]
-----
-Tasks.setDefaultExecutionServiceFactory(new DefaultExecutionServiceFactory());
-----
-
-If you are running from an extension, after +ExecutionServiceInitialized+ event factory is initialized. There is also +ToolRegistryInitialized+ event, which denotes that all tools were registered and you can use them (TBD).
+You can use Spacelift both with and without Arquillian. 
 
 == How to use the extension
 
@@ -35,11 +28,11 @@ Arquillian Spacelift provides you a concept of a task. Task is isolated amount o
 Task is always executed asynchronously.
 
 How do I create new tasks?::
-    Task is defined by class that represents its payload. You prepare tasks by calling +Tasks+ utility
+    Task is defined by class that represents its payload. You prepare tasks by calling +Spacelift+ utility
 +
 [source,java]
 ----
-Tasks.prepare(DownloadTool.class)
+Spacelift.task(DownloadTool.class)
 ----
 +
 Once task is created, you get access to API defined by task class itself.
@@ -49,7 +42,7 @@ How do I run more tasks together?::
     Task can be chained together by using +then(NextTaskName.class)+ call. There is following rules for chaining tasks: Input of next task must much output of current task. 
     If next task input is type of +Object+, it can be chained to any task. +Object+ usually means that you don't care about input of next task at all.
 I already have input for a task. How do I pass it to the task?::
-    Just call +Tasks.chain(input, NextTaskName.class)+
+    Just call +Spacelift.task(input, NextTaskName.class)+
 How do I create my own tasks?::
     Extend abstract class +Task+ and implement +process(INPUT)+ method.
 
@@ -68,17 +61,7 @@ Terminating execution::
     behavior cannot be guaranteed for all types of tasks, as execution might be atomic. In such circumstances, task should return +null+ if it figures out if was forcefully terminated 
     before it finished the work.
 
-=== Tool
-
-Tool is a task that additionally defines a string based name. This name is used by +Installation+ steps to determine what tasks should be run
-in order to install additional stuff to your test environment.            
-
-How do I create a tool?::
-    You can use +Tasks.prepare(TheTool.class)+
-How do I create my own tool?::
-    Extends abstract class +Tool+ and implement +process(INPUT)+ and +aliases()+ methods.
-
-Current tools are:
+Current tasks are:
 
 * DownloadTool: _Nothing -> File, download_ can download anything to a file
 * UnzipTool: _File -> File, unzip_ can unzip an archive to a directory
