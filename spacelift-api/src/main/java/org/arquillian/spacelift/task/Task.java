@@ -36,6 +36,23 @@ public abstract class Task<IN, OUT> {
     }
 
     /**
+     * Allows to connect current task with next task, given the output of this task matches input of next task
+     *
+     * @param nextTask Task to be executed right after this task is finished
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public Task<?, ?> then(String nextTask) {
+
+        @SuppressWarnings("rawtypes")
+        Task next = Spacelift.task(nextTask);
+        next.setPreviousTask(this);
+
+        return next;
+    }
+
+
+    /**
      * Asynchronously executes current chain of tasks.
      *
      * @return Execution object that allows later retrieved result of the task

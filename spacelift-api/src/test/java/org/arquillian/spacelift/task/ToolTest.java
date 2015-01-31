@@ -21,9 +21,8 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import org.apache.commons.lang3.SystemUtils;
+import org.arquillian.spacelift.Spacelift;
 import org.arquillian.spacelift.process.Command;
-import org.arquillian.spacelift.task.Task;
-import org.arquillian.spacelift.task.TaskRegistry;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -56,6 +55,14 @@ public class ToolTest {
         registry.register(TestJavaTool.class, "java");
 
         Task<?, ?> task = registry.find("java");
+        assertThat(task, notNullValue());
+    }
+
+    @Test
+    public void getJavaToolFromSpaceliftByAlias() {
+        new Spacelift.SpaceliftInstance().registry().register(TestJavaTool.class, "java");
+
+        Task<?, ?> task = Spacelift.task("java");
         assertThat(task, notNullValue());
     }
 

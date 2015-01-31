@@ -27,6 +27,10 @@ public class TaskRegistryImpl implements TaskRegistry {
             aliasRegistry.put(alias, taskFactory);
         }
 
+        // use class name and simple name as aliases as well
+        aliasRegistry.put(taskDef.getName(), taskFactory);
+        aliasRegistry.put(taskDef.getSimpleName(), taskFactory);
+
         return this;
     }
 
