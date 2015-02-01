@@ -32,7 +32,7 @@ public interface TaskFactory<IN, OUT, TASK extends Task<? super IN, OUT>> {
 
     public static class ExecutionServiceInjector {
         <IN, OUT, TASK extends Task<? super IN, OUT>> TASK inject(TASK task) {
-            task.setExecutionService(new Spacelift.SpaceliftInstance().service().getExecutionServiceInstance());
+            task.setExecutionService(Spacelift.service());
             return task;
         }
     }

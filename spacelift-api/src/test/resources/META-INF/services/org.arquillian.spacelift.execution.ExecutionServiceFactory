@@ -1,2 +1,0 @@
-# this class is used only in API tests
-org.arquillian.spacelift.task.TestExecutionServiceFactory

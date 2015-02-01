@@ -41,9 +41,7 @@ public class ExecutionServiceImpl implements ExecutionService {
     private final ScheduledExecutorService scheduledService;
 
     public ExecutionServiceImpl() {
-
         final ThreadFactory threadFactory = new SpaceliftThreadFactory();
-
         this.service = Executors.newCachedThreadPool(threadFactory);
         this.scheduledService = Executors.newScheduledThreadPool(1, threadFactory);
     }

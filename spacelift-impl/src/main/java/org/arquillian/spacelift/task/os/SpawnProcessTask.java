@@ -57,7 +57,7 @@ class SpawnProcessTask extends Task<Object, Process> {
     }
 
     public SpawnProcessTask addEnvironment(Map<String, String> environment) {
-        this.environment = environment;
+        this.environment.putAll(environment);
         return this;
     }
 
@@ -101,6 +101,7 @@ class SpawnProcessTask extends Task<Object, Process> {
 
         ProcessBuilder builder = new ProcessBuilder(command.getFullCommand());
         builder.directory(workingDirectory);
+
         builder.environment().putAll(environment);
         builder.redirectErrorStream(redirectErrorStream);
         return builder.start();

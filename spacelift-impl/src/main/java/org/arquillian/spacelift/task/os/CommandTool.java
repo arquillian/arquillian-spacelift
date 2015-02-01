@@ -231,9 +231,14 @@ public class CommandTool extends Task<Object, ProcessResult> {
      * @return
      * @throws IllegalArgumentException
      */
-    public CommandTool addEnvironment(Map<String, String> envVariables) throws IllegalArgumentException {
+    public CommandTool addEnvironment(Map<? extends CharSequence, ? extends CharSequence> envVariables) throws IllegalArgumentException {
         Validate.notNull(envVariables, "Environment variables must not be null");
-        this.environment.putAll(envVariables);
+
+        for(Map.Entry<? extends CharSequence, ? extends CharSequence> entry: envVariables.entrySet()) {
+            Validate.notNull(entry.getKey(), "Environment variable name must not be null nor empty");
+            CharSequence value = entry.getValue();
+            environment.put(entry.getKey().toString(), value != null ? value.toString() : null);
+        }
         return this;
     }
 

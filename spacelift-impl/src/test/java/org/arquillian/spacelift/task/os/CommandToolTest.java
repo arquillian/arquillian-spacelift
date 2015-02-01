@@ -38,10 +38,10 @@ public class CommandToolTest {
         // run only on linux
         Assume.assumeThat(SystemUtils.IS_OS_LINUX, is(true));
 
-        new Spacelift.SpaceliftInstance().registry().register(CommandTool.class);
+        Spacelift.registry().register(CommandTool.class);
 
         // previous call caused this task to register
-        // NOTE, this is not really usefull for Java, but rather for dynamic languages
+        // NOTE, this is not really useful for Java, but rather for dynamic languages
         ((CommandTool) Spacelift.task("CommandTool")).programName("java").parameters("-help")
         .execute().await();
     }

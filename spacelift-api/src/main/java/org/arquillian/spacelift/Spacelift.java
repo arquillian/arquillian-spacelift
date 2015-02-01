@@ -4,7 +4,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.arquillian.spacelift.Invokable.InvocationException;
-import org.arquillian.spacelift.execution.ExecutionServiceFactory;
+import org.arquillian.spacelift.execution.ExecutionService;
 import org.arquillian.spacelift.task.InjectTask;
 import org.arquillian.spacelift.task.InvalidTaskException;
 import org.arquillian.spacelift.task.Task;
@@ -61,24 +61,33 @@ public class Spacelift {
         return task.passToNext(input).then(alias);
     }
 
+    public static TaskRegistry registry() {
+        return new SpaceliftInstance().registry();
+    }
+
+    public static ExecutionService service() {
+        return new SpaceliftInstance().service();
+    }
+
     /**
      * This class should not be used externally, will be replaced by dependency injection
      * @author kpiwko
      *
      */
     @SuppressWarnings({ "unchecked" })
-    public static class SpaceliftInstance {
+    private static class SpaceliftInstance {
         private static final Logger log = Logger.getLogger(Spacelift.class.getName());
 
-        private static ExecutionServiceFactory lastFactory;
+        private static ExecutionService service;
         private static TaskRegistry registry;
         static {
             try {
-                lastFactory = ImplementationLoader.implementationOf(ExecutionServiceFactory.class);
+                service = ImplementationLoader.implementationOf(ExecutionService.class);
             } catch (InvocationException e) {
+                e.printStackTrace();
                 log.log(Level.SEVERE,
                     "Unable to find default implemenation of {0} on classpath, make sure that you set one programatically.",
-                    ExecutionServiceFactory.class.getName());
+                    ExecutionService.class.getName());
             }
             try {
                 registry = ImplementationLoader.implementationOf(TaskRegistry.class);
@@ -95,8 +104,8 @@ public class Spacelift {
             return registry;
         }
 
-        public ExecutionServiceFactory service() {
-            return lastFactory;
+        public ExecutionService service() {
+            return service;
         }
     }
 

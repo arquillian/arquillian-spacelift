@@ -14,7 +14,7 @@ import org.arquillian.spacelift.execution.ExecutionException;
 import org.arquillian.spacelift.execution.ExecutionService;
 import org.arquillian.spacelift.execution.TimeoutExecutionException;
 
-class TestExecutionService implements ExecutionService {
+public class TestExecutionService implements ExecutionService {
 
     @Override
     public <T> Execution<T> execute(final Callable<T> task) throws ExecutionException {

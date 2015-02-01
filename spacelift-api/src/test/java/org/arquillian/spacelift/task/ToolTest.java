@@ -60,7 +60,7 @@ public class ToolTest {
 
     @Test
     public void getJavaToolFromSpaceliftByAlias() {
-        new Spacelift.SpaceliftInstance().registry().register(TestJavaTool.class, "java");
+        Spacelift.registry().register(TestJavaTool.class, "java");
 
         Task<?, ?> task = Spacelift.task("java");
         assertThat(task, notNullValue());

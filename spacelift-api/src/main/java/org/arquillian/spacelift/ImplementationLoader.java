@@ -16,7 +16,6 @@
  */
 package org.arquillian.spacelift;
 
-import org.arquillian.spacelift.execution.ExecutionServiceFactory;
 
 /**
  * Utility capable of loading interface implementations available on classpath indirectly.
@@ -39,7 +38,7 @@ public final class ImplementationLoader {
     }
 
     /**
-     * Creates a new {@link ExecutionServiceFactory} instance of the specified type using the {@link Thread} Context
+     * Creates a new instance of the specified type using the {@link Thread} Context
      * {@link ClassLoader}. Will consult a configuration file visible to the {@link Thread} Context {@link ClassLoader} named
      * "META-INF/services/$fullyQualfiedClassName" which should contain a fully qualified name of the implementation.
      *
