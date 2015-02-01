@@ -38,12 +38,22 @@ public class TestTaskRegistry implements TaskRegistry {
     @Override
     public <IN, OUT, TASK extends Task<? super IN, OUT>, TASK_FACTORY extends TaskFactory<IN, OUT, TASK>> TaskRegistry register(
         Class<TASK> taskDef, TASK_FACTORY taskFactory) throws InvalidTaskException {
-        classRegistry.put(taskDef, taskFactory);
         for (String alias : taskFactory.aliases()) {
             aliasRegistry.put(alias, taskFactory);
         }
 
+        if(taskDef!=null) {
+            classRegistry.put(taskDef, taskFactory);
+        }
+
         return this;
+    }
+
+    @Override
+    public <IN, OUT, TASK extends Task<? super IN, OUT>, TASK_FACTORY extends TaskFactory<IN, OUT, TASK>> TaskRegistry register(
+        TASK_FACTORY taskFactory) throws InvalidTaskException {
+
+        return register(null, taskFactory);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })

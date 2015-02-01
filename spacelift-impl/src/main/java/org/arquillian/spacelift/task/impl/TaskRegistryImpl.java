@@ -22,16 +22,25 @@ public class TaskRegistryImpl implements TaskRegistry {
     @Override
     public <IN, OUT, TASK extends Task<? super IN, OUT>, TASK_FACTORY extends TaskFactory<IN, OUT, TASK>> TaskRegistry register(
         Class<TASK> taskDef, TASK_FACTORY taskFactory) throws InvalidTaskException {
-        classRegistry.put(taskDef, taskFactory);
+
         for (String alias : taskFactory.aliases()) {
             aliasRegistry.put(alias, taskFactory);
         }
 
-        // use class name and simple name as aliases as well
-        aliasRegistry.put(taskDef.getName(), taskFactory);
-        aliasRegistry.put(taskDef.getSimpleName(), taskFactory);
+        // use class name and simple name as aliases as well in case task definition was provided
+        if(taskDef!=null) {
+            classRegistry.put(taskDef, taskFactory);
+            aliasRegistry.put(taskDef.getName(), taskFactory);
+            aliasRegistry.put(taskDef.getSimpleName(), taskFactory);
+        }
 
         return this;
+    }
+
+    @Override
+    public <IN, OUT, TASK extends Task<? super IN, OUT>, TASK_FACTORY extends TaskFactory<IN, OUT, TASK>> TaskRegistry register(
+        TASK_FACTORY taskFactory) throws InvalidTaskException {
+        return register(null, taskFactory);
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })

@@ -26,15 +26,26 @@ package org.arquillian.spacelift.task;
 public interface TaskRegistry {
 
     /**
-     * Registers task factory in the registry
+     * Registers task factory in the registry.
      *
-     * @param taskDef
-     * @param taskFactory
+     * @param taskDef Task created by this factory
+     * @param taskFactory Task fac
      * @return
      * @throws InvalidTaskException
      */
     <IN, OUT, TASK extends Task<? super IN, OUT>, TASK_FACTORY extends TaskFactory<IN, OUT, TASK>> TaskRegistry register(
         Class<TASK> taskDef, TASK_FACTORY taskFactory) throws InvalidTaskException;
+
+    /**
+     * Registers task factory in the registry. Registered task cannot be instantiated by calling {@see TaskFactory#find(Class)}
+     * but can be instantiated by aliases provided by factory itself.
+     *
+     * @param taskFactory
+     * @return
+     * @throws InvalidTaskException
+     */
+    <IN, OUT, TASK extends Task<? super IN, OUT>, TASK_FACTORY extends TaskFactory<IN, OUT, TASK>> TaskRegistry register(TASK_FACTORY taskFactory) throws InvalidTaskException;
+
 
     /**
      * Registers {@link NoArgConstructorTaskFactory} for the task type. Requires task to take no-arg constructor.
