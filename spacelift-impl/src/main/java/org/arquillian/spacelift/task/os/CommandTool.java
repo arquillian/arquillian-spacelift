@@ -322,9 +322,28 @@ public class CommandTool extends Task<Object, ProcessResult> {
         ProcessResult result = processConsumer.await();
 
         if (spawnedProcess.hasFailed()) {
-            throw new ExecutionException("Invocation of \"{0}\" failed with {1}", new Object[] {
+
+            // add environment to the command
+            StringBuilder env = new StringBuilder();
+            for(Map.Entry<String, String> envVar : environment.entrySet()) {
+                // FIXME here, we should be aware of platform we are running
+                env.append(envVar.getKey()).append("=\"").append(envVar.getValue()).append("\" ");
+            }
+
+            StringBuilder output = new StringBuilder();
+            List<String> outputList = result.output();
+            // FIXME maybe we don't want this to be hardcoded
+            int from = outputList.size() > 50 ? outputList.size() - 50 : 0;
+            for(String s: outputList.subList(from, outputList.size())) {
+                output.append("\n").append(s);
+            }
+
+            throw new ExecutionException("Invocation of \"{3} {0}\" failed with {1}, logged (last 50 lines): {2}", new Object[] {
                 command,
-                result.exitValue() });
+                result.exitValue(),
+                output,
+                env,
+            });
         }
 
         return result;
