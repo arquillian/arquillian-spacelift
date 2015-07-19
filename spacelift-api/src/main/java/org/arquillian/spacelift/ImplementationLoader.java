@@ -54,13 +54,13 @@ public final class ImplementationLoader {
     }
 
     /**
-     * Creates a new {@link ExecutionServiceFactory} instance of the specified user view type using the specified {@link ClassLoader}.
+     * Creates a new instance of the specified user view type using the specified {@link ClassLoader}.
      * Will consult a configuration file visible to the specified {@link ClassLoader} named
      * "META-INF/services/$fullyQualfiedClassName" which should contain a fully qualified name of the implementation.
      *
      * The implementation class name must have a no-arg constructor.
      *
-     * @param interfaceClass
+     * @param factoryClass
      * @param cl
      * @return
      */
