@@ -67,7 +67,8 @@ public class ExecutionException extends RuntimeException {
      * @return
      */
     public ExecutionException prependMessage(String messageFormat, Object... parameters) {
-        return new ExecutionException(this.getCause(), messageFormat + ". " + this.getMessage(), parameters);
+        // we need to escape message by adding single quotes
+        return new ExecutionException(this.getCause(), messageFormat + ". '" + this.getMessage() +"'", parameters);
     }
 
 }
