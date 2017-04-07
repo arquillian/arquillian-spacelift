@@ -2,7 +2,6 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-  <!-- Parent -->
   <parent>
     <groupId>org.arquillian.spacelift</groupId>
     <artifactId>arquillian-spacelift-aggregator</artifactId>
@@ -10,10 +9,8 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
-  <!-- Model Version -->
   <modelVersion>4.0.0</modelVersion>
 
-  <!-- Artifact Configuration -->
   <artifactId>arquillian-spacelift-api</artifactId>
 
   <name>Arquillian Spacelift API</name>
@@ -30,8 +27,5 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-
-  <build>
-  </build>
 
 </project>
