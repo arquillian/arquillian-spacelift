@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <!-- Parent -->
     <parent>
         <groupId>org.jboss</groupId>
         <artifactId>jboss-parent</artifactId>
-        <version>19</version>
+        <version>22</version>
         <relativePath />
     </parent>
 
-    <!-- Model Version -->
     <modelVersion>4.0.0</modelVersion>
 
     <!-- Artifact Configuration -->
@@ -35,18 +33,13 @@
     </scm>
 
     <properties>
-        <!-- Versioning -->
-        <version.arquillian.core>1.1.5.Final</version.arquillian.core>
-        <version.junit>4.11</version.junit>
+        <version.arquillian.core>1.1.13.Final</version.arquillian.core>
+        <version.junit>4.12</version.junit>
         <version.hamcrest>1.3</version.hamcrest>
         <version.commons.lang>3.3.1</version.commons.lang>
 
-        <!-- override from parent -->
         <maven.compiler.target>1.6</maven.compiler.target>
         <maven.compiler.source>1.6</maven.compiler.source>
-
-        <maven.compiler.argument.target>1.6</maven.compiler.argument.target>
-        <maven.compiler.argument.source>1.6</maven.compiler.argument.source>
     </properties>
 
     <dependencyManagement>
