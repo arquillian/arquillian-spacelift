@@ -21,7 +21,6 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
 import org.arquillian.spacelift.Spacelift;
 import org.arquillian.spacelift.task.Task;
 import org.arquillian.spacelift.task.io.FileReader;
@@ -46,9 +45,6 @@ public class StringReplacementTool extends Task<Object, List<File>> {
 
     /**
      * Adds files to the list to be processed by the tool.
-     *
-     * @param file
-     * @return
      */
     public StringReplacementTool in(File... file) {
         Collections.addAll(files, file);
@@ -57,9 +53,6 @@ public class StringReplacementTool extends Task<Object, List<File>> {
 
     /**
      * Adds path as a file to be processed by the tool.
-     *
-     * @param file
-     * @return
      */
     public StringReplacementTool in(String file) {
         return in(new File(file));

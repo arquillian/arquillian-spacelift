@@ -24,7 +24,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-
 import org.arquillian.spacelift.execution.Execution;
 import org.arquillian.spacelift.execution.ExecutionService;
 import org.arquillian.spacelift.execution.TimeoutExecutionException;
@@ -33,7 +32,6 @@ import org.arquillian.spacelift.execution.TimeoutExecutionException;
  * Default execution service implementation. It uses cached threaded pool to execute or schedule callables to be run.
  *
  * @author <a href="mailto:kpiwko@redhat.com">Karel Piwko</a>
- *
  */
 public class ExecutionServiceImpl implements ExecutionService {
 
@@ -59,5 +57,4 @@ public class ExecutionServiceImpl implements ExecutionService {
         ScheduledFuture<T> future = scheduledService.schedule(task, delay, unit);
         return new FutureBasedExecution<T>(this, task, future);
     }
-
 }

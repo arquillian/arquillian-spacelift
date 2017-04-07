@@ -22,13 +22,11 @@ import org.arquillian.spacelift.execution.ExecutionException;
  * Holder of executed process that can be asynchronously set later on.
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
- *
  */
 class ProcessReference {
 
-    private volatile Process process;
-
     private final String processName;
+    private volatile Process process;
 
     public ProcessReference(String processName) {
         this.processName = processName;
@@ -38,22 +36,24 @@ class ProcessReference {
         return process != null;
     }
 
-    public void setProcess(Process process) {
-        if (process == null) {
-            throw new ExecutionException("Unable to SET SET process object for {0}. This is a bug in Arquillian Spacelift.",
-                processName);
-        }
-        this.process = process;
-    }
-
     public synchronized Process getProcess() throws ExecutionException {
 
         if (!isInitialized()) {
-            throw new ExecutionException("Unable to get {0} process identifier in ref {1}. This is a bug in Arquillian Spacelift.",
+            throw new ExecutionException(
+                "Unable to get {0} process identifier in ref {1}. This is a bug in Arquillian Spacelift.",
                 processName,
                 hashCode());
         }
 
         return process;
+    }
+
+    public void setProcess(Process process) {
+        if (process == null) {
+            throw new ExecutionException(
+                "Unable to SET SET process object for {0}. This is a bug in Arquillian Spacelift.",
+                processName);
+        }
+        this.process = process;
     }
 }

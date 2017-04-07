@@ -39,9 +39,6 @@ final class SecurityActions {
     /**
      * Obtains the Constructor specified from the given Class and argument types
      *
-     * @param clazz
-     * @param argumentTypes
-     * @return
      * @throws NoSuchMethodException
      */
     static <T> Constructor<T> getConstructor(final Class<T> clazz, final Class<?>... argumentTypes)

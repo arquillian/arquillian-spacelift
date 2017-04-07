@@ -22,7 +22,6 @@
 package org.arquillian.spacelift.process;
 
 import java.util.Arrays;
-
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -31,13 +30,10 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.CoreMatchers.sameInstance;
-
 import static org.junit.Assert.assertThat;
 
 /**
- *
  * @author <a href="@mailto:smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
 public class CommandTest {
 
@@ -70,7 +66,7 @@ public class CommandTest {
     @Test
     public void complexCommandTest() {
         Command command = new CommandBuilder("command")
-            .parameters(new String[] { "some", "other", "complex", "command" })
+            .parameters(new String[] {"some", "other", "complex", "command"})
             .build();
 
         assertThat(command.getNumberOfParameters(), equalTo(4));
@@ -157,7 +153,5 @@ public class CommandTest {
         command.parameter("-baz");
 
         assertThat(command.toString(), not(equalTo(command2.toString())));
-
     }
-
 }

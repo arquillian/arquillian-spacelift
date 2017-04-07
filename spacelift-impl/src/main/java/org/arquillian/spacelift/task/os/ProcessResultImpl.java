@@ -17,14 +17,12 @@
 package org.arquillian.spacelift.task.os;
 
 import java.util.List;
-
 import org.arquillian.spacelift.process.ProcessResult;
 
 /**
  * Default implementation of {@link ProcessResult
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
- *
  */
 class ProcessResultImpl implements ProcessResult {
 
@@ -53,8 +51,8 @@ class ProcessResultImpl implements ProcessResult {
         try {
             return process.exitValue();
         } catch (IllegalThreadStateException e) {
-            throw new IllegalStateException("Process " + processName + " is not yet finished, cannot determine exit value.");
+            throw new IllegalStateException(
+                "Process " + processName + " is not yet finished, cannot determine exit value.");
         }
     }
-
 }

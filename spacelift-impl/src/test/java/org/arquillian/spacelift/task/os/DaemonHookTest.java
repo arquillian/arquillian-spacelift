@@ -16,30 +16,39 @@
  */
 package org.arquillian.spacelift.task.os;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-
 import java.lang.reflect.Field;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import org.apache.commons.lang3.SystemUtils;
 import org.arquillian.spacelift.Spacelift;
 import org.arquillian.spacelift.execution.Execution;
 import org.arquillian.spacelift.execution.impl.ShutdownHooks;
 import org.arquillian.spacelift.process.ProcessResult;
-import org.arquillian.spacelift.task.os.CommandTool;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
+
 /**
  * Test shutdown hook activation for command
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
- *
  */
 public class DaemonHookTest {
+
+    private static void resetShutdownCounter() throws Exception {
+        Field counter = ShutdownHooks.SpaceliftShutDownHook.class.getDeclaredField("shutdownCounter");
+        counter.setAccessible(true);
+        counter.set(null, new AtomicInteger(1));
+    }
+
+    private static Integer getShutdownCounter() throws Exception {
+        Field counter = ShutdownHooks.SpaceliftShutDownHook.class.getDeclaredField("shutdownCounter");
+        counter.setAccessible(true);
+        return ((AtomicInteger) counter.get(null)).get();
+    }
 
     @Before
     public void resetCounter() throws Exception {
@@ -92,17 +101,5 @@ public class DaemonHookTest {
         if (result != null) {
             Assert.assertThat(result.output().size(), is(not(0)));
         }
-    }
-
-    private static void resetShutdownCounter() throws Exception {
-        Field counter = ShutdownHooks.SpaceliftShutDownHook.class.getDeclaredField("shutdownCounter");
-        counter.setAccessible(true);
-        counter.set(null, new AtomicInteger(1));
-    }
-
-    private static Integer getShutdownCounter() throws Exception {
-        Field counter = ShutdownHooks.SpaceliftShutDownHook.class.getDeclaredField("shutdownCounter");
-        counter.setAccessible(true);
-        return ((AtomicInteger) counter.get(null)).get();
     }
 }

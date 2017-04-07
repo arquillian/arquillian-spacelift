@@ -25,7 +25,6 @@ import java.text.MessageFormat;
  * Represents a wrapper on top of Java Reflection API. It makes indirect execution much easier
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
- *
  */
 class Invokable {
 
@@ -34,8 +33,10 @@ class Invokable {
     /**
      * Creates a new instance of Invokable. Class itself is loaded by provided classloader
      *
-     * @param cl classloader
-     * @param className fully qualified class name
+     * @param cl
+     *     classloader
+     * @param className
+     *     fully qualified class name
      */
     Invokable(ClassLoader cl, String className) {
         this.classType = loadClass(cl, className);
@@ -44,8 +45,10 @@ class Invokable {
     /**
      * Creates a new instance of Invokable. Class itself is reloaded by provider classloader
      *
-     * @param cl classloader
-     * @param classType class object. Class with the same fully qualified name will be loader from provided classloader
+     * @param cl
+     *     classloader
+     * @param classType
+     *     class object. Class with the same fully qualified name will be loader from provided classloader
      */
     Invokable(ClassLoader cl, Class<?> classType) {
         this.classType = reloadClass(cl, classType);
@@ -54,10 +57,13 @@ class Invokable {
     /**
      * Loads a class from classloader
      *
-     * @param cl classloader to be used
-     * @param classTypeName fully qualified class name
-     * @return
-     * @throws InvocationException if class was not found in classloader
+     * @param cl
+     *     classloader to be used
+     * @param classTypeName
+     *     fully qualified class name
+     *
+     * @throws InvocationException
+     *     if class was not found in classloader
      */
     static Class<?> loadClass(ClassLoader cl, String classTypeName) throws InvocationException {
         try {
@@ -70,59 +76,73 @@ class Invokable {
     /**
      * Reloads a class from classloader using same fully qualified class name
      *
-     * @param cl classloader to be used
-     * @param classType class object
-     * @return
-     * @throws InvocationException if class was not found in classloader
+     * @param cl
+     *     classloader to be used
+     * @param classType
+     *     class object
+     *
+     * @throws InvocationException
+     *     if class was not found in classloader
      */
     static Class<?> reloadClass(ClassLoader cl, Class<?> classType) throws InvocationException {
         try {
             return cl.loadClass(classType.getName());
         } catch (ClassNotFoundException e) {
-            throw new InvocationException(e, "Unable to reload class {0} with class loader {1}, previously loaded with {2}",
-                    classType.getName(), cl, classType.getClassLoader());
+            throw new InvocationException(e,
+                "Unable to reload class {0} with class loader {1}, previously loaded with {2}",
+                classType.getName(), cl, classType.getClassLoader());
         }
     }
 
     /**
      * Invokes method on class registered within {@link Invokable}. It looks also for superclasses
      *
-     * @param name name of the method
-     * @param parameterTypes parameter types of the method
-     * @param instance instance on which method is called, {@code null} for static methods
-     * @param parameters parameters for method invocation
-     * @return
-     * @throws InvocationException if method was not found or could not be invoked
+     * @param name
+     *     name of the method
+     * @param parameterTypes
+     *     parameter types of the method
+     * @param instance
+     *     instance on which method is called, {@code null} for static methods
+     * @param parameters
+     *     parameters for method invocation
+     *
+     * @throws InvocationException
+     *     if method was not found or could not be invoked
      */
     Object invokeMethod(String name, Class<?>[] parameterTypes, Object instance, Object[] parameters)
-            throws InvocationException {
+        throws InvocationException {
         try {
             return findMethod(name, parameterTypes).invoke(instance, parameters);
         } catch (IllegalAccessException e) {
             throw new InvocationException(e, "Unable to invoke {0}({1}) on object {2} with parameters {3}", name,
-                    parameterTypes, instance == null ? "" : instance.getClass().getName(), parameters);
+                parameterTypes, instance == null ? "" : instance.getClass().getName(), parameters);
         } catch (IllegalArgumentException e) {
             throw new InvocationException(e, "Unable to invoke {0}({1}) on object {2} with parameters {3}", name,
-                    parameterTypes, instance == null ? "" : instance.getClass().getName(), parameters);
+                parameterTypes, instance == null ? "" : instance.getClass().getName(), parameters);
         } catch (InvocationTargetException e) {
             throw new InvocationException(e, "Unable to invoke {0}({1}) on object {2} with parameters {3}", name,
-                    parameterTypes, instance == null ? "" : instance.getClass().getName(), parameters);
+                parameterTypes, instance == null ? "" : instance.getClass().getName(), parameters);
         } catch (SecurityException e) {
             throw new InvocationException(e, "Unable to invoke {0}({1}) on object {2} with parameters {3}", name,
-                    parameterTypes, instance == null ? "" : instance.getClass().getName(), parameters);
+                parameterTypes, instance == null ? "" : instance.getClass().getName(), parameters);
         } catch (InvocationException e) {
             throw new InvocationException(e, "Unable to invoke {0}({1}) on object {2} with parameters {3}", name,
-                    parameterTypes, instance == null ? "" : instance.getClass().getName(), parameters);
+                parameterTypes, instance == null ? "" : instance.getClass().getName(), parameters);
         }
     }
 
     /**
      * Creates a new instance of the class registered within {@link Invokable}.
      *
-     * @param parameterTypes parameter types of constructor
-     * @param parameters parameter values
+     * @param parameterTypes
+     *     parameter types of constructor
+     * @param parameters
+     *     parameter values
+     *
      * @return new instance
-     * @throws InvocationException If constructor was not found or could not be invoked
+     *
+     * @throws InvocationException
+     *     If constructor was not found or could not be invoked
      */
     Object invokeConstructor(Class<?>[] parameterTypes, Object[] parameters) throws InvocationException {
 
@@ -131,28 +151,28 @@ class Invokable {
             return con.newInstance(parameters);
         } catch (NoSuchMethodException e) {
             throw new InvocationException(e, "Unable to invoke constructor {0}({1}) with parameters {2}",
-                    classType.getSimpleName(),
-                    parameterTypes, parameters);
+                classType.getSimpleName(),
+                parameterTypes, parameters);
         } catch (SecurityException e) {
             throw new InvocationException(e, "Unable to invoke constructor {0}({1}) with parameters {2}",
-                    classType.getSimpleName(),
-                    parameterTypes, parameters);
+                classType.getSimpleName(),
+                parameterTypes, parameters);
         } catch (InstantiationException e) {
             throw new InvocationException(e, "Unable to invoke constructor {0}({1}) with parameters {2}",
-                    classType.getSimpleName(),
-                    parameterTypes, parameters);
+                classType.getSimpleName(),
+                parameterTypes, parameters);
         } catch (IllegalAccessException e) {
             throw new InvocationException(e, "Unable to invoke constructor {0}({1}) with parameters {2}",
-                    classType.getSimpleName(),
-                    parameterTypes, parameters);
+                classType.getSimpleName(),
+                parameterTypes, parameters);
         } catch (IllegalArgumentException e) {
             throw new InvocationException(e, "Unable to invoke constructor {0}({1}) with parameters {2}",
-                    classType.getSimpleName(),
-                    parameterTypes, parameters);
+                classType.getSimpleName(),
+                parameterTypes, parameters);
         } catch (InvocationTargetException e) {
             throw new InvocationException(e, "Unable to invoke constructor {0}({1}) with parameters {2}",
-                    classType.getSimpleName(),
-                    parameterTypes, parameters);
+                classType.getSimpleName(),
+                parameterTypes, parameters);
         }
     }
 
@@ -181,16 +201,14 @@ class Invokable {
         }
 
         throw new InvocationException(
-                "Unable to find method {0}({1}) in class {2} nor its superclasses or implemented interfaces", name,
-                parameterTypes, classType.getName());
-
+            "Unable to find method {0}({1}) in class {2} nor its superclasses or implemented interfaces", name,
+            parameterTypes, classType.getName());
     }
 
     /**
      * Represents an invocation exception that can happen during reflection calls
      *
      * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
-     *
      */
     static class InvocationException extends RuntimeException {
         private static final long serialVersionUID = 1L;

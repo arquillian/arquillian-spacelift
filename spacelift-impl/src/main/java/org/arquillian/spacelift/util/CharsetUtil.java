@@ -45,6 +45,4 @@ public class CharsetUtil {
             return Charset.defaultCharset();
         }
     }
-
-
 }

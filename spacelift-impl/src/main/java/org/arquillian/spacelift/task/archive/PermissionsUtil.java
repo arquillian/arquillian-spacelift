@@ -22,7 +22,6 @@ import java.io.File;
  * Permissions util
  *
  * @author <a href="asotobu@gmail.com">Alex Soto</a>
- *
  */
 public class PermissionsUtil {
 
@@ -43,36 +42,45 @@ public class PermissionsUtil {
         int maskedMode = mode & 0777;
         FilePermission filePermission = new FilePermission();
 
-        if ((maskedMode & OWNER_READ_FLAG) > 0)
+        if ((maskedMode & OWNER_READ_FLAG) > 0) {
             filePermission.setOwnerCanRead(true);
-        if ((maskedMode & OWNER_WRITE_FLAG) > 0)
+        }
+        if ((maskedMode & OWNER_WRITE_FLAG) > 0) {
             filePermission.setOwnerCanWrite(true);
-        if ((maskedMode & OWNER_EXECUTE_FLAG) > 0)
+        }
+        if ((maskedMode & OWNER_EXECUTE_FLAG) > 0) {
             filePermission.setOwnerCanExecute(true);
+        }
 
-        if ((maskedMode & GROUP_READ_FLAG) > 0)
+        if ((maskedMode & GROUP_READ_FLAG) > 0) {
             filePermission.setGroupCanRead(true);
-        if ((maskedMode & GROUP_WRITE_FLAG) > 0)
+        }
+        if ((maskedMode & GROUP_WRITE_FLAG) > 0) {
             filePermission.setGroupCanWrite(true);
-        if ((maskedMode & GROUP_EXECUTE_FLAG) > 0)
+        }
+        if ((maskedMode & GROUP_EXECUTE_FLAG) > 0) {
             filePermission.setGroupCanExecute(true);
+        }
 
-        if ((maskedMode & OTHERS_READ_FLAG) > 0)
+        if ((maskedMode & OTHERS_READ_FLAG) > 0) {
             filePermission.setOthersCanRead(true);
-        if ((maskedMode & OTHERS_WRITE_FLAG) > 0)
+        }
+        if ((maskedMode & OTHERS_WRITE_FLAG) > 0) {
             filePermission.setOthersCanWrite(true);
-        if ((maskedMode & OTHERS_EXECUTE_FLAG) > 0)
+        }
+        if ((maskedMode & OTHERS_EXECUTE_FLAG) > 0) {
             filePermission.setOthersCanExecute(true);
+        }
 
         return filePermission;
-
     }
 
     public static void applyPermission(File file, FilePermission permissions) {
 
-        file.setExecutable(permissions.isOwnerCanExecute(), !permissions.isGroupCanExecute() && !permissions.isOthersCanExecute());
-        file.setWritable(permissions.isOwnerCanWrite(), !permissions.isGroupCanWrite() && !permissions.isOthersCanWrite());
+        file.setExecutable(permissions.isOwnerCanExecute(),
+            !permissions.isGroupCanExecute() && !permissions.isOthersCanExecute());
+        file.setWritable(permissions.isOwnerCanWrite(),
+            !permissions.isGroupCanWrite() && !permissions.isOthersCanWrite());
         file.setReadable(permissions.isOwnerCanRead(), !permissions.isGroupCanRead() && !permissions.isOthersCanRead());
-
     }
 }

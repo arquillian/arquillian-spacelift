@@ -17,21 +17,20 @@
 package org.arquillian.spacelift.execution.impl;
 
 import java.util.concurrent.atomic.AtomicInteger;
-
 import org.arquillian.spacelift.execution.Execution;
 
 /**
  * Utility class that registers a shutdown hook for execution.
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
- *
  */
 public class ShutdownHooks {
 
     /**
      * Register a shutdown hook for {@code execution} that is automatically called if JVM exits
      *
-     * @param execution Execution to be terminated when JVM exits
+     * @param execution
+     *     Execution to be terminated when JVM exits
      */
     public static <RETURNTYPE> void addHookFor(final Execution<RETURNTYPE> execution) {
         Thread shutdownThread = new SpaceliftShutDownHook<RETURNTYPE>(execution);
@@ -42,8 +41,6 @@ public class ShutdownHooks {
      * A shutdown thread for Spacelift that terminates running execution.
      *
      * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
-     *
-     * @param <RETURNTYPE>
      */
     public static class SpaceliftShutDownHook<RETURNTYPE> extends Thread {
 
@@ -65,5 +62,4 @@ public class ShutdownHooks {
             }
         }
     }
-
 }

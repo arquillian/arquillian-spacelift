@@ -21,9 +21,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Custom thread factory which purpose is to visually recognize Spacelift threads from others for debugging purposes.
- * 
- * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
  *
+ * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
  */
 public class SpaceliftThreadFactory implements ThreadFactory {
 
@@ -37,5 +36,4 @@ public class SpaceliftThreadFactory implements ThreadFactory {
 
         return spaceliftThread;
     }
-
 }

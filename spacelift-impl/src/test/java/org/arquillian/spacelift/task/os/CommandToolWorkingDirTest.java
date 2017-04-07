@@ -22,9 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
 import org.arquillian.spacelift.Spacelift;
-import org.arquillian.spacelift.task.os.CommandTool;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -33,10 +31,9 @@ import org.junit.rules.ExpectedException;
 
 public class CommandToolWorkingDirTest {
 
-    private List<File> tempFiles;
-
     @Rule
     public ExpectedException exception = ExpectedException.none();
+    private List<File> tempFiles;
 
     @Before
     public void setup() {
@@ -107,5 +104,4 @@ public class CommandToolWorkingDirTest {
         }
         tempFiles.clear();
     }
-
 }

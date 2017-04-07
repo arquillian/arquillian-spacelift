@@ -30,8 +30,9 @@ import java.util.logging.Logger;
 
 /**
  * A basic {@link ServiceLoader} implementation which uses META-INF/services registration.
- *
- * In order to register a service, create a file META-INF/services/${service.interface.name}. The content of the file should
+ * <p>
+ * In order to register a service, create a file META-INF/services/${service.interface.name}. The content of the file
+ * should
  * list fully qualified names of interface implementations, separated by new line character.
  *
  * @author <a href="mailto:aslak@redhat.com">Aslak Knutsen</a>
@@ -59,8 +60,6 @@ public class SpiServiceLoader implements ServiceLoader {
 
     /**
      * Creates an instance of SPI service loader. Uses specific {@link ClassLoader} to load service implementations.
-     *
-     * @param classLoader
      */
     public SpiServiceLoader(final ClassLoader classLoader) {
         this.classLoader = classLoader;
@@ -86,8 +85,7 @@ public class SpiServiceLoader implements ServiceLoader {
 
         if (services.isEmpty()) {
             throw new IllegalStateException("There are no services for serviceClass " + serviceClass.getName());
-        }
-        else if (services.size() > 1) {
+        } else if (services.size() > 1) {
             throw new IllegalStateException("There are more than 1 services for serviceClass " + serviceClass.getName());
         }
 
@@ -114,7 +112,6 @@ public class SpiServiceLoader implements ServiceLoader {
                 }
                 return service;
             }
-
         }
         throw new IllegalStateException("There is more then a one service for serviceClass " + serviceClass.getName());
     }
@@ -161,7 +158,7 @@ public class SpiServiceLoader implements ServiceLoader {
                                 if (!classLoader.getClass().equals(serviceClass.getClassLoader())) {
                                     throw new IllegalStateException("Service " + line
                                         + " was loaded by different classloader (" + (other == null ? "bootstrap"
-                                            : other.getClass().getName()) + ") then service interface "
+                                        : other.getClass().getName()) + ") then service interface "
                                         + serviceClass.getName() + " (" + classLoader.getClass().getName()
                                         + "), unable to cast classes");
                                 }
@@ -203,17 +200,16 @@ public class SpiServiceLoader implements ServiceLoader {
                     providerImpls.add(enumInstance);
                     if (log.isLoggable(Level.FINE)) {
                         log.log(Level.FINE, "Registered new service for type {0}: {1}#{2}", new Object[] {
-                            serviceType.getName(), serviceClass.getName(), enumInstance.toString() });
+                            serviceType.getName(), serviceClass.getName(), enumInstance.toString()});
                     }
                 }
             } else {
                 // add classes as service providers
                 providerImpls.add(createInstance(serviceClass));
                 if (log.isLoggable(Level.FINE)) {
-                    log.log(Level.FINE, "Registered new service for type {0}: {1}", new Object[] { serviceType.getName(),
-                        serviceClass.getName() });
+                    log.log(Level.FINE, "Registered new service for type {0}: {1}", new Object[] {serviceType.getName(),
+                        serviceClass.getName()});
                 }
-
             }
         }
         return providerImpls;
@@ -221,15 +217,20 @@ public class SpiServiceLoader implements ServiceLoader {
 
     /**
      * Create a new instance of the found Service. <br/>
-     *
+     * <p>
      * Verifies that the found ServiceImpl implements Service.
      *
-     * @param <T>
-     * @param serviceType The Service interface
-     * @param className The name of the implementation class
-     * @param loader The ClassLoader to load the ServiceImpl from
+     * @param serviceType
+     *     The Service interface
+     * @param className
+     *     The name of the implementation class
+     * @param loader
+     *     The ClassLoader to load the ServiceImpl from
+     *
      * @return A new instance of the ServiceImpl
-     * @throws Exception If problems creating a new instance
+     *
+     * @throws Exception
+     *     If problems creating a new instance
      */
     private <T> T createInstance(final Class<T> implClass) {
         {
@@ -253,7 +254,6 @@ public class SpiServiceLoader implements ServiceLoader {
 
             // Return
             return implClass.cast(instance);
-
         }
     }
 }

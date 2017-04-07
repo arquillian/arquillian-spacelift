@@ -26,7 +26,6 @@ import java.util.regex.Pattern;
  * Builds {@link Command}s.
  *
  * @author <a href="smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
 public class CommandBuilder {
 
@@ -36,8 +35,11 @@ public class CommandBuilder {
     /**
      * Creates a command builder with program name and parameters to be executed
      *
-     * @param command Program name with subsequent parameters
-     * @throws IllegalArgumentException If {@code command} is an empty array
+     * @param command
+     *     Program name with subsequent parameters
+     *
+     * @throws IllegalArgumentException
+     *     If {@code command} is an empty array
      */
     public CommandBuilder(CharSequence... command) throws IllegalArgumentException {
         if (command.length < 1) {
@@ -50,10 +52,8 @@ public class CommandBuilder {
 
     /**
      * Creates a command builder with program name to be executed.
-     *
+     * <p>
      * It is not checked whether {@code programName} is a valid command for current operating system
-     *
-     * @param programName
      */
     public CommandBuilder(CharSequence programName) {
         this.programName = programName.toString();
@@ -62,11 +62,15 @@ public class CommandBuilder {
 
     /**
      * Cloning constructor that creates a command builder based on this command builder.
-     * @param builder the builder to be cloned
-     * @throws IllegalArgumentException if {@code builder} in {@code null}
+     *
+     * @param builder
+     *     the builder to be cloned
+     *
+     * @throws IllegalArgumentException
+     *     if {@code builder} in {@code null}
      */
     public CommandBuilder(CommandBuilder builder) {
-        if(builder == null) {
+        if (builder == null) {
             throw new IllegalArgumentException("CommandBuilder must not be null");
         }
         this.programName = builder.programName;
@@ -76,7 +80,9 @@ public class CommandBuilder {
     /**
      * Adds a list of parameters to the command under construction, ignoring null and empty parameters.
      *
-     * @param parameters parameters we are adding to the already existing list
+     * @param parameters
+     *     parameters we are adding to the already existing list
+     *
      * @return instance of this {@link CommandBuilder}
      */
     public CommandBuilder parameters(List<? extends CharSequence> parameters) {
@@ -89,7 +95,6 @@ public class CommandBuilder {
     /**
      * Adds parameters to the command under construction, ignoring null and empty parameters.
      *
-     * @param parameters
      * @return instance of this {@link CommandBuilder}
      */
     public CommandBuilder parameters(CharSequence... parameters) {
@@ -99,7 +104,9 @@ public class CommandBuilder {
     /**
      * Adds a parameter to the command under construction, ignoring null and empty parameter.
      *
-     * @param parameter parameter to add to the command list
+     * @param parameter
+     *     parameter to add to the command list
+     *
      * @return instance of this {@link CommandBuilder}
      */
     public CommandBuilder parameter(CharSequence parameter) {
@@ -110,8 +117,6 @@ public class CommandBuilder {
     }
 
     /**
-     * @param stringToBeParsed
-     * @return instance of this {@link CommandBuilder}
      * @return instance of this {@link CommandBuilder}
      */
     public CommandBuilder splitToParameters(CharSequence sequenceToBeParsed) {
@@ -122,7 +127,8 @@ public class CommandBuilder {
     }
 
     /**
-     * Builds so-far constructed command, any subsequent call of this method will build command starting from empty command
+     * Builds so-far constructed command, any subsequent call of this method will build command starting from empty
+     * command
      * instance.
      *
      * @return built command
@@ -195,25 +201,26 @@ public class CommandBuilder {
                 // check wheter we should print command in escaped form.
                 if (StringUtils.parameterize(s).size() > 1) {
                     sb.append('"').append(s).append('"');
-                }
-                else {
+                } else {
                     sb.append(s);
                 }
                 delimiter = " ";
             }
             return sb.toString();
         }
-
     }
 
     static final class StringUtils {
 
         /**
-         * Parse string to parameters. Tokens are separated by whitespace. In case some parameter contains whitespace, the whole
+         * Parse string to parameters. Tokens are separated by whitespace. In case some parameter contains whitespace, the
+         * whole
          * parameter
          * has to be quoted. For instance string 'opt0 opt1=val1 "opt2=val2 with space"' results in three parameters.
          *
-         * @param stringToBeParsed - string to be parsed to parameters
+         * @param stringToBeParsed
+         *     - string to be parsed to parameters
+         *
          * @return List of parameters, returns empty list rather that null value
          */
         public static List<String> parameterize(String stringToBeParsed) {
@@ -227,12 +234,12 @@ public class CommandBuilder {
                 Matcher m = p.matcher(stringToBeParsed);
                 while (m.find()) {
                     if (!(m.group().trim().equals(""))) {
-                        options.add(Pattern.compile(QUOTED_TOKEN, Pattern.DOTALL).matcher(m.group().trim()).replaceAll("$1"));
+                        options.add(
+                            Pattern.compile(QUOTED_TOKEN, Pattern.DOTALL).matcher(m.group().trim()).replaceAll("$1"));
                     }
                 }
             }
             return options;
         }
-
     }
 }

@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-
 import org.arquillian.spacelift.execution.Execution;
 import org.arquillian.spacelift.execution.ExecutionException;
 import org.arquillian.spacelift.process.OutputTransformer;
@@ -41,7 +40,6 @@ import org.arquillian.spacelift.task.Task;
  * An internal task that consumes process I/O and uses {@see ProcessInteraction} to communicate with the process
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
- *
  */
 class ConsumeProcessOutputTask extends Task<Execution<Process>, ProcessResult> {
 
@@ -67,7 +65,8 @@ class ConsumeProcessOutputTask extends Task<Execution<Process>, ProcessResult> {
 
         final List<String> output = new ArrayList<String>();
         final ProcessResult result = new ProcessResultImpl(process, programName, output);
-        final ProcessInteractionApplicator interaction = new ProcessInteractionApplicator(interactionDefinition, programName);
+        final ProcessInteractionApplicator interaction =
+            new ProcessInteractionApplicator(interactionDefinition, programName);
         final BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         final OutputStream writer = new BufferedOutputStream(process.getOutputStream());
 
@@ -118,7 +117,7 @@ class ConsumeProcessOutputTask extends Task<Execution<Process>, ProcessResult> {
                 // save and print output
                 if (sentence.isFinished()) {
                     sentence.trim();
-                    log.log(Level.FINEST, "({0}): {1}", new Object[] { result.processName(), sentence });
+                    log.log(Level.FINEST, "({0}): {1}", new Object[] {result.processName(), sentence});
 
                     output.add(sentence.toString());
                     // propagate output/error to user
@@ -134,7 +133,7 @@ class ConsumeProcessOutputTask extends Task<Execution<Process>, ProcessResult> {
 
             // handle last line
             if (!sentence.isEmpty()) {
-                log.log(Level.FINEST, "{0} outputs: {1}", new Object[] { result.processName(), sentence });
+                log.log(Level.FINEST, "{0} outputs: {1}", new Object[] {result.processName(), sentence});
 
                 output.add(sentence.toString());
                 // propagate output/error to user
@@ -144,7 +143,6 @@ class ConsumeProcessOutputTask extends Task<Execution<Process>, ProcessResult> {
                 if (interaction.shouldOutputToErr(sentence)) {
                     System.err.println(interaction.transform(sentence));
                 }
-
             }
         } catch (IOException ignore) {
         }
@@ -165,7 +163,7 @@ class ConsumeProcessOutputTask extends Task<Execution<Process>, ProcessResult> {
             throw new ExecutionException(e.getCause() != null ? e.getCause() : e,
                 "Execution of \"{0}\" was interrupted with: {1}",
                 new Object[] {
-                    programName, e.getMessage() });
+                    programName, e.getMessage()});
         } finally {
             // cleanup
             if (process != null) {
@@ -202,7 +200,6 @@ class ConsumeProcessOutputTask extends Task<Execution<Process>, ProcessResult> {
      * Applicator of ProcessInteraction to the currently running process
      *
      * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
-     *
      */
     private static class ProcessInteractionApplicator {
 
@@ -219,8 +216,7 @@ class ConsumeProcessOutputTask extends Task<Execution<Process>, ProcessResult> {
                         return output.prepend("):").prepend(processName).prepend("(");
                     }
                 };
-            }
-            else {
+            } else {
                 this.transformer = interaction.transformer();
             }
         }
@@ -270,8 +266,8 @@ class ConsumeProcessOutputTask extends Task<Execution<Process>, ProcessResult> {
         }
 
         public boolean requiresInputInteraction() {
-            return !interaction.replyMap().isEmpty() || (interaction.textTypedIn() != null && interaction.textTypedIn() != "");
+            return !interaction.replyMap().isEmpty() || (interaction.textTypedIn() != null
+                && interaction.textTypedIn() != "");
         }
     }
-
 }

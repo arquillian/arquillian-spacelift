@@ -1,11 +1,8 @@
 package org.arquillian.spacelift.execution;
 
-import org.arquillian.spacelift.process.Command;
-import org.arquillian.spacelift.process.CommandBuilder;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -37,7 +34,7 @@ public class ExecutionExceptionTest {
     @Test
     public void multiplePrependMessage() {
         ExecutionException e = new ExecutionException("{0}", "test");
-        for(int i=0; i < 5; i++) {
+        for (int i = 0; i < 5; i++) {
             ExecutionException e2 = e.prependMessage("{0}", "{ ERR: err }");
             assertThat(e2.getMessage(), is("{ ERR: err }. " + e.getMessage()));
             e = e2;

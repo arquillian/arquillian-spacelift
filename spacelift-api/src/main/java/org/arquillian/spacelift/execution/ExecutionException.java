@@ -22,7 +22,6 @@ import java.text.MessageFormat;
  * Execution that flags a problem during ansynchronous execution of a task.
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
- *
  */
 public class ExecutionException extends RuntimeException {
 
@@ -30,8 +29,6 @@ public class ExecutionException extends RuntimeException {
 
     /**
      * Creates execution exception with cause
-     *
-     * @param cause
      */
     public ExecutionException(Throwable cause) {
         super(cause);
@@ -40,8 +37,8 @@ public class ExecutionException extends RuntimeException {
     /**
      * Creates execution exception with message
      *
-     * @param messageFormat String format. See {@see MessageFormat}.
-     * @param parameters
+     * @param messageFormat
+     *     String format. See {@see MessageFormat}.
      */
     public ExecutionException(String messageFormat, Object... parameters) {
         super(MessageFormat.format(messageFormat, parameters));
@@ -50,9 +47,8 @@ public class ExecutionException extends RuntimeException {
     /**
      * Creates execution exception with cause and message
      *
-     * @param cause
-     * @param messageFormat String format. See {@see MessageFormat}.
-     * @param parameters
+     * @param messageFormat
+     *     String format. See {@see MessageFormat}.
      */
     public ExecutionException(Throwable cause, String messageFormat, Object... parameters) {
         super(MessageFormat.format(messageFormat, parameters), cause);
@@ -61,14 +57,9 @@ public class ExecutionException extends RuntimeException {
     /**
      * Allows to modify the message of current exception. This call is useful for wrapping/unwrapping messages
      * throws from asynchronous executions
-     *
-     * @param messageFormat
-     * @param parameters
-     * @return
      */
     public ExecutionException prependMessage(String messageFormat, Object... parameters) {
         // we need to escape message by adding single quotes
-        return new ExecutionException(this.getCause(), messageFormat + ". '" + this.getMessage() +"'", parameters);
+        return new ExecutionException(this.getCause(), messageFormat + ". '" + this.getMessage() + "'", parameters);
     }
-
 }

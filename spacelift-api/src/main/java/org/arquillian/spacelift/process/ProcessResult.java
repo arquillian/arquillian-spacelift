@@ -22,29 +22,24 @@ import java.util.List;
  * An abstraction for process execution result. Allows to get process output and exit value
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
- *
  */
 public interface ProcessResult {
 
     /**
      * Returns name of the process that was executed
-     *
-     * @return
      */
     String processName();
 
     /**
      * Returns output of the process split per line
-     *
-     * @return
      */
     List<String> output();
 
     /**
      * Returns exit value of the process
      *
-     * @return
-     * @throws IllegalStateException If exit value could not have been determined
+     * @throws IllegalStateException
+     *     If exit value could not have been determined
      */
     Integer exitValue() throws IllegalStateException;
 }

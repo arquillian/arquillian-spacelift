@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.arquillian.spacelift.Spacelift;
 import org.arquillian.spacelift.task.Task;
 
@@ -39,7 +38,7 @@ public class WriteToFileTool extends Task<Object, List<File>> {
     protected List<File> process(Object input) throws Exception {
         Map<File, String> contents = new HashMap<File, String>();
         for (WriteFileContentsTuple fileContent : fileContents) {
-            if(fileContent.target == null) {
+            if (fileContent.target == null) {
                 continue;
             }
             contents.put(fileContent.target, fileContent.content);

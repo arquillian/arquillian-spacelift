@@ -23,7 +23,6 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.arquillian.spacelift.task.Task;
@@ -33,7 +32,6 @@ import org.arquillian.spacelift.task.text.ReplacementTuple;
  * Uncompress Tool
  *
  * @author <a href="asotobu@gmail.com">Alex Soto</a>
- *
  */
 public abstract class UncompressTool extends Task<File, File> {
 
@@ -51,20 +49,16 @@ public abstract class UncompressTool extends Task<File, File> {
     protected abstract int permissionsMode(ArchiveEntry archiveEntry);
 
     /**
-     *
      * @param pathToDestination
-     *        destination where to uncompress a file
-     * @return
+     *     destination where to uncompress a file
      */
     public UncompressTool toDir(String pathToDestination) {
         return toDir(new File(pathToDestination));
     }
 
     /**
-     *
      * @param destination
-     *        destination where to uncompress a file
-     * @return
+     *     destination where to uncompress a file
      */
     public UncompressTool toDir(File destination) {
         this.dest = destination;
@@ -73,13 +67,14 @@ public abstract class UncompressTool extends Task<File, File> {
 
     /**
      * Applies renaming for entries in compressed file. Uses standard Java regex notation.
-     *
+     * <p>
      * Also ensures that prior replacement all filesystem delimiters are mapped to forward slash '/'.
      * You can define multiple patterns, if so, they are applied in order there are specified.
      *
-     * @param pattern pattern to be find in archive
-     * @param replacement replacement of the path in archive
-     * @return
+     * @param pattern
+     *     pattern to be find in archive
+     * @param replacement
+     *     replacement of the path in archive
      */
     public ReplacementTuple<UncompressTool> remap(String pattern) {
         ReplacementTuple<UncompressTool> replacement = new ReplacementTuple<UncompressTool>(this, pattern);
@@ -89,8 +84,6 @@ public abstract class UncompressTool extends Task<File, File> {
 
     /**
      * Applies renaming for entries in compressed file by removing the first directory in there.
-     *
-     * @return
      */
     public UncompressTool cutdirs() {
         ReplacementTuple<UncompressTool> replacement = new ReplacementTuple<UncompressTool>(this, CUT_DIR_PATTERN);
@@ -154,5 +147,4 @@ public abstract class UncompressTool extends Task<File, File> {
         }
         return finalName;
     }
-
 }

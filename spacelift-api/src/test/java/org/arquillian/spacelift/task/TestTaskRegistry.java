@@ -19,12 +19,6 @@ package org.arquillian.spacelift.task;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.arquillian.spacelift.task.InvalidTaskException;
-import org.arquillian.spacelift.task.NoArgConstructorTaskFactory;
-import org.arquillian.spacelift.task.Task;
-import org.arquillian.spacelift.task.TaskFactory;
-import org.arquillian.spacelift.task.TaskRegistry;
-
 public class TestTaskRegistry implements TaskRegistry {
 
     private Map<Class<?>, TaskFactory<?, ?, ?>> classRegistry;
@@ -42,7 +36,7 @@ public class TestTaskRegistry implements TaskRegistry {
             aliasRegistry.put(alias, taskFactory);
         }
 
-        if(taskDef!=null) {
+        if (taskDef != null) {
             classRegistry.put(taskDef, taskFactory);
         }
 
@@ -56,7 +50,7 @@ public class TestTaskRegistry implements TaskRegistry {
         return register(null, taskFactory);
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public <IN, OUT, TASK extends Task<? super IN, OUT>> TaskRegistry register(Class<TASK> taskType, String... aliases)
         throws InvalidTaskException {

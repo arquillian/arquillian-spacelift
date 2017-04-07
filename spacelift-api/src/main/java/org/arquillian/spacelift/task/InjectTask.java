@@ -13,5 +13,4 @@ public class InjectTask<NEXT_IN> extends Task<Object, NEXT_IN> {
     protected NEXT_IN process(Object input) throws Exception {
         return nextIn;
     }
-
 }

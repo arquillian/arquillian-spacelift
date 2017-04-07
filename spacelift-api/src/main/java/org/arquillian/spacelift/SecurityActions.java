@@ -61,13 +61,19 @@ final class SecurityActions {
      * Create a new instance by finding a constructor that matches the argumentTypes signature using the arguments for
      * instantiation.
      *
-     * @param clazz Clazz to create
-     * @param argumentTypes Constructor argument types
-     * @param arguments Constructor arguments
-     * @param expectedType Expected type of created class
-     * @throws IllegalArgumentException if clazz, argumentTypes, or arguments are null
-     * @throws RuntimeException if any exceptions during creation
-     * @return
+     * @param clazz
+     *     Clazz to create
+     * @param argumentTypes
+     *     Constructor argument types
+     * @param arguments
+     *     Constructor arguments
+     * @param expectedType
+     *     Expected type of created class
+     *
+     * @throws IllegalArgumentException
+     *     if clazz, argumentTypes, or arguments are null
+     * @throws RuntimeException
+     *     if any exceptions during creation
      */
     private static <T> T newInstance(final Class<?> clazz, final Class<?>[] argumentTypes, final Object[] arguments,
         final Class<T> expectedType) throws IllegalArgumentException, IllegalStateException, RuntimeException {
@@ -115,9 +121,6 @@ final class SecurityActions {
     /**
      * Obtains the Constructor specified from the given Class and argument types
      *
-     * @param clazz
-     * @param argumentTypes
-     * @return
      * @throws NoSuchMethodException
      */
     private static Constructor<?> getConstructor(final Class<?> clazz, final Class<?>... argumentTypes)
@@ -176,5 +179,4 @@ final class SecurityActions {
         }
 
     }
-
 }

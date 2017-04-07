@@ -16,25 +16,23 @@
  */
 package org.arquillian.spacelift.task.os;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.startsWith;
-
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
-
 import org.apache.commons.lang3.SystemUtils;
 import org.arquillian.spacelift.Spacelift;
 import org.arquillian.spacelift.execution.ExecutionException;
 import org.arquillian.spacelift.process.ProcessInteractionBuilder;
-import org.arquillian.spacelift.task.os.CommandTool;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.startsWith;
 
 public class ProcessNameTest {
 
@@ -58,7 +56,6 @@ public class ProcessNameTest {
         exception.expectMessage(containsString("java -bar -baz"));
 
         Spacelift.task(CommandTool.class).programName("java").parameters("-bar", "-baz").execute().await();
-
     }
 
     @Test
@@ -66,7 +63,12 @@ public class ProcessNameTest {
 
         // run only on linux
         Assume.assumeThat(SystemUtils.IS_OS_LINUX, is(true));
-        Spacelift.task(CommandTool.class).programName("java").parameters("-bar", "-baz").shouldExitWith(1).execute().await();
+        Spacelift.task(CommandTool.class)
+            .programName("java")
+            .parameters("-bar", "-baz")
+            .shouldExitWith(1)
+            .execute()
+            .await();
     }
 
     @Test
@@ -85,7 +87,6 @@ public class ProcessNameTest {
             Spacelift.task(CommandTool.class).programName("java").parameters("-bar", "-baz")
                 .interaction(new ProcessInteractionBuilder().outputPrefix("").when(".*").printToOut())
                 .execute().await();
-
         } catch (ExecutionException e) {
             // ignore
         }
@@ -109,12 +110,10 @@ public class ProcessNameTest {
             Spacelift.task(CommandTool.class).programName("java").parameters("-bar", "-baz")
                 .interaction(new ProcessInteractionBuilder().when(".*").printToOut())
                 .execute().await();
-
         } catch (ExecutionException e) {
             // ignore
         }
         String output = errorOutput.toString(Charset.defaultCharset().name());
         Assert.assertThat(output, startsWith("(java):Unrecognized option: -bar"));
     }
-
 }

@@ -24,50 +24,38 @@ import java.util.regex.Pattern;
  * An object that encapsulates interaction with process.
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
- *
  */
 public interface ProcessInteraction {
 
     /**
      * Returns text that is typed in after process is started, might be {@code null}
-     *
-     * @return
      */
     String textTypedIn();
 
     /**
      * Returns a map that defines what should be written to stdin of running process based on its stdout
-     *
-     * @return
      */
     Map<Pattern, String> replyMap();
 
     /**
      * Returns a list of patterns that are propagated to standard output of process running this process via Spacelift
-     *
-     * @return
      */
     List<Pattern> allowedOutput();
 
     /**
      * Returns a list of patterns that are propagated to error output of process running this process via Spacelift
-     *
-     * @return
      */
     List<Pattern> errorOutput();
 
     /**
      * Returns a list of patterns that cause process to terminate forcefully
-     *
-     * @return
      */
     List<Pattern> terminatingOutput();
 
     /**
-     * Returns a transformer that can modify output printed to both standard and error output. Might be null to indicate that
+     * Returns a transformer that can modify output printed to both standard and error output. Might be null to indicate
+     * that
      * default {@link OutputTransformer} should be used
-     *
-     * @return
      */
     OutputTransformer transformer();
 }

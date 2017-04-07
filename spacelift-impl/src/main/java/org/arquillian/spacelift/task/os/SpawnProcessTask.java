@@ -20,16 +20,13 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.arquillian.spacelift.execution.Execution;
 import org.arquillian.spacelift.execution.ExecutionException;
 import org.arquillian.spacelift.process.Command;
 import org.arquillian.spacelift.task.Task;
 
 /**
- *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
- *
  */
 class SpawnProcessTask extends Task<Object, Process> {
 
@@ -106,5 +103,4 @@ class SpawnProcessTask extends Task<Object, Process> {
         builder.redirectErrorStream(redirectErrorStream);
         return builder.start();
     }
-
 }

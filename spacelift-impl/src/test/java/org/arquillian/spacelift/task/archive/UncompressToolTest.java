@@ -16,16 +16,13 @@
  */
 package org.arquillian.spacelift.task.archive;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-
 import java.io.File;
-
 import org.arquillian.spacelift.Spacelift;
-import org.arquillian.spacelift.task.archive.UntarTool;
-import org.arquillian.spacelift.task.archive.UnzipTool;
 import org.junit.Assert;
 import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 
 public class UncompressToolTest {
 
@@ -147,5 +144,4 @@ public class UncompressToolTest {
         Assert.assertThat(present, notNullValue());
         Assert.assertThat(present.exists(), is(true));
     }
-
 }

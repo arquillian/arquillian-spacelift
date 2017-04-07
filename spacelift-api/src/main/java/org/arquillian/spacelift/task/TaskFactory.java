@@ -1,17 +1,19 @@
 package org.arquillian.spacelift.task;
 
 import java.util.Collection;
-
 import org.arquillian.spacelift.Spacelift;
 
 /**
  * A factory that is able to create tasks instances
  *
- * @author kpiwko
+ * @param <IN>
+ *     Input of the task
+ * @param <OUT>
+ *     Output of the task
+ * @param <TASK>
+ *     {@link Task} that is created by this factory
  *
- * @param <IN> Input of the task
- * @param <OUT> Output of the task
- * @param <TASK> {@link Task} that is created by this factory
+ * @author kpiwko
  */
 public interface TaskFactory<IN, OUT, TASK extends Task<? super IN, OUT>> {
 
@@ -25,8 +27,6 @@ public interface TaskFactory<IN, OUT, TASK extends Task<? super IN, OUT>> {
     /**
      * Returns a collection of aliases for this task factory. An alias can be used to get a task
      * from the {@link TaskRegistry}
-     *
-     * @return
      */
     Collection<String> aliases();
 
@@ -36,5 +36,4 @@ public interface TaskFactory<IN, OUT, TASK extends Task<? super IN, OUT>> {
             return task;
         }
     }
-
 }

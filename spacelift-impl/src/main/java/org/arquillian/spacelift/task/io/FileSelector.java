@@ -16,13 +16,12 @@
  */
 package org.arquillian.spacelift.task.io;
 
-import org.arquillian.spacelift.task.Task;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import org.arquillian.spacelift.task.Task;
 
 /**
  * An utility task for file selection. It has no input and outputs a {@link List} of {@link File}s. This is basically

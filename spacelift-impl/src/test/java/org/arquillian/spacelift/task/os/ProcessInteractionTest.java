@@ -16,24 +16,22 @@
  */
 package org.arquillian.spacelift.task.os;
 
-import static org.hamcrest.CoreMatchers.is;
-
 import org.apache.commons.lang3.SystemUtils;
 import org.arquillian.spacelift.Spacelift;
 import org.arquillian.spacelift.execution.Execution;
 import org.arquillian.spacelift.process.ProcessInteractionBuilder;
 import org.arquillian.spacelift.process.ProcessResult;
-import org.arquillian.spacelift.task.os.CommandTool;
 import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import static org.hamcrest.CoreMatchers.is;
+
 /**
  * Checks basic process IO support
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
- *
  */
 public class ProcessInteractionTest {
 

@@ -20,14 +20,15 @@ package org.arquillian.spacelift.process;
  * Represents a line on execution input or output
  *
  * @author <a href="mailto:kpiwko@redhat.com">Karel Piwko</a>
- *
  */
 public interface Sentence extends CharSequence {
 
     /**
      * Prepends a character sequence to sentence
      *
-     * @param s sequence
+     * @param s
+     *     sequence
+     *
      * @return updated sentence
      */
     Sentence prepend(CharSequence s);
@@ -35,7 +36,9 @@ public interface Sentence extends CharSequence {
     /**
      * Prepends a character to sentence
      *
-     * @param c character
+     * @param c
+     *     character
+     *
      * @return updated sentence
      */
     Sentence prepend(char c);
@@ -43,7 +46,9 @@ public interface Sentence extends CharSequence {
     /**
      * Appends a character sequence to sentence
      *
-     * @param s sequence
+     * @param s
+     *     sequence
+     *
      * @return updated sentence
      */
     Sentence append(CharSequence s);
@@ -51,22 +56,20 @@ public interface Sentence extends CharSequence {
     /**
      * Appends a character to sentence
      *
-     * @param c character
+     * @param c
+     *     character
+     *
      * @return updated sequence
      */
     Sentence append(char c);
 
     /**
      * Checks whether sentence is finished by newline character(s)
-     *
-     * @return
      */
     boolean isFinished();
 
     /**
      * Checks whether sentence is empty, that is does not contain any characters
-     *
-     * @return
      */
     boolean isEmpty();
 
@@ -79,8 +82,6 @@ public interface Sentence extends CharSequence {
 
     /**
      * Clears the sentence
-     *
-     * @return
      */
     Sentence reset();
 }

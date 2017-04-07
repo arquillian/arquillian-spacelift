@@ -2,7 +2,6 @@ package org.arquillian.spacelift.task.impl;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.arquillian.spacelift.task.InvalidTaskException;
 import org.arquillian.spacelift.task.NoArgConstructorTaskFactory;
 import org.arquillian.spacelift.task.Task;
@@ -28,7 +27,7 @@ public class TaskRegistryImpl implements TaskRegistry {
         }
 
         // use class name and simple name as aliases as well in case task definition was provided
-        if(taskDef!=null) {
+        if (taskDef != null) {
             classRegistry.put(taskDef, taskFactory);
             aliasRegistry.put(taskDef.getName(), taskFactory);
             aliasRegistry.put(taskDef.getSimpleName(), taskFactory);
@@ -43,14 +42,14 @@ public class TaskRegistryImpl implements TaskRegistry {
         return register(null, taskFactory);
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public <IN, OUT, TASK extends Task<? super IN, OUT>> TaskRegistry register(Class<TASK> taskType, String... aliases)
         throws InvalidTaskException {
         return register(taskType, new NoArgConstructorTaskFactory(taskType, aliases));
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public <IN, OUT, TASK extends Task<? super IN, OUT>> TASK find(Class<TASK> taskType) throws InvalidTaskException {
 

@@ -1,24 +1,85 @@
 package org.arquillian.spacelift.task;
 
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import org.arquillian.spacelift.Spacelift;
 import org.arquillian.spacelift.execution.ExecutionCondition;
 import org.arquillian.spacelift.execution.ExecutionException;
 import org.arquillian.spacelift.execution.TimeoutExecutionException;
-import org.arquillian.spacelift.task.Task;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
+
 public class TaskChainTest {
+
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
+
+    @Test
+    public void chainTools() {
+        String result = Spacelift.task(CreateWriterTask.class)
+            .then(DataSampler.class)
+            .generateRandomData(123)
+            .then(MyStringReader.class)
+            .execute().await();
+
+        assertThat(result, notNullValue());
+    }
+
+    @Test
+    public void scheduleTools() {
+
+        Spacelift.task(CreateWriterTask.class)
+            .then(DataSampler.class)
+            .generateRandomData(123)
+            .then(MyStringReader.class)
+            .then(ExecutionCounter.class)
+            .execute().until(3, TimeUnit.SECONDS, new ExecutionCondition<Integer>() {
+            @Override
+            public boolean satisfiedBy(Integer object) throws ExecutionException {
+                return object >= 3;
+            }
+        });
+
+        // restart counter
+        Spacelift.task(ExecutionCounter.class).restart();
+
+        exception.expect(TimeoutExecutionException.class);
+
+        Spacelift.task(CreateWriterTask.class)
+            .then(DataSampler.class)
+            .generateRandomData(123)
+            .then(MyStringReader.class)
+            .then(ExecutionCounter.class)
+            .execute()
+            .reexecuteEvery(1, TimeUnit.SECONDS).until(3, TimeUnit.SECONDS, new ExecutionCondition<Integer>() {
+            @Override
+            public boolean satisfiedBy(Integer object) throws ExecutionException {
+                return object >= 5;
+            }
+        });
+    }
+
+    @Test
+    public void injectFirstParam() {
+
+        StringWriter preparedFile = Spacelift.task(CreateWriterTask.class)
+            .execute().await();
+
+        String result = Spacelift.task(preparedFile, DataSampler.class)
+            .generateRandomData(123)
+            .then(MyStringReader.class)
+            .execute()
+            .await();
+
+        assertThat(result, notNullValue());
+    }
 
     public static class CreateWriterTask extends Task<Object, StringWriter> {
 
@@ -71,69 +132,5 @@ public class TaskChainTest {
             // return count.get();
             return count.incrementAndGet();
         }
-
-    }
-
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
-
-    @Test
-    public void chainTools() {
-        String result = Spacelift.task(CreateWriterTask.class)
-            .then(DataSampler.class)
-            .generateRandomData(123)
-            .then(MyStringReader.class)
-            .execute().await();
-
-        assertThat(result, notNullValue());
-    }
-
-    @Test
-    public void scheduleTools() {
-
-        Spacelift.task(CreateWriterTask.class)
-            .then(DataSampler.class)
-            .generateRandomData(123)
-            .then(MyStringReader.class)
-            .then(ExecutionCounter.class)
-            .execute().until(3, TimeUnit.SECONDS, new ExecutionCondition<Integer>() {
-                @Override
-                public boolean satisfiedBy(Integer object) throws ExecutionException {
-                    return object >= 3;
-                }
-            });
-
-        // restart counter
-        Spacelift.task(ExecutionCounter.class).restart();
-
-        exception.expect(TimeoutExecutionException.class);
-
-        Spacelift.task(CreateWriterTask.class)
-            .then(DataSampler.class)
-            .generateRandomData(123)
-            .then(MyStringReader.class)
-            .then(ExecutionCounter.class)
-            .execute()
-            .reexecuteEvery(1, TimeUnit.SECONDS).until(3, TimeUnit.SECONDS, new ExecutionCondition<Integer>() {
-                @Override
-                public boolean satisfiedBy(Integer object) throws ExecutionException {
-                    return object >= 5;
-                }
-            });
-    }
-
-    @Test
-    public void injectFirstParam() {
-
-        StringWriter preparedFile = Spacelift.task(CreateWriterTask.class)
-            .execute().await();
-
-        String result = Spacelift.task(preparedFile, DataSampler.class)
-            .generateRandomData(123)
-            .then(MyStringReader.class)
-            .execute()
-            .await();
-
-        assertThat(result, notNullValue());
     }
 }

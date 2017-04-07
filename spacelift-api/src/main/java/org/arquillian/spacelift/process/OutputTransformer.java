@@ -20,7 +20,6 @@ package org.arquillian.spacelift.process;
  * A transformer for process execution output.
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
- *
  */
 public interface OutputTransformer {
 
@@ -28,7 +27,9 @@ public interface OutputTransformer {
      * Transforms process output to a different string. This might be handy
      * if you want to visually distinguish in between outputs of different processes.
      *
-     * @param output Sentence to be transformed
+     * @param output
+     *     Sentence to be transformed
+     *
      * @return modified output
      */
     Sentence transform(Sentence output);

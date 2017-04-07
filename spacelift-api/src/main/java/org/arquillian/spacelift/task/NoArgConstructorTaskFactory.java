@@ -4,7 +4,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-public class NoArgConstructorTaskFactory<IN, OUT, TASK extends Task<? super IN, OUT>> implements TaskFactory<IN, OUT, TASK> {
+public class NoArgConstructorTaskFactory<IN, OUT, TASK extends Task<? super IN, OUT>>
+    implements TaskFactory<IN, OUT, TASK> {
 
     private final Class<TASK> taskDef;
     private final List<String> aliases;
@@ -24,5 +25,4 @@ public class NoArgConstructorTaskFactory<IN, OUT, TASK extends Task<? super IN, 
     public Collection<String> aliases() {
         return aliases;
     }
-
 }

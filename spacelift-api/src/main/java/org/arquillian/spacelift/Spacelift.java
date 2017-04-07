@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.arquillian.spacelift.Invokable.InvocationException;
 import org.arquillian.spacelift.execution.ExecutionService;
 import org.arquillian.spacelift.task.InjectTask;
@@ -15,14 +14,17 @@ import org.arquillian.spacelift.task.TaskRegistry;
 
 /**
  * Arquillian Spacelift
- * @author kpiwko
  *
+ * @author kpiwko
  */
 public class Spacelift {
 
     /**
      * Creates a task based on task definition
-     * @param taskDef Task definition
+     *
+     * @param taskDef
+     *     Task definition
+     *
      * @return Instantiated task
      */
     public static <IN, OUT, TASK extends Task<? super IN, OUT>> TASK task(Class<TASK> taskDef) {
@@ -31,9 +33,14 @@ public class Spacelift {
 
     /**
      * Creates a task based on task definition stored under alias
-     * @param alias Task alias
+     *
+     * @param alias
+     *     Task alias
+     *
      * @return Instantiated task
-     * @throws InvalidTaskException if no such task exists
+     *
+     * @throws InvalidTaskException
+     *     if no such task exists
      */
     public static Task<?, ?> task(String alias) throws InvalidTaskException {
         return SpaceliftInstance.get().registry().find(alias);
@@ -41,8 +48,12 @@ public class Spacelift {
 
     /**
      * Creates a task based on task definition and passes initial input to it
-     * @param input Input for the task
-     * @param taskDef Task definition
+     *
+     * @param input
+     *     Input for the task
+     * @param taskDef
+     *     Task definition
+     *
      * @return Instantiated task
      */
     public static <IN, OUT, TASK extends Task<? super IN, OUT>> TASK task(IN input, Class<TASK> taskDef) {
@@ -53,10 +64,16 @@ public class Spacelift {
 
     /**
      * Creates a task based on task definition stored under alias and passes initial input to it
-     * @param input input for the task
-     * @param alias Task alias
+     *
+     * @param input
+     *     input for the task
+     * @param alias
+     *     Task alias
+     *
      * @return Instantiated task
-     * @throws InvalidTaskException if no such task exists
+     *
+     * @throws InvalidTaskException
+     *     if no such task exists
      */
     public static Task<?, ?> task(Object input, String alias) throws InvalidTaskException {
         @SuppressWarnings("unchecked")
@@ -72,32 +89,28 @@ public class Spacelift {
         return SpaceliftInstance.get().service();
     }
 
-    public static SpaceliftConfiguration configuration() { return SpaceliftInstance.get().configuration(); }
+    public static SpaceliftConfiguration configuration() {
+        return SpaceliftInstance.get().configuration();
+    }
 
     /**
      * This class should not be used externally, will be replaced by dependency injection
-     * @author kpiwko
      *
+     * @author kpiwko
      */
-    @SuppressWarnings({ "unchecked" })
+    @SuppressWarnings({"unchecked"})
     private static class SpaceliftInstance {
         private static final Logger log = Logger.getLogger(Spacelift.class.getName());
-
-        private static class LazyHolder {
-            private static final SpaceliftInstance INSTANCE = new SpaceliftInstance();
-        }
-
         private ExecutionService service;
         private TaskRegistry registry;
         private SpaceliftConfiguration configuration;
-
         private SpaceliftInstance() {
             try {
                 service = ImplementationLoader.implementationOf(ExecutionService.class);
             } catch (InvocationException e) {
                 throw new IllegalStateException(
-                        MessageFormat.format("Unable to find default implementation of {0} on classpath.",
-                                ExecutionService.class.getName()), e);
+                    MessageFormat.format("Unable to find default implementation of {0} on classpath.",
+                        ExecutionService.class.getName()), e);
             }
             try {
                 registry = ImplementationLoader.implementationOf(TaskRegistry.class);
@@ -105,24 +118,26 @@ public class Spacelift {
                 registry.register(InjectTask.class);
             } catch (InvocationException e) {
                 throw new IllegalStateException(
-                        MessageFormat.format("Unable to find default implementation of {0} on classpath.",
-                                ExecutionService.class.getName()), e);
+                    MessageFormat.format("Unable to find default implementation of {0} on classpath.",
+                        ExecutionService.class.getName()), e);
             }
 
             try {
                 try {
                     configuration = ImplementationLoader.implementationOf(SpaceliftConfiguration.class);
                     log.log(Level.INFO, "Initialized Spacelift, workspace: {0}, cache: {1}",
-                            new Object[]{configuration.workspace().getCanonicalPath(), configuration.cache().getCanonicalPath()});
+                        new Object[] {configuration.workspace().getCanonicalPath(),
+                            configuration.cache().getCanonicalPath()});
                 } catch (InvocationException e) {
                     configuration = new SpaceliftConfigurationImpl();
                     log.log(Level.INFO, "Initialized Spacelift from defaults, workspace: {0}, cache: {1}",
-                            new Object[]{configuration.workspace().getCanonicalPath(), configuration.cache().getCanonicalPath()});
+                        new Object[] {configuration.workspace().getCanonicalPath(),
+                            configuration.cache().getCanonicalPath()});
                 }
             } catch (IOException e) {
                 throw new IllegalStateException(
-                        MessageFormat.format("Unable to initialize Spacelift configuration.",
-                                ExecutionService.class.getName()), e);
+                    MessageFormat.format("Unable to initialize Spacelift configuration.",
+                        ExecutionService.class.getName()), e);
             }
         }
 
@@ -140,6 +155,10 @@ public class Spacelift {
 
         public SpaceliftConfiguration configuration() {
             return configuration;
+        }
+
+        private static class LazyHolder {
+            private static final SpaceliftInstance INSTANCE = new SpaceliftInstance();
         }
     }
 
@@ -161,7 +180,7 @@ public class Spacelift {
         @Override
         public File workpath(String path) throws IllegalArgumentException {
 
-            if(path == null) {
+            if (path == null) {
                 throw new IllegalArgumentException("Path must not be null.");
             }
 
@@ -171,12 +190,11 @@ public class Spacelift {
         @Override
         public File cachePath(String path) throws IllegalArgumentException {
 
-            if(path == null) {
+            if (path == null) {
                 throw new IllegalArgumentException("Path must not be null.");
             }
 
             return new File(cache(), path);
         }
     }
-
 }

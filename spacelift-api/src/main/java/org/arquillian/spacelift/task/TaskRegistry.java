@@ -16,43 +16,42 @@
  */
 package org.arquillian.spacelift.task;
 
-
 /**
  * Registry that contains all available tasks.
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
- *
  */
 public interface TaskRegistry {
 
     /**
      * Registers task factory in the registry.
      *
-     * @param taskDef Task created by this factory
-     * @param taskFactory Task fac
-     * @return
+     * @param taskDef
+     *     Task created by this factory
+     * @param taskFactory
+     *     Task fac
+     *
      * @throws InvalidTaskException
      */
     <IN, OUT, TASK extends Task<? super IN, OUT>, TASK_FACTORY extends TaskFactory<IN, OUT, TASK>> TaskRegistry register(
         Class<TASK> taskDef, TASK_FACTORY taskFactory) throws InvalidTaskException;
 
     /**
-     * Registers task factory in the registry. Registered task cannot be instantiated by calling {@see TaskFactory#find(Class)}
+     * Registers task factory in the registry. Registered task cannot be instantiated by calling {@see
+     * TaskFactory#find(Class)}
      * but can be instantiated by aliases provided by factory itself.
      *
-     * @param taskFactory
-     * @return
      * @throws InvalidTaskException
      */
-    <IN, OUT, TASK extends Task<? super IN, OUT>, TASK_FACTORY extends TaskFactory<IN, OUT, TASK>> TaskRegistry register(TASK_FACTORY taskFactory) throws InvalidTaskException;
-
+    <IN, OUT, TASK extends Task<? super IN, OUT>, TASK_FACTORY extends TaskFactory<IN, OUT, TASK>> TaskRegistry register(
+        TASK_FACTORY taskFactory) throws InvalidTaskException;
 
     /**
      * Registers {@link NoArgConstructorTaskFactory} for the task type. Requires task to take no-arg constructor.
      *
-     * @param task
-     * @param aliases Optional aliases for the task
-     * @return
+     * @param aliases
+     *     Optional aliases for the task
+     *
      * @throws InvalidTaskException
      */
     <IN, OUT, TASK extends Task<? super IN, OUT>> TaskRegistry register(Class<TASK> taskType, String... aliases)
@@ -61,30 +60,32 @@ public interface TaskRegistry {
     /**
      * Finds task by its type.
      *
-     * @param toolType
-     * @return
      * @throws InvalidTaskException
      */
     <IN, OUT, TASK extends Task<? super IN, OUT>> TASK find(Class<TASK> taskType) throws InvalidTaskException;
 
     /**
      * Finds task by its alias.
-     *
+     * <p>
      * This method should be used only by metadata bindings.
      *
-     * @param alias the alias
-     * @return
+     * @param alias
+     *     the alias
      */
     Task<?, ?> find(String alias) throws InvalidTaskException;
 
     /**
      * Finds task by its alias.
      *
-     * @param alias the alias
-     * @param inType the input type of the task
-     * @param outType the output type of the task
-     * @return
-     * @throws InvalidTaskException in case that task input/output type is different
+     * @param alias
+     *     the alias
+     * @param inType
+     *     the input type of the task
+     * @param outType
+     *     the output type of the task
+     *
+     * @throws InvalidTaskException
+     *     in case that task input/output type is different
      */
     <IN, OUT> Task<IN, OUT> find(String alias, Class<IN> inType, Class<OUT> outType) throws InvalidTaskException;
 }

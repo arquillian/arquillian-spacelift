@@ -22,24 +22,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A simple singleton (application scoped} registry that fulfills {@link ServiceLoader} contract. This registry uses underlying
+ * A simple singleton (application scoped} registry that fulfills {@link ServiceLoader} contract. This registry uses
+ * underlying
  * {@link ServiceLoader} implementation to load the service while storing cached instances in a local map.
  *
  * @author <a href="mailto:kpiwko@redhat.com">Karel Piwko</a>
- *
  */
 public class ServiceRegistry implements ServiceLoader {
 
-    private ServiceLoader serviceLoader;
-
-    private Map<Class<?>, Collection<?>> cachedServiceInstances;
-
     private static ServiceRegistry instance;
+    private ServiceLoader serviceLoader;
+    private Map<Class<?>, Collection<?>> cachedServiceInstances;
 
     /**
      * Creates a service registry with a {@link ServiceLoader} to load service instances until they are cached
-     *
-     * @param serviceLoader
      */
     public ServiceRegistry(ServiceLoader serviceLoader) {
         this.serviceLoader = serviceLoader;
@@ -49,8 +45,8 @@ public class ServiceRegistry implements ServiceLoader {
     /**
      * Returns {@link ServiceRegistry} instance. Instance must be registered first.
      *
-     * @return
-     * @throws IllegalStateException If no service registry was registered yet
+     * @throws IllegalStateException
+     *     If no service registry was registered yet
      */
     public static synchronized ServiceRegistry getInstance() throws IllegalStateException {
         if (instance == null) {
@@ -61,8 +57,6 @@ public class ServiceRegistry implements ServiceLoader {
 
     /**
      * Registers an instance of {@link ServiceRegistry}.
-     *
-     * @param registry
      */
     public static synchronized void register(ServiceRegistry registry) {
         instance = registry;
@@ -71,9 +65,8 @@ public class ServiceRegistry implements ServiceLoader {
     /**
      * Loads all registered services for given {@code serviceClass}
      *
-     * @param serviceClass
-     * @return
-     * @throws IllegalArgumentException If {@code serviceClass} is {@code null}
+     * @throws IllegalArgumentException
+     *     If {@code serviceClass} is {@code null}
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -96,10 +89,10 @@ public class ServiceRegistry implements ServiceLoader {
     /**
      * Loads a registered service for given {@code serviceClass}
      *
-     * @param serviceClass
-     * @return
-     * @throws IllegalArgumentException If either {@code classLoader} or {@code serviceClass} is {@code null}
-     * @throws IllegalStateException If more than a single service is registered
+     * @throws IllegalArgumentException
+     *     If either {@code classLoader} or {@code serviceClass} is {@code null}
+     * @throws IllegalStateException
+     *     If more than a single service is registered
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -122,19 +115,19 @@ public class ServiceRegistry implements ServiceLoader {
 
     /**
      * Loads a registered service for given {@code serviceClass}. Reverts to the {@code defaultImplementationClass} if no
-     * other service is registered. If {@code defaultImplemenationClass} is registered as well, it simply ignores it during
+     * other service is registered. If {@code defaultImplemenationClass} is registered as well, it simply ignores it
+     * during
      * resolution.
      *
-     * @param serviceClass
-     * @param defaultImplementationClass
-     * @return
-     * @throws IllegalArgumentException If either {@code serviceClass} or {@code defaultImplementationClass} is {@code null}
-     * @throws IllegalStateException If more than a single service is registered
+     * @throws IllegalArgumentException
+     *     If either {@code serviceClass} or {@code defaultImplementationClass} is {@code null}
+     * @throws IllegalStateException
+     *     If more than a single service is registered
      */
     @SuppressWarnings("unchecked")
     @Override
     public <T> T onlyOne(Class<T> serviceClass, Class<? extends T> defaultImplementationClass)
-            throws IllegalArgumentException, IllegalStateException {
+        throws IllegalArgumentException, IllegalStateException {
 
         // double check here, we don't eventually want to pass null as a key to the map
         if (serviceClass == null) {
@@ -150,5 +143,4 @@ public class ServiceRegistry implements ServiceLoader {
             return service;
         }
     }
-
 }

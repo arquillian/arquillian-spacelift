@@ -20,47 +20,46 @@ import java.util.Collection;
 
 /**
  * ServiceLoader allows to load services available on classpath implementing given service interface.
- *
+ * <p>
  * All service are required to have a non-argument public constructor.
- *
- * All ServiceLoader are required to handle registration of services implemented as {@link Enum}s. See {@link SpiServiceLoader}
+ * <p>
+ * All ServiceLoader are required to handle registration of services implemented as {@link Enum}s. See {@link
+ * SpiServiceLoader}
  * for default implementation.
  *
  * @author <a href="mailto:kpiwko@redhat.com">Karel Piwko</a>
- *
  */
 public interface ServiceLoader {
 
     /**
      * Loads all registered services for given {@code serviceClass}
      *
-     * @param serviceClass
-     * @return
-     * @throws IllegalArgumentException If either {@code classLoader} or {@code serviceClass} is {@code null}
+     * @throws IllegalArgumentException
+     *     If either {@code classLoader} or {@code serviceClass} is {@code null}
      */
     <T> Collection<T> all(Class<T> serviceClass) throws IllegalArgumentException;
 
     /**
      * Loads a registered service for given {@code serviceClass}
      *
-     * @param serviceClass
-     * @return
-     * @throws IllegalArgumentException If {@code serviceClass} is {@code null}
-     * @throws IllegalStateException If more than a single service is registered
+     * @throws IllegalArgumentException
+     *     If {@code serviceClass} is {@code null}
+     * @throws IllegalStateException
+     *     If more than a single service is registered
      */
     <T> T onlyOne(Class<T> serviceClass) throws IllegalArgumentException, IllegalStateException;
 
     /**
      * Loads a registered service for given {@code serviceClass}. Reverts to the {@code defaultImplementationClass} if no
-     * other service is registered. If {@code defaultImplemenationClass} is registered as well, it simply ignores it during
+     * other service is registered. If {@code defaultImplemenationClass} is registered as well, it simply ignores it
+     * during
      * resolution.
      *
-     * @param serviceClass
-     * @param defaultImplementationClass
-     * @return
-     * @throws IllegalArgumentException If either {@code serviceClass} or {@code defaultImplementationClass} is {@code null}
-     * @throws IllegalStateException If more than a single service is registered
+     * @throws IllegalArgumentException
+     *     If either {@code serviceClass} or {@code defaultImplementationClass} is {@code null}
+     * @throws IllegalStateException
+     *     If more than a single service is registered
      */
     <T> T onlyOne(Class<T> serviceClass, Class<? extends T> defaultImplementationClass)
-            throws IllegalArgumentException, IllegalStateException;
+        throws IllegalArgumentException, IllegalStateException;
 }

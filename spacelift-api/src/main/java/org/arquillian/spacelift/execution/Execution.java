@@ -21,16 +21,15 @@ import java.util.concurrent.TimeUnit;
 /**
  * Representation of currently running execution that promises to return {@code RESULT} somewhen in the future.
  *
- * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
+ * @param <RESULT>
+ *     Type of result to be returned from this execution
  *
- * @param <RESULT> Type of result to be returned from this execution
+ * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
  */
 public interface Execution<RESULT> {
 
     /**
      * Marks execution as finished. This means that we have discovered that it did the work we expected.
-     *
-     * @return
      */
     Execution<RESULT> markAsFinished();
 
@@ -57,7 +56,9 @@ public interface Execution<RESULT> {
      * Checks whether execution failed.
      *
      * @return true if execution has failed, false otherwise
-     * @throws IllegalStateException If execution status could not yet be determined
+     *
+     * @throws IllegalStateException
+     *     If execution status could not yet be determined
      */
     boolean hasFailed() throws IllegalStateException;
 
@@ -65,6 +66,7 @@ public interface Execution<RESULT> {
      * Immediately terminates execution evaluation.
      *
      * @return immediate execution evaluation
+     *
      * @throws ExecutionException
      */
     Execution<RESULT> terminate() throws ExecutionException;
@@ -73,6 +75,7 @@ public interface Execution<RESULT> {
      * Blocks execution of current thread, waiting for the execution to be finished.
      *
      * @return result of execution
+     *
      * @throws ExecutionException
      */
     RESULT await() throws ExecutionException;
@@ -80,29 +83,43 @@ public interface Execution<RESULT> {
     /**
      * Blocks execution of current thread, waiting for the execution to be finished.
      *
-     * @param timeout the timeout
-     * @param unit timeout unit
+     * @param timeout
+     *     the timeout
+     * @param unit
+     *     timeout unit
+     *
      * @return Result of execution
-     * @throws ExecutionException If execution failed
-     * @throws TimeoutExecutionException If execution was not retrieved during the timeout
+     *
+     * @throws ExecutionException
+     *     If execution failed
+     * @throws TimeoutExecutionException
+     *     If execution was not retrieved during the timeout
      */
     RESULT awaitAtMost(long timeout, TimeUnit unit) throws ExecutionException, TimeoutExecutionException;
 
     /**
      * Blocks execution of current thread, waiting for the execution to be finished.
      *
-     * @param timeout the timeout
+     * @param timeout
+     *     the timeout
+     *
      * @return Result of execution
-     * @throws ExecutionException If execution failed
-     * @throws TimeoutExecutionException If execution was not retrieved during the timeout
+     *
+     * @throws ExecutionException
+     *     If execution failed
+     * @throws TimeoutExecutionException
+     *     If execution was not retrieved during the timeout
      */
     RESULT awaitAtMost(CountDownWatch timeout) throws ExecutionException, TimeoutExecutionException;
 
     /**
      * Sets interval for execution reexecution.
      *
-     * @param step the time delay
-     * @param unit time unit
+     * @param step
+     *     the time delay
+     * @param unit
+     *     time unit
+     *
      * @return this execution with reexecution interval set
      */
     Execution<RESULT> reexecuteEvery(long step, TimeUnit unit);
@@ -111,10 +128,11 @@ public interface Execution<RESULT> {
      * Continues (re)executing the execution until condition is satisfied. This call can be used to poll regularly for an
      * external process status.
      *
-     * @param timeout the timeout
-     * @param unit
-     * @param condition condition that determines whether reexecution should continue
-     * @return
+     * @param timeout
+     *     the timeout
+     * @param condition
+     *     condition that determines whether reexecution should continue
+     *
      * @throws ExecutionException
      * @throws TimeoutExecutionException
      */
@@ -125,9 +143,11 @@ public interface Execution<RESULT> {
      * Continues (re)executing the execution until condition is satisfied. This call can be used to poll regularly for an
      * external process status.
      *
-     * @param timeout the timeout
-     * @param condition condition that determines whether reexecution should continue
-     * @return
+     * @param timeout
+     *     the timeout
+     * @param condition
+     *     condition that determines whether reexecution should continue
+     *
      * @throws ExecutionException
      * @throws TimeoutExecutionException
      */

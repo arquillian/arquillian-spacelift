@@ -22,7 +22,6 @@ import org.arquillian.spacelift.process.Sentence;
  * Representation a line on standard output or standard error output
  *
  * @author <a href="mailto:kpiwko@redhat.com">Karel Piwko</a>
- *
  */
 class SentenceImpl implements Sentence {
     private final StringBuilder sb;
@@ -37,7 +36,9 @@ class SentenceImpl implements Sentence {
     /**
      * Appends a character sequence to sentence
      *
-     * @param s sequence
+     * @param s
+     *     sequence
+     *
      * @return updated sentence
      */
     public Sentence append(CharSequence s) {
@@ -48,7 +49,9 @@ class SentenceImpl implements Sentence {
     /**
      * Appends a character to sentence
      *
-     * @param c character
+     * @param c
+     *     character
+     *
      * @return updated sequence
      */
     public Sentence append(char c) {
@@ -70,8 +73,6 @@ class SentenceImpl implements Sentence {
 
     /**
      * Checks whether sentence is finished by newline character(s)
-     *
-     * @return
      */
     // adb command writes its output with ends of lines as "\\n"
     // ignoring Windows conventions which recognize "\r\n" as the end of the line
@@ -82,8 +83,6 @@ class SentenceImpl implements Sentence {
 
     /**
      * Checks whether sentence is empty, that is does not contain any characters
-     *
-     * @return
      */
     public boolean isEmpty() {
         return sb.length() == 0;
@@ -108,8 +107,6 @@ class SentenceImpl implements Sentence {
 
     /**
      * Clears the sentence
-     *
-     * @return
      */
     public Sentence reset() {
         sb.setLength(0);
@@ -135,5 +132,4 @@ class SentenceImpl implements Sentence {
     public CharSequence subSequence(int start, int end) {
         return sb.subSequence(start, end);
     }
-
 }

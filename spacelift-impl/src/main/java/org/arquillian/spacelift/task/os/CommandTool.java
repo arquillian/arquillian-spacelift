@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.arquillian.spacelift.Spacelift;
 import org.arquillian.spacelift.execution.Execution;
 import org.arquillian.spacelift.execution.ExecutionException;
@@ -36,9 +35,7 @@ import org.arquillian.spacelift.task.Task;
 /**
  * Tool that is able to execute an external, operating system dependent command.
  *
- *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
- *
  */
 public class CommandTool extends Task<Object, ProcessResult> {
 
@@ -68,9 +65,11 @@ public class CommandTool extends Task<Object, ProcessResult> {
     /**
      * Sets executable to be executed. This can either a an absolute path or executed on path of underlying file system
      *
-     * @param programName program name
-     * @return
-     * @throws IllegalArgumentException If program name is null or empty
+     * @param programName
+     *     program name
+     *
+     * @throws IllegalArgumentException
+     *     If program name is null or empty
      */
     public CommandTool programName(CharSequence programName) throws IllegalArgumentException {
         Validate.notNullOrEmpty(programName, "Program name must not be empty nor null");
@@ -81,8 +80,8 @@ public class CommandTool extends Task<Object, ProcessResult> {
     /**
      * Adds a list of parameters to the command to be executed
      *
-     * @param parameters parameters
-     * @return
+     * @param parameters
+     *     parameters
      */
     public CommandTool parameters(List<? extends CharSequence> parameters) {
         commandBuilder.parameters(parameters);
@@ -92,8 +91,8 @@ public class CommandTool extends Task<Object, ProcessResult> {
     /**
      * Adds a list of parameters to the command to be executed
      *
-     * @param parameters parameters
-     * @return
+     * @param parameters
+     *     parameters
      */
     public CommandTool parameters(CharSequence... parameters) {
         commandBuilder.parameters(parameters);
@@ -103,8 +102,8 @@ public class CommandTool extends Task<Object, ProcessResult> {
     /**
      * Adds a parameter to the command to be executed
      *
-     * @param parameter parameter
-     * @return
+     * @param parameter
+     *     parameter
      */
     public CommandTool parameter(CharSequence parameter) {
         commandBuilder.parameter(parameter);
@@ -114,8 +113,8 @@ public class CommandTool extends Task<Object, ProcessResult> {
     /**
      * Splits {@code sequenceToBeParsed} into list of parameters, using unescaped spaces as delimiters
      *
-     * @param sequenceToBeParsed string to be parsed
-     * @return
+     * @param sequenceToBeParsed
+     *     string to be parsed
      */
     public CommandTool splitToParameters(CharSequence sequenceToBeParsed) {
         commandBuilder.splitToParameters(sequenceToBeParsed);
@@ -125,8 +124,8 @@ public class CommandTool extends Task<Object, ProcessResult> {
     /**
      * Sets interaction for the command
      *
-     * @param interaction the interaction
-     * @return
+     * @param interaction
+     *     the interaction
      */
     public CommandTool interaction(ProcessInteraction interaction) {
         this.interaction = interaction;
@@ -136,8 +135,8 @@ public class CommandTool extends Task<Object, ProcessResult> {
     /**
      * Sets interaction for the command
      *
-     * @param interactionBuilder the interaction
-     * @return
+     * @param interactionBuilder
+     *     the interaction
      */
     public CommandTool interaction(ProcessInteractionBuilder interactionBuilder) {
         this.interaction = interactionBuilder.build();
@@ -147,8 +146,8 @@ public class CommandTool extends Task<Object, ProcessResult> {
     /**
      * Sets the command. Overrides all previous parameters and program name
      *
-     * @param command the command
-     * @return
+     * @param command
+     *     the command
      */
     public CommandTool command(Command command) {
         this.commandBuilder = new CommandBuilder(command.getFullCommand().toArray(new String[0]));
@@ -158,8 +157,8 @@ public class CommandTool extends Task<Object, ProcessResult> {
     /**
      * Sets the command. Overrides all previous parameters and program name
      *
-     * @param command the command
-     * @return
+     * @param command
+     *     the command
      */
     public CommandTool command(CommandBuilder commandBuilder) {
         this.commandBuilder = commandBuilder;
@@ -169,12 +168,14 @@ public class CommandTool extends Task<Object, ProcessResult> {
     /**
      * Adds list of valid exit codes for the command. If command finishes execution and exit code does
      * not match the one set, {@see ExecutionException} is thrown
-     *
+     * <p>
      * By default, allowed exit code is set to {@code 0}
      *
-     * @param exitCodes the exit code
-     * @param others possible other codes
-     * @return
+     * @param exitCodes
+     *     the exit code
+     * @param others
+     *     possible other codes
+     *
      * @see ExecutionException
      */
     public CommandTool shouldExitWith(Integer... exitCodes) {
@@ -192,7 +193,8 @@ public class CommandTool extends Task<Object, ProcessResult> {
         }
 
         if (!workingDirectory.exists()) {
-            throw new IllegalArgumentException("Specified path " + workingDirectory.getAbsolutePath() + " does not exist!");
+            throw new IllegalArgumentException(
+                "Specified path " + workingDirectory.getAbsolutePath() + " does not exist!");
         }
         if (!workingDirectory.isDirectory()) {
             throw new IllegalArgumentException("Specified path " + workingDirectory.getAbsolutePath()
@@ -206,9 +208,11 @@ public class CommandTool extends Task<Object, ProcessResult> {
     /**
      * Sets working directory for the command
      *
-     * @param workingDirectory working directory, can be {@code null} to use current directory of running Java process
-     * @return
-     * @throws IllegalArgumentException if working directory does not exist
+     * @param workingDirectory
+     *     working directory, can be {@code null} to use current directory of running Java process
+     *
+     * @throws IllegalArgumentException
+     *     if working directory does not exist
      */
     public CommandTool workingDirectory(String workingDirectory) throws IllegalArgumentException {
         if (workingDirectory == null) {
@@ -227,14 +231,16 @@ public class CommandTool extends Task<Object, ProcessResult> {
     /**
      * Adds a map of key, value environment variables to the default process environment
      *
-     * @param envVariables environment variables. Value might be null.
-     * @return
+     * @param envVariables
+     *     environment variables. Value might be null.
+     *
      * @throws IllegalArgumentException
      */
-    public CommandTool addEnvironment(Map<? extends CharSequence, ? extends CharSequence> envVariables) throws IllegalArgumentException {
+    public CommandTool addEnvironment(Map<? extends CharSequence, ? extends CharSequence> envVariables)
+        throws IllegalArgumentException {
         Validate.notNull(envVariables, "Environment variables must not be null");
 
-        for(Map.Entry<? extends CharSequence, ? extends CharSequence> entry: envVariables.entrySet()) {
+        for (Map.Entry<? extends CharSequence, ? extends CharSequence> entry : envVariables.entrySet()) {
             Validate.notNull(entry.getKey(), "Environment variable name must not be null nor empty");
             CharSequence value = entry.getValue();
             environment.put(entry.getKey().toString(), value != null ? value.toString() : null);
@@ -245,9 +251,11 @@ public class CommandTool extends Task<Object, ProcessResult> {
     /**
      * Adds a sequence of key, value environment variables to the default process environment
      *
-     * @param envVariables environment variables. Value might be null.
-     * @return
-     * @throws IllegalArgumentException If values do not form complete pairs or if key is null
+     * @param envVariables
+     *     environment variables. Value might be null.
+     *
+     * @throws IllegalArgumentException
+     *     If values do not form complete pairs or if key is null
      */
     public CommandTool addEnvironment(CharSequence... envVariables) throws IllegalArgumentException {
 
@@ -268,8 +276,6 @@ public class CommandTool extends Task<Object, ProcessResult> {
 
     /**
      * Indicates that command should be executed as daemon and survive JVM process.
-     *
-     * @return
      */
     public CommandTool runAsDaemon() {
         this.isDaemon = true;
@@ -325,7 +331,7 @@ public class CommandTool extends Task<Object, ProcessResult> {
 
             // add environment to the command
             StringBuilder env = new StringBuilder();
-            for(Map.Entry<String, String> envVar : environment.entrySet()) {
+            for (Map.Entry<String, String> envVar : environment.entrySet()) {
                 // FIXME here, we should be aware of platform we are running
                 env.append(envVar.getKey()).append("=\"").append(envVar.getValue()).append("\" ");
             }
@@ -334,16 +340,17 @@ public class CommandTool extends Task<Object, ProcessResult> {
             List<String> outputList = result.output();
             // FIXME maybe we don't want this to be hardcoded
             int from = outputList.size() > 50 ? outputList.size() - 50 : 0;
-            for(String s: outputList.subList(from, outputList.size())) {
+            for (String s : outputList.subList(from, outputList.size())) {
                 output.append("\n").append(s);
             }
 
-            throw new ExecutionException("Invocation of \"{3} {0}\" failed with {1}, logged (last 50 lines): {2}", new Object[] {
-                command,
-                result.exitValue(),
-                output,
-                env,
-            });
+            throw new ExecutionException("Invocation of \"{3} {0}\" failed with {1}, logged (last 50 lines): {2}",
+                new Object[] {
+                    command,
+                    result.exitValue(),
+                    output,
+                    env,
+                });
         }
 
         return result;

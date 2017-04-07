@@ -16,11 +16,11 @@
  */
 package org.arquillian.spacelift.task.text;
 
-
 /**
  * A class for making the API of {@link StringReplacementTask} and {@link StringReplacementTool} fluent.
  *
- * @param <PARENT> Preferably the type of the parent, but can be anything to help with the fluent API.
+ * @param <PARENT>
+ *     Preferably the type of the parent, but can be anything to help with the fluent API.
  */
 public class ReplacementTuple<PARENT> {
     private final PARENT parent;
@@ -29,9 +29,11 @@ public class ReplacementTuple<PARENT> {
     private String replacement;
 
     /**
-     * @param parent Should be an instance of the creator. It will be returned when replacement is set in
-     *               {@link #with(String)}. Its purpose is to allow for making the API fluent.
-     * @param regex  Regex to be used for matching.
+     * @param parent
+     *     Should be an instance of the creator. It will be returned when replacement is set in
+     *     {@link #with(String)}. Its purpose is to allow for making the API fluent.
+     * @param regex
+     *     Regex to be used for matching.
      */
     public ReplacementTuple(PARENT parent, String regex) {
         this.parent = parent;
@@ -41,7 +43,9 @@ public class ReplacementTuple<PARENT> {
     /**
      * Sets the replacement for the given regex.
      *
-     * @param replacement If null, it will be ignored by the replacement task.
+     * @param replacement
+     *     If null, it will be ignored by the replacement task.
+     *
      * @return The instance of {@link PARENT} given in the constructor.
      */
     public PARENT with(String replacement) {

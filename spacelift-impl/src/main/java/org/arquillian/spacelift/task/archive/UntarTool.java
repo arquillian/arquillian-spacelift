@@ -19,7 +19,6 @@ package org.arquillian.spacelift.task.archive;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -32,9 +31,38 @@ import org.arquillian.spacelift.execution.ExecutionException;
  * Untar Tool
  *
  * @author <a href="asotobu@gmail.com">Alex Soto</a>
- *
  */
 public class UntarTool extends UncompressTool {
+
+    private Compression compression = Compression.GZIP;
+
+    public UntarTool gzip(boolean isGzip) {
+        this.compression = (isGzip) ? Compression.GZIP : Compression.NONE;
+        return this;
+    }
+
+    public UntarTool bzip2(boolean isBZip2) {
+        this.compression = (isBZip2) ? Compression.BZIP2 : Compression.NONE;
+        return this;
+    }
+
+    @Override
+    protected ArchiveInputStream compressedInputStream(InputStream compressedFile) {
+
+        BufferedInputStream in = new BufferedInputStream(compressedFile);
+
+        return compression.wrap(in);
+    }
+
+    @Override
+    protected int permissionsMode(ArchiveEntry archiveEntry) {
+        if (archiveEntry instanceof TarArchiveEntry) {
+            TarArchiveEntry tarArchiveEntry = (TarArchiveEntry) archiveEntry;
+            return tarArchiveEntry.getMode();
+        } else {
+            throw new ExecutionException("No TarEntry has been passed to a Tar method.");
+        }
+    }
 
     private enum Compression {
         GZIP {
@@ -69,35 +97,5 @@ public class UntarTool extends UncompressTool {
         };
 
         public abstract ArchiveInputStream wrap(BufferedInputStream input);
-    }
-
-    private Compression compression = Compression.GZIP;
-
-    public UntarTool gzip(boolean isGzip) {
-        this.compression = (isGzip) ? Compression.GZIP : Compression.NONE;
-        return this;
-    }
-
-    public UntarTool bzip2(boolean isBZip2) {
-        this.compression = (isBZip2) ? Compression.BZIP2 : Compression.NONE;
-        return this;
-    }
-
-    @Override
-    protected ArchiveInputStream compressedInputStream(InputStream compressedFile) {
-
-        BufferedInputStream in = new BufferedInputStream(compressedFile);
-
-        return compression.wrap(in);
-    }
-
-    @Override
-    protected int permissionsMode(ArchiveEntry archiveEntry) {
-        if (archiveEntry instanceof TarArchiveEntry) {
-            TarArchiveEntry tarArchiveEntry = (TarArchiveEntry) archiveEntry;
-            return tarArchiveEntry.getMode();
-        } else {
-            throw new ExecutionException("No TarEntry has been passed to a Tar method.");
-        }
     }
 }

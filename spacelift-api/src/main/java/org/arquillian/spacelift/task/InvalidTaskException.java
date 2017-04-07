@@ -19,9 +19,7 @@ package org.arquillian.spacelift.task;
 import java.text.MessageFormat;
 
 /**
- *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
- *
  */
 public class InvalidTaskException extends RuntimeException {
 
@@ -38,5 +36,4 @@ public class InvalidTaskException extends RuntimeException {
     public InvalidTaskException(String messageFormat, Object... args) {
         super(MessageFormat.format(messageFormat, args));
     }
-
 }

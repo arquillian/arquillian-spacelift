@@ -20,7 +20,6 @@ package org.arquillian.spacelift.task.archive;
  * File permission
  *
  * @author <a href="asotobu@gmail.com">Alex Soto</a>
- *
  */
 public class FilePermission {
 
@@ -107,5 +106,4 @@ public class FilePermission {
     public void setOthersCanExecute(boolean othersCanExecute) {
         this.othersCanExecute = othersCanExecute;
     }
-
 }

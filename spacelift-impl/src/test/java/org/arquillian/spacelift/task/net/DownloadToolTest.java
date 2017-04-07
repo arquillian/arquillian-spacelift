@@ -16,16 +16,14 @@
  */
 package org.arquillian.spacelift.task.net;
 
-import static org.hamcrest.CoreMatchers.notNullValue;
-
 import java.io.File;
-
 import org.arquillian.spacelift.task.TaskRegistry;
 import org.arquillian.spacelift.task.impl.TaskRegistryImpl;
-import org.arquillian.spacelift.task.net.DownloadTool;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.notNullValue;
 
 public class DownloadToolTest {
 
@@ -47,5 +45,4 @@ public class DownloadToolTest {
 
         Assert.assertThat(indexHtml, notNullValue());
     }
-
 }

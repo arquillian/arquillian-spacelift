@@ -16,18 +16,16 @@
  */
 package org.arquillian.spacelift.task.archive;
 
-import static org.hamcrest.CoreMatchers.notNullValue;
-
 import java.io.File;
-
 import org.arquillian.spacelift.execution.ExecutionService;
 import org.arquillian.spacelift.task.TaskRegistry;
-import org.arquillian.spacelift.task.archive.UnzipTool;
 import org.arquillian.spacelift.task.impl.TaskRegistryImpl;
 import org.arquillian.spacelift.task.net.DownloadTool;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.notNullValue;
 
 public class DownloadUncompressToolTest {
 
@@ -53,7 +51,5 @@ public class DownloadUncompressToolTest {
             .execute().await();
 
         Assert.assertThat(jsonSmartExtracted, notNullValue());
-
     }
-
 }

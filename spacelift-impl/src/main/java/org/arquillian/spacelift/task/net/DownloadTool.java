@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.arquillian.spacelift.execution.ExecutionException;
 import org.arquillian.spacelift.task.Task;
 
@@ -73,8 +72,6 @@ public class DownloadTool extends Task<Object, File> {
     /**
      * Sets the read timeout of the HTTP request.
      *
-     * @param timeout
-     * @return
      * @see HttpURLConnection#setReadTimeout(int)
      */
     public DownloadTool timeout(int timeout) {
@@ -85,9 +82,6 @@ public class DownloadTool extends Task<Object, File> {
     /**
      * Sets a HTTP property with the given key. If the key already has a value, it will be overwritten by the new one.
      *
-     * @param key
-     * @param value
-     * @return
      * @see HttpURLConnection#setRequestProperty(String, String)
      */
     public DownloadTool property(String key, String value) {
@@ -97,9 +91,6 @@ public class DownloadTool extends Task<Object, File> {
 
     /**
      * Sets whether to follow redirects. Defaults to true.
-     *
-     * @param followRedirects
-     * @return
      */
     public DownloadTool followRedirects(boolean followRedirects) {
         this.followRedirects = followRedirects;
@@ -169,7 +160,6 @@ public class DownloadTool extends Task<Object, File> {
                 while ((read = is.read(buffer)) != -1) {
                     fos.write(buffer, 0, read);
                 }
-
             } finally {
                 try {
                     if (is != null) {

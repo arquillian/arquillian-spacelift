@@ -18,7 +18,6 @@ package org.arquillian.spacelift.execution;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
-
 import org.arquillian.spacelift.process.Command;
 import org.arquillian.spacelift.task.Task;
 
@@ -27,15 +26,17 @@ import org.arquillian.spacelift.task.Task;
  * Allows both synchronous and asynchronous task execution
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
- *
  */
 public interface ExecutionService {
 
     /**
      * Executes a task asynchronously.
      *
-     * @param task Task to be executed
+     * @param task
+     *     Task to be executed
+     *
      * @return Object that describes current execution
+     *
      * @throws ExecutionException
      */
     <T> Execution<T> execute(Callable<T> task) throws ExecutionException;
@@ -44,16 +45,20 @@ public interface ExecutionService {
      * Schedules a task to be executed periodically until {@code breakCondition} is evaluate to {@code true} or timeout is
      * reached.
      *
-     * @param task Task to be executed
-     * @param breakCondition break condition
-     * @param step Time to wait until next execution should be performed
-     * @param timeout Total timeout
-     * @param unit Timeout unit
-     * @return
+     * @param task
+     *     Task to be executed
+     * @param breakCondition
+     *     break condition
+     * @param step
+     *     Time to wait until next execution should be performed
+     * @param timeout
+     *     Total timeout
+     * @param unit
+     *     Timeout unit
+     *
      * @throws TimeoutExecutionException
      * @throws ExecutionException
      */
     <T> Execution<T> schedule(Callable<T> task, long delay, TimeUnit unit)
         throws TimeoutExecutionException, ExecutionException;
-
 }

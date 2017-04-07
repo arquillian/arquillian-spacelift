@@ -22,7 +22,6 @@ import java.util.List;
  * Command abstraction. Commands are built via {@link CommandBuilder}.
  *
  * @author <a href="smikloso@redhat.com">Stefan Miklosovic</a>
- *
  */
 public interface Command {
 
@@ -37,31 +36,23 @@ public interface Command {
      * Returns a list of parameters. Program name is not included in this list.
      *
      * @see Command#getFullCommand()
-     * @return
      */
     List<String> getParameters();
 
     /**
      * Returns a parameter by index. If {@code index} is {@code 0}, program name is returned
-     *
+     * <p>
      * If index is out of range, {@code null} is returned
-     *
-     * @param i
-     * @return
      */
     String getParameter(int i);
 
     /**
      * Returns number of parameters
-     *
-     * @return
      */
     int getNumberOfParameters();
 
     /**
      * Returns program name and parameters concatenated into a single list
-     *
-     * @return
      */
     List<String> getFullCommand();
 }

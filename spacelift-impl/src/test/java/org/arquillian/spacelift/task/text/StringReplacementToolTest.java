@@ -16,20 +16,18 @@
  */
 package org.arquillian.spacelift.task.text;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-
 import java.io.File;
 import java.io.IOException;
-
 import org.arquillian.spacelift.Spacelift;
 import org.arquillian.spacelift.task.io.FileReader;
 import org.arquillian.spacelift.task.io.FileSelector;
 import org.arquillian.spacelift.task.io.WriteToFileTool;
-import org.arquillian.spacelift.task.text.StringReplacementTool;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author <a href="mailto:smikloso@redhat.com">Stefan Miklosovic</a>
@@ -39,28 +37,28 @@ public class StringReplacementToolTest {
     private File tempFile = null;
 
     private String contentBefore = "this is some testing (temporary) file where I want to\n" +
-            "replace strings for another ones by Spacelift Sed tool\n" +
-            "This is the third row in it.";
+        "replace strings for another ones by Spacelift Sed tool\n" +
+        "This is the third row in it.";
 
     private String contentAfter1 = "this is sOme testing (tempOrary) file where I want tO\n" +
-            "replace strings fOr anOther Ones by Spacelift Sed tOOl\n" +
-            "This is the third rOw in it.";
+        "replace strings fOr anOther Ones by Spacelift Sed tOOl\n" +
+        "This is the third rOw in it.";
 
     private String contentAfter2 = ".... .. .... ....... ........... .... ..... . .... ..\n" +
-            "....... ....... ... ....... .... .. ......... ... ....\n" +
-            ".... .. ... ..... ... .. ...";
+        "....... ....... ... ....... .... .. ......... ... ....\n" +
+        ".... .. ... ..... ... .. ...";
 
     private String contentAfter3 = "thisisis isisis some testing (temporary) file where I want to\n" +
-            "replace strings for another ones by Spacelift Sed tool\n" +
-            "Thisisis isisis the third row in it.";
+        "replace strings for another ones by Spacelift Sed tool\n" +
+        "Thisisis isisis the third row in it.";
 
     @Before
     public void before() throws IOException {
         tempFile = File.createTempFile("sed-test", ".tmp");
 
         Spacelift.task(WriteToFileTool.class)
-                .write(contentBefore).to(tempFile)
-                .execute().await();
+            .write(contentBefore).to(tempFile)
+            .execute().await();
     }
 
     @After
@@ -73,9 +71,9 @@ public class StringReplacementToolTest {
     @Test
     public void replacementTest() throws Exception {
         Spacelift.task(StringReplacementTool.class)
-                .in(tempFile)
-                .replace("o").with("O")
-                .execute().await();
+            .in(tempFile)
+            .replace("o").with("O")
+            .execute().await();
 
         assertThat(readFromFile(tempFile), is(contentAfter1));
     }
@@ -83,9 +81,9 @@ public class StringReplacementToolTest {
     @Test
     public void replacementRegexTest() throws Exception {
         Spacelift.task(StringReplacementTool.class)
-                .in(tempFile)
-                .replace("[^ \n]").with(".")
-                .execute().await();
+            .in(tempFile)
+            .replace("[^ \n]").with(".")
+            .execute().await();
 
         assertThat(readFromFile(tempFile), is(contentAfter2));
     }
@@ -93,17 +91,17 @@ public class StringReplacementToolTest {
     @Test
     public void replacementRegexGroupTest() {
         Spacelift.task(StringReplacementTool.class)
-                .in(tempFile)
-                .replace("(is)").with("$1$1$1")
-                .execute().await();
+            .in(tempFile)
+            .replace("(is)").with("$1$1$1")
+            .execute().await();
 
         assertThat(readFromFile(tempFile), is(contentAfter3));
     }
 
     private String readFromFile(File file) {
         return Spacelift.task(FileSelector.class)
-                .select(file)
-                .then(FileReader.class)
-                .execute().await().values().iterator().next();
+            .select(file)
+            .then(FileReader.class)
+            .execute().await().values().iterator().next();
     }
 }

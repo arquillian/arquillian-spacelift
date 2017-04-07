@@ -18,7 +18,6 @@ package org.arquillian.spacelift.task.archive;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
-
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.AsiExtraField;
@@ -31,7 +30,6 @@ import org.arquillian.spacelift.execution.ExecutionException;
  * Unzip Tool
  *
  * @author <a href="asotobu@gmail.com">Alex Soto</a>
- *
  */
 public class UnzipTool extends UncompressTool {
 

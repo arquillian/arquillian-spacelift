@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
 import org.arquillian.spacelift.task.Task;
 
 /**
@@ -69,5 +68,4 @@ public class StringReplacementTask extends Task<Map<File, String>, Map<File, Str
 
         return input;
     }
-
 }

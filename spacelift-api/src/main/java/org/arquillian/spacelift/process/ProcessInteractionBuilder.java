@@ -25,9 +25,8 @@ import java.util.regex.Pattern;
 /**
  * Builder API for process interaction. It uses regular expression to match allowed and error output.
  *
- * @see ProcessInteraction
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
- *
+ * @see ProcessInteraction
  */
 public class ProcessInteractionBuilder {
 
@@ -51,77 +50,6 @@ public class ProcessInteractionBuilder {
     private Pattern lastPattern;
 
     /**
-     * Definition of allowed actions when process starts
-     *
-     * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
-     *
-     */
-    public class StartingProcessInteractionBuilder {
-
-        /**
-         * Types in the {@code sentence} when process is started
-         *
-         * @param sentence the sentence
-         * @return current instance to allow chaining
-         */
-        public ProcessInteractionBuilder typeIn(String sentence) {
-            textTypedIn = sentence;
-            return ProcessInteractionBuilder.this;
-        }
-    }
-
-    /**
-     * Definition of allowed actions when output is matched
-     *
-     * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
-     *
-     */
-    public class MatchedOutputProcessInteractionBuilder {
-
-        /**
-         * Prints the {@code response} to stdin of the process
-         *
-         * @param response the response
-         * @return current instance to allow chaining
-         */
-        public ProcessInteractionBuilder replyWith(String response) {
-            replyMap.put(lastPattern, response);
-            return ProcessInteractionBuilder.this;
-        }
-
-        /**
-         * Forces current process to terminate
-         *
-         * @return current instance to allow chaining
-         */
-        public ProcessInteractionBuilder terminate() {
-            terminatingOutput.add(lastPattern);
-            return ProcessInteractionBuilder.this;
-        }
-
-        /**
-         * Echoes the line to standard output of the process running Spacelift
-         *
-         * @return current instance to allow chaining
-         */
-        public ProcessInteractionBuilder printToOut() {
-            allowedOutput.add(lastPattern);
-            return ProcessInteractionBuilder.this;
-        }
-
-        /**
-         * Echoes the line to error output of the process running Spacelift
-         *
-         * @return current instance to allow chaining
-         */
-        public ProcessInteractionBuilder printToErr() {
-            errorOutput.add(lastPattern);
-            return ProcessInteractionBuilder.this;
-        }
-
-    }
-
-    /**
      * Creates empty interaction builder
      */
     public ProcessInteractionBuilder() {
@@ -135,7 +63,9 @@ public class ProcessInteractionBuilder {
     /**
      * Defines an interaction when {@code pattern} is matched
      *
-     * @param pattern the line
+     * @param pattern
+     *     the line
+     *
      * @return current instance to allow chaining
      */
     public MatchedOutputProcessInteractionBuilder when(String pattern) {
@@ -153,10 +83,13 @@ public class ProcessInteractionBuilder {
     }
 
     /**
-     * Defines a prefix for standard output and standard error output. Might be {@code null} or empty string, in such case no
+     * Defines a prefix for standard output and standard error output. Might be {@code null} or empty string, in such case
+     * no
      * prefix is added and process outputs cannot be distinguished
      *
-     * @param prefix the prefix
+     * @param prefix
+     *     the prefix
+     *
      * @return current instance to allow chaining
      */
     public ProcessInteractionBuilder outputPrefix(final String prefix) {
@@ -167,8 +100,7 @@ public class ProcessInteractionBuilder {
                     return output;
                 }
             };
-        }
-        else {
+        } else {
             // sets prefix output transformer
             this.transformer = new OutputTransformer() {
                 @Override
@@ -186,7 +118,8 @@ public class ProcessInteractionBuilder {
      * @return {@link ProcessInteraction}
      */
     public ProcessInteraction build() {
-        return new ProcessInteractionImpl(replyMap, transformer, allowedOutput, errorOutput, terminatingOutput, textTypedIn);
+        return new ProcessInteractionImpl(replyMap, transformer, allowedOutput, errorOutput, terminatingOutput,
+            textTypedIn);
     }
 
     private static class ProcessInteractionImpl implements ProcessInteraction {
@@ -203,7 +136,8 @@ public class ProcessInteractionBuilder {
 
         private final OutputTransformer transformer;
 
-        public ProcessInteractionImpl(Map<Pattern, String> replyMap, OutputTransformer outputTransformer, List<Pattern> allowedOutput,
+        public ProcessInteractionImpl(Map<Pattern, String> replyMap, OutputTransformer outputTransformer,
+            List<Pattern> allowedOutput,
             List<Pattern> errorOutput, List<Pattern> terminatingOutput, String textTypedIn) {
             this.replyMap = replyMap;
             this.transformer = outputTransformer;
@@ -242,6 +176,77 @@ public class ProcessInteractionBuilder {
         public OutputTransformer transformer() {
             return transformer;
         }
+    }
 
+    /**
+     * Definition of allowed actions when process starts
+     *
+     * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
+     */
+    public class StartingProcessInteractionBuilder {
+
+        /**
+         * Types in the {@code sentence} when process is started
+         *
+         * @param sentence
+         *     the sentence
+         *
+         * @return current instance to allow chaining
+         */
+        public ProcessInteractionBuilder typeIn(String sentence) {
+            textTypedIn = sentence;
+            return ProcessInteractionBuilder.this;
+        }
+    }
+
+    /**
+     * Definition of allowed actions when output is matched
+     *
+     * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
+     */
+    public class MatchedOutputProcessInteractionBuilder {
+
+        /**
+         * Prints the {@code response} to stdin of the process
+         *
+         * @param response
+         *     the response
+         *
+         * @return current instance to allow chaining
+         */
+        public ProcessInteractionBuilder replyWith(String response) {
+            replyMap.put(lastPattern, response);
+            return ProcessInteractionBuilder.this;
+        }
+
+        /**
+         * Forces current process to terminate
+         *
+         * @return current instance to allow chaining
+         */
+        public ProcessInteractionBuilder terminate() {
+            terminatingOutput.add(lastPattern);
+            return ProcessInteractionBuilder.this;
+        }
+
+        /**
+         * Echoes the line to standard output of the process running Spacelift
+         *
+         * @return current instance to allow chaining
+         */
+        public ProcessInteractionBuilder printToOut() {
+            allowedOutput.add(lastPattern);
+            return ProcessInteractionBuilder.this;
+        }
+
+        /**
+         * Echoes the line to error output of the process running Spacelift
+         *
+         * @return current instance to allow chaining
+         */
+        public ProcessInteractionBuilder printToErr() {
+            errorOutput.add(lastPattern);
+            return ProcessInteractionBuilder.this;
+        }
     }
 }

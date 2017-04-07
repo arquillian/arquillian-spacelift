@@ -1,12 +1,8 @@
 package org.arquillian.spacelift.task.os;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.apache.commons.lang3.SystemUtils;
 import org.arquillian.spacelift.Spacelift;
 import org.arquillian.spacelift.execution.Execution;
@@ -18,6 +14,9 @@ import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 
 public class CommandToolTest {
     @Rule
@@ -66,7 +65,7 @@ public class CommandToolTest {
 
         env.put("FOO", "bar");
         env.put("BAR", new CharSequence() {
-            private final String value ="baz";
+            private final String value = "baz";
 
             @Override
             public CharSequence subSequence(int start, int end) {
@@ -114,7 +113,8 @@ public class CommandToolTest {
 
     @Test
     public void splitToParameters() throws Exception {
-        CommandBuilder cb = Spacelift.task(CommandTool.class).programName("java").splitToParameters("-foo -bar").commandBuilder;
+        CommandBuilder cb =
+            Spacelift.task(CommandTool.class).programName("java").splitToParameters("-foo -bar").commandBuilder;
         Assert.assertThat(cb.build().getNumberOfParameters(), is(2));
     }
 

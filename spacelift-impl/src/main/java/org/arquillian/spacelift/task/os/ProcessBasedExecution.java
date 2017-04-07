@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.arquillian.spacelift.execution.CountDownWatch;
 import org.arquillian.spacelift.execution.Execution;
 import org.arquillian.spacelift.execution.ExecutionCondition;
@@ -35,7 +34,6 @@ import org.arquillian.spacelift.execution.impl.ShutdownHooks;
  * Representation of a process execution.
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
- *
  */
 public class ProcessBasedExecution<RESULT> implements Execution<RESULT> {
     private static final Logger log = Logger.getLogger(ProcessBasedExecution.class.getName());
@@ -49,11 +47,9 @@ public class ProcessBasedExecution<RESULT> implements Execution<RESULT> {
 
     /**
      * Creates a process execution, add a name to the process
-     *
-     * @param processFutureExecution
-     * @param processName
      */
-    public ProcessBasedExecution(Execution<RESULT> processFutureExecution, ProcessReference processReference, String processName, List<Integer> allowedExitCodes) {
+    public ProcessBasedExecution(Execution<RESULT> processFutureExecution, ProcessReference processReference,
+        String processName, List<Integer> allowedExitCodes) {
         this.processFutureExecution = processFutureExecution;
         this.processReference = processReference;
         this.processName = processName;
@@ -147,7 +143,6 @@ public class ProcessBasedExecution<RESULT> implements Execution<RESULT> {
             return null;
         }
         return processFutureExecution.await();
-
     }
 
     @Override
@@ -177,7 +172,8 @@ public class ProcessBasedExecution<RESULT> implements Execution<RESULT> {
     }
 
     @Override
-    public RESULT until(CountDownWatch timeout, ExecutionCondition<RESULT> condition) throws ExecutionException, TimeoutExecutionException {
+    public RESULT until(CountDownWatch timeout, ExecutionCondition<RESULT> condition)
+        throws ExecutionException, TimeoutExecutionException {
         return until(timeout.timeout(), timeout.getTimeUnit(), condition);
     }
 }

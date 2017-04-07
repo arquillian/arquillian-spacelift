@@ -17,9 +17,7 @@
 package org.arquillian.spacelift.execution;
 
 /**
- *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
- *
  */
 public class TimeoutExecutionException extends ExecutionException {
 
@@ -32,5 +30,4 @@ public class TimeoutExecutionException extends ExecutionException {
     public TimeoutExecutionException(Throwable cause, String messageFormat, Object... parameters) {
         super(cause, messageFormat, parameters);
     }
-
 }

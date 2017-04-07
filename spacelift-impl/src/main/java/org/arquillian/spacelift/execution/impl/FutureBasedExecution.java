@@ -20,7 +20,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
 import org.arquillian.spacelift.execution.CountDownWatch;
 import org.arquillian.spacelift.execution.Execution;
 import org.arquillian.spacelift.execution.ExecutionCondition;
@@ -31,10 +30,10 @@ import org.arquillian.spacelift.execution.TimeoutExecutionException;
 /**
  * Execution that is based on {@see Future} and causes thread to block if await is called.
  *
+ * @param <RESULT>
+ *     Deferred result of the execution
  *
  * @author <a href="kpiwko@redhat.com">Karel Piwko</a>
- *
- * @param <RESULT> Deferred result of the execution
  */
 class FutureBasedExecution<RESULT> implements Execution<RESULT> {
 
@@ -56,6 +55,36 @@ class FutureBasedExecution<RESULT> implements Execution<RESULT> {
         this.executionFuture = future;
         this.pollInterval = DEFAULT_POLL_INTERVAL;
         this.pollUnit = DEFAULT_POLL_TIME_UNIT;
+    }
+
+    private static ExecutionException unwrapException(Throwable cause, String messageFormat, Object... parameters) {
+        Throwable current = cause;
+        ExecutionException deepestCause = null;
+        while (current != null) {
+            if (current instanceof ExecutionException) {
+                deepestCause = (ExecutionException) current;
+            }
+            current = current.getCause();
+        }
+
+        if (deepestCause != null) {
+            return deepestCause.prependMessage(messageFormat, parameters);
+        }
+
+        return new ExecutionException(cause, messageFormat, parameters);
+    }
+
+    private static TimeoutExecutionException unwrapExceptionAsTimeoutException(Throwable cause, String messageFormat,
+        Object... parameters) {
+        Throwable current = cause;
+        while (current != null) {
+            if (current instanceof ExecutionException) {
+                return new TimeoutExecutionException(current, messageFormat, parameters);
+            }
+            current = current.getCause();
+        }
+
+        return new TimeoutExecutionException(cause, messageFormat, parameters);
     }
 
     @Override
@@ -156,37 +185,6 @@ class FutureBasedExecution<RESULT> implements Execution<RESULT> {
 
         throw new TimeoutExecutionException("Unable to trigger condition within {0} {1}.", timeout, unit.toString()
             .toLowerCase());
-
-    }
-
-    private static ExecutionException unwrapException(Throwable cause, String messageFormat, Object... parameters) {
-        Throwable current = cause;
-        ExecutionException deepestCause = null;
-        while (current != null) {
-            if (current instanceof ExecutionException) {
-                deepestCause = (ExecutionException) current;
-            }
-            current = current.getCause();
-        }
-
-        if (deepestCause != null) {
-            return deepestCause.prependMessage(messageFormat, parameters);
-        }
-
-        return new ExecutionException(cause, messageFormat, parameters);
-    }
-
-    private static TimeoutExecutionException unwrapExceptionAsTimeoutException(Throwable cause, String messageFormat,
-        Object... parameters) {
-        Throwable current = cause;
-        while (current != null) {
-            if (current instanceof ExecutionException) {
-                return new TimeoutExecutionException(current, messageFormat, parameters);
-            }
-            current = current.getCause();
-        }
-
-        return new TimeoutExecutionException(cause, messageFormat, parameters);
     }
 
     @Override
@@ -195,7 +193,8 @@ class FutureBasedExecution<RESULT> implements Execution<RESULT> {
     }
 
     @Override
-    public RESULT until(CountDownWatch timeout, ExecutionCondition<RESULT> condition) throws ExecutionException, TimeoutExecutionException {
+    public RESULT until(CountDownWatch timeout, ExecutionCondition<RESULT> condition)
+        throws ExecutionException, TimeoutExecutionException {
         return until(timeout.timeout(), timeout.getTimeUnit(), condition);
     }
 }

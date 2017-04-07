@@ -16,16 +16,16 @@
  */
 package org.arquillian.spacelift.task;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
 import org.apache.commons.lang3.SystemUtils;
 import org.arquillian.spacelift.Spacelift;
 import org.arquillian.spacelift.process.Command;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 public class ToolTest {
 
@@ -42,8 +42,7 @@ public class ToolTest {
 
         if (SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC_OSX) {
             assertThat(javaCommand.toString(), equalTo("java -foo"));
-        }
-        else if (SystemUtils.IS_OS_WINDOWS) {
+        } else if (SystemUtils.IS_OS_WINDOWS) {
             assertThat(javaCommand.toString(), equalTo("java.exe -foo"));
         }
     }

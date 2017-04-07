@@ -6,7 +6,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-
 import org.arquillian.spacelift.execution.CountDownWatch;
 import org.arquillian.spacelift.execution.Execution;
 import org.arquillian.spacelift.execution.ExecutionCondition;
@@ -21,7 +20,6 @@ public class TestExecutionService implements ExecutionService {
 
         final Future<T> future = Executors.newSingleThreadExecutor().submit(task);
         return new TestExecution<T>(task, future);
-
     }
 
     @Override
@@ -113,7 +111,7 @@ public class TestExecutionService implements ExecutionService {
             long startTime = System.currentTimeMillis();
             long timeLeft = TimeUnit.MILLISECONDS.convert(timeout, unit);
 
-            @SuppressWarnings({ "rawtypes", "unchecked" })
+            @SuppressWarnings({"rawtypes", "unchecked"})
             Execution<RESULT> currentExecution = new TestExecution(currentTask, futureResult);
 
             while (timeLeft > TimeUnit.MILLISECONDS.convert(pollInterval, pollUnit)) {
@@ -143,6 +141,7 @@ public class TestExecutionService implements ExecutionService {
             TimeoutExecutionException {
             return until(timeout.timeout(), timeout.getTimeUnit(), condition);
         }
-    };
+    }
 
+    ;
 }
