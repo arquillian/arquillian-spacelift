@@ -161,10 +161,10 @@ class FutureBasedExecution<RESULT> implements Execution<RESULT> {
         // keep scheduling task until we have some time
         while (countdown.timeLeft() > 0) {
 
-            Execution<RESULT> nextExecution = service.schedule(executionTask, pollInterval, pollUnit);
-
             try {
                 RESULT result = currentExecution.awaitAtMost(countdown.timeLeft(), countdown.getTimeUnit());
+                Execution<RESULT> nextExecution = service.schedule(executionTask, pollInterval, pollUnit);
+
                 if (condition.satisfiedBy(result)) {
                     // terminate execution of next callable
                     // we want to ignore failures in termination
@@ -175,12 +175,13 @@ class FutureBasedExecution<RESULT> implements Execution<RESULT> {
                     }
                     return result;
                 }
+
+                // continue evaluating scheduled execution
+                currentExecution = nextExecution;
+
             } catch (TimeoutExecutionException e) {
                 continue;
             }
-
-            // continue evaluating scheduled execution
-            currentExecution = nextExecution;
         }
 
         throw new TimeoutExecutionException("Unable to trigger condition within {0} {1}.", timeout, unit.toString()
