@@ -1,6 +1,7 @@
 package org.arquillian.spacelift;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Spacelift configuration.
@@ -22,8 +23,10 @@ public interface SpaceliftConfiguration {
      * Returns a directory where Spacelift caches task artifacts so they can be reused by all builds.
      * <p>
      * By default, this is $USER_DIR/.spacelift
+     * @throws IOException if an I/O exception occured during creation of the
+     * cache directory
      */
-    File cache();
+    File cache() throws IOException;
 
     /**
      * Returns a path in workspace
@@ -44,6 +47,8 @@ public interface SpaceliftConfiguration {
      *
      * @throws IllegalArgumentException
      *     if path is null
+     * @throws IOException if an I/O exception occured during creation of the
+     * cache directory
      */
-    File cachePath(String path) throws IllegalArgumentException;
+    File cachePath(String path) throws IllegalArgumentException, IOException;
 }
