@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.io.FileUtils;
 import org.arquillian.spacelift.task.Task;
 import org.arquillian.spacelift.task.text.ReplacementTuple;
 
@@ -105,11 +106,10 @@ public abstract class UncompressTool extends Task<File, File> {
             File file = new File(this.dest, remapEntryName(entry.getName()));
 
             if (entry.isDirectory()) {
-                file.mkdirs();
+                FileUtils.forceMkdir(file);
             } else {
-
                 if (!file.getParentFile().exists()) {
-                    file.getParentFile().mkdirs();
+                    FileUtils.forceMkdir(file.getParentFile());
                 }
 
                 int count;

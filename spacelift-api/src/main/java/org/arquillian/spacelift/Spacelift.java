@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.io.FileUtils;
 import org.arquillian.spacelift.Invokable.InvocationException;
 import org.arquillian.spacelift.execution.ExecutionService;
 import org.arquillian.spacelift.task.InjectTask;
@@ -170,10 +171,10 @@ public class Spacelift {
         }
 
         @Override
-        public File cache() {
+        public File cache() throws IOException {
             String userHome = System.getProperty("user.home", ".");
             File cache = new File(userHome, ".spacelift/cache");
-            cache.mkdirs();
+            FileUtils.forceMkdir(cache);
             return cache;
         }
 
@@ -188,7 +189,7 @@ public class Spacelift {
         }
 
         @Override
-        public File cachePath(String path) throws IllegalArgumentException {
+        public File cachePath(String path) throws IllegalArgumentException, IOException {
 
             if (path == null) {
                 throw new IllegalArgumentException("Path must not be null.");
