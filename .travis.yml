@@ -1,9 +1,13 @@
 language: java
-sudo: false  
+addons:
+  apt:
+    packages:
+      - openjdk-6-jdk
 jdk:
-    - oraclejdk8
-    - oraclejdk7
-    - openjdk6
+    - openjdk7
+    - openjdk8
+    - oraclejdk9
+    - oraclejdk11
 branches:
     except:    
         - /^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$/
