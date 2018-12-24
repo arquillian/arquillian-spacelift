@@ -4,9 +4,8 @@ addons:
     packages:
       - openjdk-6-jdk
 jdk:
-    - openjdk8
     - openjdk7
-    - openjdk6
+    - openjdk8
     - oraclejdk9
     - oraclejdk11
 branches:
