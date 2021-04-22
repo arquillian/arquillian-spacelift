@@ -9,7 +9,7 @@
   </parent>
 
   <properties>
-    <version.commons.compress>1.8.1</version.commons.compress>
+    <version.commons.compress>1.19</version.commons.compress>
   </properties>
 
   <modelVersion>4.0.0</modelVersion>
